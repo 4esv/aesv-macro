@@ -42,11 +42,31 @@ pub(crate) struct LoginQueryParams {
 }
 
 pub(crate) fn is_allowed_original_url(url: &Url) -> bool {
-    let local_origin = match macro_env::Environment::new_or_prod() {
-        macro_env::Environment::Local => Some(crate::api::utils::default_redirect_url()),
-        _ => None,
+    let local_origins = match macro_env::Environment::new_or_prod() {
+        macro_env::Environment::Local => local_origins(),
+        _ => Vec::new(),
     };
-    is_allowed_original_url_with_local_origin(url, local_origin.as_ref())
+    is_allowed_original_url_with_local_origins(url, &local_origins)
+}
+
+/// NOTE: aesv serves its local stack from a public HTTPS name (os.aesv.io)
+/// through a proxy. `OVERRIDE_APP_SERVICE_URL` names it and survives a stack
+/// restart, while `FRONTEND_ORIGIN` is regenerated as the proxy's localhost
+/// URL, so a sign-in or link started on the public name needs both trusted.
+fn local_origins() -> Vec<Url> {
+    let app_origin = macro_service_urls::AppServiceUrl::new()
+        .ok()
+        .and_then(|app| Url::parse(&app).ok());
+    std::iter::once(crate::api::utils::default_redirect_url())
+        .chain(app_origin)
+        .collect()
+}
+
+fn is_allowed_original_url_with_local_origins(url: &Url, local_origins: &[Url]) -> bool {
+    is_allowed_original_url_with_local_origin(url, None)
+        || local_origins
+            .iter()
+            .any(|origin| is_allowed_original_url_with_local_origin(url, Some(origin)))
 }
 
 fn is_allowed_original_url_with_local_origin(url: &Url, local_origin: Option<&Url>) -> bool {
