@@ -290,14 +290,36 @@ pub fn build_static(stage: &Stage, instance: &Instance, mode: Mode) -> Result<()
 
 fn stage_bundle(stage: &Stage, instance: &Instance, bundle: &Path) -> Result<()> {
     stage.run_step("Staging frontend bundle", || {
-        let staged = static_dir(instance);
-        if staged.exists() {
-            std::fs::remove_dir_all(&staged)
-                .with_context(|| format!("clearing {}", staged.display()))?;
-        }
         instance.ensure_artifact_dir()?;
-        bundle_cache::copy_tree(bundle, &staged)
+        refill(&static_dir(instance), bundle)
     })
+}
+
+/// Replace `dir`'s contents with a copy of `from`, keeping `dir` itself.
+///
+/// NOTE: a running proxy bind-mounts the staged directory. Replacing the
+/// directory would leave a proxy that a rerun does not recreate serving the
+/// old, deleted one, which is empty.
+fn refill(dir: &Path, from: &Path) -> Result<()> {
+    let fresh = dir.with_extension("new");
+    let _ = std::fs::remove_dir_all(&fresh);
+    bundle_cache::copy_tree(from, &fresh)?;
+    std::fs::create_dir_all(dir).with_context(|| format!("creating {}", dir.display()))?;
+    for entry in std::fs::read_dir(dir).with_context(|| format!("reading {}", dir.display()))? {
+        let path = entry?.path();
+        if path.is_dir() && !path.is_symlink() {
+            std::fs::remove_dir_all(&path)
+        } else {
+            std::fs::remove_file(&path)
+        }
+        .with_context(|| format!("clearing {}", path.display()))?;
+    }
+    for entry in std::fs::read_dir(&fresh).with_context(|| format!("reading {}", fresh.display()))? {
+        let entry = entry?;
+        std::fs::rename(entry.path(), dir.join(entry.file_name()))
+            .with_context(|| format!("moving {} into {}", entry.path().display(), dir.display()))?;
+    }
+    std::fs::remove_dir(&fresh).with_context(|| format!("removing {}", fresh.display()))
 }
 
 /// `cargo x frontend-bundle`: build the local stack's static bundle into `out`,
