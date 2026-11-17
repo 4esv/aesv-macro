@@ -115,6 +115,18 @@ class EndToEnd(unittest.TestCase):
         call("GET", "/static-file-storage/a.png")
         self.assertEqual([s[0] for s in Fake.seen], ["dynamodb", "core", "core", "s3"])
 
+    def test_health_waits_for_the_stores(self):
+        closed = http.server.HTTPServer(("127.0.0.1", 0), Fake)
+        closed.server_close()
+        ready = awsrouter.DYNAMODB_UPSTREAM
+        awsrouter.DYNAMODB_UPSTREAM = f"127.0.0.1:{closed.server_port}"
+        try:
+            self.assertEqual(call("GET", "/_localstack/health")[0], 503)
+            self.assertEqual(Fake.seen, [], "core is not asked while a store is down")
+        finally:
+            awsrouter.DYNAMODB_UPSTREAM = ready
+        self.assertEqual(call("GET", "/_localstack/health")[0], 200)
+
     def test_one_content_length_reaches_upstream(self):
         call("POST", "/", b'{"a":1}', {"Authorization": sig("dynamodb"), "content-length": "7"})
         [(_, _, _, headers, body)] = Fake.seen

@@ -20,6 +20,7 @@ import json
 import os
 import re
 import secrets
+import socket
 import socketserver
 import sys
 import threading
@@ -204,6 +205,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def handle_any(self):
         parsed = urllib.parse.urlsplit(self.path)
+        # NOTE: LocalStack's health speaks for core alone. The router is ready
+        # only once the stores it fronts accept a connection, so a cold boot
+        # waits for DynamoDB Local's slow JVM start before provisioning.
+        if parsed.path == "/_localstack/health" and (down := stores_down()):
+            return self.reply(503, f"waiting for {', '.join(down)}".encode(), "text/plain")
         query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
         body = self.read_body()
         service = service_of(self.headers, query)
@@ -270,6 +276,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             resp = conn.getresponse()
             data = resp.read()
         except OSError as e:
+            print(f"{self.command} {self.path} -> {upstream}: {e}", file=sys.stderr, flush=True)
             self.reply(502, f"upstream {upstream}: {e}".encode(), "text/plain")
             return 502
         finally:
@@ -291,6 +298,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
         return resp.status
 
     do_GET = do_PUT = do_POST = do_DELETE = do_HEAD = do_PATCH = do_OPTIONS = handle_any
+
+
+def stores_down():
+    """The stores that refuse a TCP connection."""
+    down = []
+    for upstream in (S3_UPSTREAM, DYNAMODB_UPSTREAM):
+        host, port = upstream.split(":")
+        try:
+            socket.create_connection((host, int(port)), timeout=2).close()
+        except OSError:
+            down.append(upstream)
+    return down
 
 
 class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
