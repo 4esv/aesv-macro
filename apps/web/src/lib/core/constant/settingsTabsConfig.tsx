@@ -7,11 +7,9 @@ import BuildingsIcon from '@icon/system/regular/buildings.svg';
 import CalendarIcon from '@icon/system/regular/calendar-blank.svg';
 import RoutineIcon from '@icon/system/regular/clock-clockwise.svg';
 import CpuIcon from '@icon/system/regular/cpu.svg';
-import CreditCardIcon from '@icon/system/regular/credit-card.svg';
 import DesktopIcon from '@icon/system/regular/desktop.svg';
 import DeviceMobileIcon from '@icon/system/regular/device-mobile-speaker.svg';
 import EmailIcon from '@icon/system/regular/envelope-simple.svg';
-import GaugeIcon from '@icon/system/regular/gauge.svg';
 import HardDrivesIcon from '@icon/system/regular/hard-drives.svg';
 import KeyIcon from '@icon/system/regular/key.svg';
 import KeyboardIcon from '@icon/system/regular/keyboard.svg';
@@ -34,7 +32,6 @@ import {
   botManagement,
   DEV_MODE_ENV,
   desktopApp,
-  ENABLE_APP_STORE_QR_CODE,
   ENABLE_EMAIL,
   enableCalendarScheduling,
   enableChatV3Agents,
@@ -193,16 +190,6 @@ export const SETTINGS_TAB_GROUPS: SettingsTabGroup[] = [
         icon: KeyboardIcon,
         keywords: ['keyboard', 'hotkey', 'keybinding'],
       }),
-      tabItem('tabUsage', {
-        tab: 'Usage',
-        icon: GaugeIcon,
-        keywords: ['ai', 'limit', 'credits', 'reload', 'usage'],
-      }),
-      tabItem('tabBilling', {
-        tab: 'Billing',
-        icon: CreditCardIcon,
-        keywords: ['payment', 'subscription', 'invoice', 'plan'],
-      }),
       tabItem('tabDesktopApp', {
         tab: 'Desktop App',
         icon: DesktopIcon,
@@ -301,9 +288,6 @@ const SETTINGS_TAB_SLUGS: Record<SettingsTab, string> = {
   'API Keys': 'api-keys',
   'Account Managers': 'account-managers',
   Notifications: 'notifications',
-  Usage: 'usage',
-  Billing: 'billing',
-  Subscription: 'subscription',
   Organization: 'organization',
   Appearance: 'appearance',
   Mobile: 'mobile',
@@ -370,8 +354,6 @@ export const useSettingsTabAvailable = () => {
       case 'Appearance':
       case 'Account':
       case 'Notifications':
-      case 'Usage':
-      case 'Billing':
         return true;
       case 'Email':
         return ENABLE_EMAIL;
@@ -398,7 +380,7 @@ export const useSettingsTabAvailable = () => {
       case 'Shortcuts':
         return !isTouchDevice();
       case 'Mobile App':
-        return isNativeMobilePlatform() || ENABLE_APP_STORE_QR_CODE;
+        return isNativeMobilePlatform();
       case 'Desktop App':
         return (
           isPlatform('desktop') ||

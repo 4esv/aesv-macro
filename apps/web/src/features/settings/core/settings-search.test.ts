@@ -111,20 +111,22 @@ describe('individual settings search', () => {
     expect(search('xyz123')).toEqual([]);
   });
   it('finds a page by its translated label and by its English label', () => {
-    const billing = SETTINGS_TAB_GROUPS.flatMap((group) => group.items).find(
-      (item) => item.tab === 'Billing'
+    const shortcuts = SETTINGS_TAB_GROUPS.flatMap((group) => group.items).find(
+      (item) => item.tab === 'Shortcuts'
     );
-    if (!billing) throw new Error('Billing tab missing');
+    if (!shortcuts) throw new Error('Shortcuts tab missing');
     const groups = [
       {
         label: '個人',
-        items: [{ ...billing, label: '請求', englishLabel: 'Billing' }],
+        items: [
+          { ...shortcuts, label: 'ショートカット', englishLabel: 'Shortcuts' },
+        ],
       },
     ];
-    expect(searchSettings(groups, '請求')[0]).toMatchObject({
-      tab: 'Billing',
-      title: '請求',
+    expect(searchSettings(groups, 'ショートカット')[0]).toMatchObject({
+      tab: 'Shortcuts',
+      title: 'ショートカット',
     });
-    expect(searchSettings(groups, 'billing')[0]?.tab).toBe('Billing');
+    expect(searchSettings(groups, 'shortcuts')[0]?.tab).toBe('Shortcuts');
   });
 });

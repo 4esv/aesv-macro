@@ -18,7 +18,6 @@ import { ParticipantRole } from '@service-storage/generated/schemas/participantR
 import { Panel } from '@ui';
 import { createSignal, Show } from 'solid-js';
 import { ChannelBotsPanel } from './ChannelBotsPanel';
-import { ChannelJoinLinkButton } from './ChannelJoinLinkButton';
 import { ChannelTeamSettingsPanel } from './ChannelTeamSettingsPanel';
 import { ParticipantsAddPanel } from './ParticipantsAddPanel';
 import { ParticipantsList } from './ParticipantsList';
@@ -177,9 +176,7 @@ export function ChannelParticipantsTab(props: {
             <Panel depth={2} class="min-h-0 flex-1 overflow-hidden text-ink">
               <Panel.Header class="justify-between gap-2 px-6">
                 <div class="text-sm font-semibold">Participants</div>
-                <Show when={channelType() === ChannelType.private}>
-                  <ChannelJoinLinkButton channelId={props.channelId} />
-                </Show>
+                {/* FIX: W-2094 decides whether the channel join link (ChannelJoinLinkButton) returns via file.aesv.io; os.aesv.io is owner-only. */}
               </Panel.Header>
               <Panel.Toolbar class="h-auto flex-col items-stretch border-edge-muted p-0">
                 <Show when={isEditable()}>
@@ -237,13 +234,7 @@ export function ChannelParticipantsTab(props: {
             onRemoveParticipant={removeParticipant}
           />
         )}
-        inviteLink={
-          channelType() === ChannelType.private
-            ? () => (
-                <ChannelJoinLinkButton channelId={props.channelId} iconOnly />
-              )
-            : undefined
-        }
+        /* FIX: W-2094 decides whether the channel join link (inviteLink) returns via file.aesv.io. */
         addParticipants={
           isEditable()
             ? (onAdded) => (

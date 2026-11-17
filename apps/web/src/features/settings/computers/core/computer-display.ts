@@ -3,12 +3,10 @@ import { ThrownResultError } from '@core/util/result';
 import type {
   ComputerSize,
   ComputerStatus,
-  Quote,
   SetupStep,
   SizeOffer,
 } from '@service-auth/computers';
 import { match } from 'ts-pattern';
-import { formatBillingAmount } from '../../core/format-billing-amount';
 
 export function sizeLabel(size: ComputerSize): string {
   return match(size)
@@ -35,22 +33,6 @@ export function computerSpecs(computer: ComputerStatus): string {
     memory: computer.memoryGib,
     disk: computer.diskGib,
   });
-}
-
-/** "$40/month" from a quote in the currency's smallest unit. */
-export function formatQuote(quote: Quote): string {
-  const amount = formatBillingAmount(
-    quote.amount,
-    quote.currency,
-    formatLocale()
-  );
-  const interval = match(quote.interval)
-    .with('month', () => t('computers.priceMonthly', { amount }))
-    .with('year', () => t('computers.priceYearly', { amount }))
-    .exhaustive((interval) =>
-      t('computers.priceInterval', { amount, interval: String(interval) })
-    );
-  return interval;
 }
 
 export function formatComputerDate(value: string): string {
@@ -204,71 +186,12 @@ export function computerFailureMessage(
 ): string {
   if (!(error instanceof ThrownResultError)) return fallback;
   return match(error.errors[0]?.code)
-    .with('TEAM_ON_TRIAL', () => t('computers.trialBlocked'))
-    .with('PURCHASE_CONFLICT', () => t('computers.errorPurchaseConflict'))
-    .with('PAYMENT_FAILED', () => t('computers.errorPaymentFailed'))
-    .with('NOT_PURCHASABLE', () => t('computers.errorNotPurchasable'))
-    .with('SALES_UNAVAILABLE', () => t('computers.errorSalesUnavailable'))
     .with('COMPUTERS_UNAVAILABLE', () =>
       t('computers.errorComputersUnavailable')
     )
-    .with('NOT_RESTORABLE', () => t('computers.errorNotRestorable'))
     .with('NAME_MISMATCH', () => t('computers.errorNameMismatch'))
-    .with('NO_PAID_PLAN', () => t('computers.noPaidPlan'))
     .with('ROLLOUT_DISABLED', () => t('computers.rolloutDisabled'))
-    .with('BILLING_PROVIDER_FAILED', () => t('computers.errorBillingProvider'))
     .with('TIMED_OUT', () => t('computers.errorTimedOut'))
     .with('NETWORK_ERROR', () => t('computers.errorNetwork'))
     .otherwise(() => fallback);
-}
-
-/** Why the sizes could not load, and what gets the team past it. */
-export type OffersFailure = {
-  message: string;
-  /** Billing for a plan problem, a retry for a transient one, else nothing. */
-  remedy: 'billing' | 'retry' | 'none';
-};
-
-/**
- * What to tell a team whose sizes request failed. Plan problems (a trial,
- * no paid plan) end in Billing; a missing rollout ends nowhere; everything
- * else is worth a retry, named when the cause is known.
- */
-export function offersFailure(error: unknown): OffersFailure {
-  const code =
-    error instanceof ThrownResultError ? error.errors[0]?.code : undefined;
-  return match(code)
-    .returnType<OffersFailure>()
-    .with('TEAM_ON_TRIAL', () => ({
-      message: t('computers.trialBlocked'),
-      remedy: 'billing',
-    }))
-    .with('NO_PAID_PLAN', () => ({
-      message: t('computers.noPaidPlan'),
-      remedy: 'billing',
-    }))
-    .with('ROLLOUT_DISABLED', () => ({
-      message: t('computers.rolloutDisabled'),
-      remedy: 'none',
-    }))
-    .with('COMPUTERS_UNAVAILABLE', () => ({
-      message: t('computers.errorComputersUnavailable'),
-      remedy: 'retry',
-    }))
-    .with('BILLING_PROVIDER_FAILED', () => ({
-      message: t('computers.errorBillingProvider'),
-      remedy: 'retry',
-    }))
-    .with('TIMED_OUT', () => ({
-      message: t('computers.offersTimedOut'),
-      remedy: 'retry',
-    }))
-    .with('NETWORK_ERROR', () => ({
-      message: t('computers.errorNetwork'),
-      remedy: 'retry',
-    }))
-    .otherwise(() => ({
-      message: t('computers.offersFailed'),
-      remedy: 'retry',
-    }));
 }

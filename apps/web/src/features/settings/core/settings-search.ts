@@ -189,18 +189,6 @@ const SETTINGS: Setting[] = [
     keywords: 'unmute silence notifications',
   },
   {
-    tab: 'Billing',
-    title: 'Plan and payment',
-    target: 'Subscription',
-    keywords: 'subscription invoice billing credit card cancel manage upgrade',
-  },
-  {
-    tab: 'Billing',
-    title: 'AI usage',
-    target: 'AI usage',
-    keywords: 'limits quota tokens credits consumption',
-  },
-  {
     tab: 'Team',
     title: 'Team name and URL',
     target: 'General',
@@ -327,7 +315,7 @@ const SETTINGS: Setting[] = [
   },
   {
     tab: 'Agent',
-    title: 'Connect to the Macro MCP server',
+    title: 'Connect to the aesv MCP server',
     keywords: 'claude chatgpt external client url setup',
   },
   {
@@ -347,8 +335,8 @@ const SETTINGS: Setting[] = [
   },
   {
     tab: 'Mobile App',
-    title: 'Mobile app version and download',
-    keywords: 'download phone ios android qr code version build bundle',
+    title: 'Mobile app version',
+    keywords: 'phone ios android version build bundle',
   },
 ];
 

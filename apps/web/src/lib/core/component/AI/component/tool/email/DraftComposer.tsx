@@ -436,7 +436,6 @@ export function EmailDraftComposer(props: EmailDraftComposerProps) {
     isSending,
     isSavingDraft: () => false,
     hasDraft: () => false,
-    hasPaidAccess: () => true,
     focusRecipientsOnMount: false,
     includeSelf: true,
     hideAttachments: props.readOnly === true,

@@ -101,10 +101,9 @@ describe('buildLinkShareScopePayload', () => {
 });
 
 describe('link share copy', () => {
-  it('provides None, Public, and Team selector options', () => {
+  it('offers no public link: os.aesv.io is owner-only until W-2094', () => {
     expect(LINK_SHARE_SCOPE_OPTIONS).toEqual([
       { value: 'NONE', label: 'Only people with access' },
-      { value: 'PUBLIC', label: 'Anyone with the link' },
       { value: 'TEAM', label: 'Team members with the link' },
     ]);
   });

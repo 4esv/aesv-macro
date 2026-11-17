@@ -11,7 +11,6 @@ Object.assign(process.env, {
   VITE_ENABLE_CALENDAR_TEAM_OOO: 'true',
   VITE_ENABLE_GRAPHQL_CALENDAR: 'false',
   VITE_DISABLE_BROWSER_TURSO_CACHE: 'true',
-  VITE_ENABLE_IN_APP_TOURS: 'false',
   VITE_ENABLE_BROWSER_OTEL: 'false',
 });
 export default defineConfig((env) =>

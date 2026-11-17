@@ -47,8 +47,7 @@ function claudeText(claude: ComputerClaudeState): string | undefined {
 /**
  * The one line under a computer's name: its specs, then the single state
  * that matters now (setup progress, powered off, a fault, or how Claude is
- * paid for), then its billing: past due, a pending cancellation, or how
- * long a released computer is kept.
+ * paid for), then how long a released computer is kept.
  */
 function ComputerSubtitle(props: {
   computer: ComputerStatus;
@@ -69,24 +68,16 @@ function ComputerSubtitle(props: {
     if (status().tone !== 'success') return status().label;
     return claudeText(props.claude);
   };
-  // Past due, a pending cancellation, or how long a released computer's
-  // disk is kept.
-  const billing = () => {
-    const computer = props.computer;
-    if (computer.billing === 'past_due') return t('computers.pastDue');
-    if (computer.cancelsAt)
-      return t('computers.cancels', {
-        date: formatComputerDate(computer.cancelsAt),
-      });
-    if (computer.retainedUntil)
-      return t('computers.keptUntil', {
-        date: formatComputerDate(computer.retainedUntil),
-      });
-    return undefined;
+  // How long a released computer's disk is kept.
+  const kept = () => {
+    const until = props.computer.retainedUntil;
+    return until
+      ? t('computers.keptUntil', { date: formatComputerDate(until) })
+      : undefined;
   };
   return (
     <span>
-      {[computerSpecs(props.computer), state(), billing()]
+      {[computerSpecs(props.computer), state(), kept()]
         .filter(Boolean)
         .join(' · ')}
       <Show when={!state() && props.claude.kind === 'loading'}>

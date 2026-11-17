@@ -118,7 +118,7 @@ export default {
     agentHint: 'Session d’agent dédiée',
     routineLabel: 'Routine',
     routineDescription:
-      'Exécuter un modèle ou un agent selon un planning ou une activité Macro',
+      'Exécuter un modèle ou un agent selon un planning ou une activité aesv',
     routineHint: 'Plannings et déclencheurs d’activité',
     databaseLabel: 'Base de données',
     databaseDescription: 'Créer une base de données',
@@ -325,7 +325,7 @@ export default {
     projectShortTagline: 'Organiser les tâches liées',
     reminderTagline: 'Un rappel au moment choisi',
     reminderDetails:
-      'Créez un rappel pour une chose à revoir plus tard.\nChoisissez une heure et Macro vous la rappellera.',
+      'Créez un rappel pour une chose à revoir plus tard.\nChoisissez une heure et aesv vous la rappellera.',
     reminderExample1: 'Rappeler',
     reminderExample2: 'Faire le point vendredi',
     reminderExample3: 'Renouveler la licence',
@@ -406,7 +406,7 @@ export default {
       'Ajoutez des tags pour organiser et filtrer votre travail entre projets.',
     guideConversation: 'Démarrez une conversation avec un agent existant.',
     guideWorkAgent:
-      'Créez un assistant avec des instructions et un accès à votre espace Macro.',
+      'Créez un assistant avec des instructions et un accès à votre espace aesv.',
     guideCodingAgent:
       'Créez un agent qui travaille dans un environnement de code connecté.',
     guideRoutine:
@@ -721,7 +721,6 @@ export default {
     more: 'Plus',
     moreOptions: 'Plus d’options',
     create: 'Créer',
-    getMobileApp: 'Obtenir l’app mobile',
     signedInAs: 'Connecté en tant que {{name}}',
     commandMenu: 'Menu des commandes',
     searchEverything: 'Tout rechercher',
@@ -735,20 +734,20 @@ export default {
     updateAvailable: 'Mise à jour disponible',
     updateNewVersionTitle: 'Nouvelle version disponible',
     updateWebDescription:
-      'Une nouvelle version de Macro est prête. Rechargez la page pour l’utiliser.',
+      'Une nouvelle version de aesv est prête. Rechargez la page pour l’utiliser.',
     updateWebFailedLoadDescription:
-      'Une partie de Macro n’a pas pu se charger car une nouvelle version est disponible. Rechargez la page pour l’utiliser.',
+      'Une partie de aesv n’a pas pu se charger car une nouvelle version est disponible. Rechargez la page pour l’utiliser.',
     updateReload: 'Recharger',
     updateReadyTitle: 'Mise à jour prête',
     updateBundleDescription:
-      'Une nouvelle version de l’app de bureau Macro a été téléchargée. Mettez à jour pour l’utiliser.',
+      'Une nouvelle version de l’app de bureau aesv a été téléchargée. Mettez à jour pour l’utiliser.',
     updateAction: 'Mettre à jour',
     updateDesktopReadyTitle: 'Mise à jour de l’app de bureau prête',
     updateNativeDescription:
-      'Redémarrez Macro pour l’installer, ou continuez à travailler : elle s’installera à la fermeture.',
+      'Redémarrez aesv pour l’installer, ou continuez à travailler : elle s’installera à la fermeture.',
     updateRestartAndUpdate: 'Redémarrer et mettre à jour',
     updateNativePreparingDescription:
-      'Enregistrement de votre travail avant le redémarrage de Macro pour installer la mise à jour.',
+      'Enregistrement de votre travail avant le redémarrage de aesv pour installer la mise à jour.',
     updatePreparingRestart: 'Préparation du redémarrage…',
   },
   settingsLanguage: {
@@ -762,7 +761,7 @@ export default {
     yourLanguageDescription:
       'Remplace la langue de l’équipe pour vous uniquement.',
     yourLanguageNoTeamDescription:
-      'La langue dans laquelle Macro s’affiche pour vous. L’option « Automatique » suit votre navigateur.',
+      'La langue dans laquelle aesv s’affiche pour vous. L’option « Automatique » suit votre navigateur.',
     useTeamLanguage: 'Utiliser la langue de l’équipe ({{language}})',
     automatic: 'Automatique ({{language}})',
     teamAutomatic: 'Automatique (langue du navigateur de chacun)',

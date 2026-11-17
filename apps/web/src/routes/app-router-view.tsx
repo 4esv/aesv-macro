@@ -7,8 +7,6 @@ import { ChannelsViewSkeleton } from '@app/features/channels-view/channels-view-
 import { DriveViewSkeleton } from '@app/features/drive-view/drive-view-skeleton';
 import { EmailViewSkeleton } from '@app/features/email-view/email-view-skeleton';
 import { ExternalViewSkeleton } from '@app/features/external-view/external-view-skeleton';
-import { InviteLinksPortal } from '@app/features/gtm-invite/InviteLinksPortal';
-import { InviteWelcome } from '@app/features/gtm-invite/InviteWelcome';
 import {
   HomeCalendarRouteView,
   HomeDetailRouteView,
@@ -148,9 +146,7 @@ import {
   homePreviewRoute,
   homeSplitRoute,
   inboxLinkCallbackRoute,
-  internalInviteLinksRoute,
   internalSystemStatusRoute,
-  inviteRoute,
   legacyContentRoute,
   loginPopupSuccessRoute,
   loginRoute,
@@ -283,11 +279,6 @@ export function appRouteElements(): JSX.Element {
           component={MobileWebSignup}
         />
         <Route definition={onboardingRoute} component={OnboardingPage} />
-        <Route definition={inviteRoute} component={InviteWelcome} />
-        <Route
-          definition={internalInviteLinksRoute}
-          component={InviteLinksPortal}
-        />
         <Route
           definition={internalSystemStatusRoute}
           component={SystemStatusDashboard}

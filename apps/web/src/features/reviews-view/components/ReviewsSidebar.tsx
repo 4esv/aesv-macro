@@ -50,7 +50,6 @@ import {
   type ReviewsScope,
   type ReviewsStatusTabId,
 } from '../reviews-types';
-import { RepositoriesPromotion } from './RepositoriesPromotion';
 import { ReviewsStatusTabs } from './ReviewsStatusTabs';
 
 const SCOPE_ITEMS: Record<
@@ -377,7 +376,6 @@ export function ReviewsSidebar(props: {
           activeLabels={props.activeLabels}
           onActiveLabelsChange={props.onActiveLabelsChange}
         />
-        <RepositoriesPromotion class="mt-auto" />
       </ViewSidebar.Content>
     </ViewSidebar.Root>
   );

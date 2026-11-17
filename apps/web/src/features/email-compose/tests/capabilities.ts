@@ -49,10 +49,7 @@ export function createComposeContext(): EmailComposeContext & {
     connectivity: { looksOffline: vi.fn(() => false) },
     recipients: () => [],
     createRecipientSource: undefined,
-    hasPaidAccess: () => true,
     presentation: {
-      viewerLoading: () => false,
-      onUpgrade: vi.fn(),
       prepareSignatureLinks: vi.fn(),
       isTouch: () => false,
       isMobile: () => false,

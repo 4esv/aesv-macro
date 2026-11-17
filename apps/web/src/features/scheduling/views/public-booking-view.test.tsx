@@ -28,7 +28,8 @@ afterEach(cleanup);
 it('carries the Macro name when it is the whole page', () => {
   renderPage();
 
-  expect(screen.getByRole('link', { name: /Macro\s*Scheduling/ })).toBeTruthy();
+  expect(screen.getByText('/ Scheduling')).toBeTruthy();
+  expect(screen.queryByRole('link')).toBeNull();
   expect(screen.getByText('Scheduling by Macro')).toBeTruthy();
 });
 

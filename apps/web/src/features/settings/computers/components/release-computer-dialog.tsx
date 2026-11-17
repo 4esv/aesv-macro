@@ -29,8 +29,7 @@ export function ReleaseComputerDialog(props: {
       <div class="space-y-2">
         <p>
           The computer is destroyed right away and its disk is deleted, with
-          everything on it. There is no refund for the rest of this billing
-          period.
+          everything on it.
         </p>
         <Show when={props.agentCount > 0}>
           <p class="font-medium text-ink">

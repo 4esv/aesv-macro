@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AuthIntent } from '../context/auth-context';
 import type { FakeAuthWorld } from '../tests/fake-auth-context';
 import { renderWithFakeAuth } from '../tests/render';
-import { AuthView, type SignupJourneySlots } from './auth-view';
+import { AuthView } from './auth-view';
 
 afterEach(() => {
   cleanup();
@@ -19,11 +19,9 @@ function setup(
     autoStart?: boolean;
     token?: string;
     ssoFallbackNotice?: string;
-    signupJourney?: (slots: SignupJourneySlots) => ReturnType<typeof Journey>;
   } = {}
 ) {
   const verified = vi.fn();
-  const signIn = vi.fn();
   const { fake } = renderWithFakeAuth(
     () => (
       <AuthView
@@ -35,8 +33,6 @@ function setup(
         token={options.token}
         ssoFallbackNotice={options.ssoFallbackNotice}
         onVerified={verified}
-        onSignIn={signIn}
-        signupJourney={options.signupJourney}
         signedIn={(user) => (
           <p data-testid="signed-in">
             {user().email} {user().tutorialComplete ? 'returning' : 'new'}
@@ -46,7 +42,7 @@ function setup(
     ),
     options.world
   );
-  return { fake, verified, signIn };
+  return { fake, verified };
 }
 
 /** As `setup`, but the session code can arrive after the view has mounted. */
@@ -384,84 +380,12 @@ describe('single sign-on', () => {
   });
 });
 
-let googleSignup: Promise<void> | undefined;
-
-function Journey(props: SignupJourneySlots) {
-  return (
-    <section>
-      <button
-        type="button"
-        onClick={() => {
-          googleSignup = props.onGoogle();
-        }}
-      >
-        Connect work email
-      </button>
-      <button type="button" onClick={props.onSignIn}>
-        Sign in instead
-      </button>
-      <p data-testid="showing-email">{String(props.showingEmail)}</p>
-      {props.emailForm}
-    </section>
-  );
-}
-
 describe('desktop sign-up', () => {
-  it('hands onboarding’s slides a Google sign-up and no email form until chosen', async () => {
-    const { fake } = setup({
-      intent: 'signup',
-      signupJourney: (slots) => <Journey {...slots} />,
-    });
-    expect(screen.getByTestId('showing-email').textContent).toBe('false');
-    expect(screen.queryByPlaceholderText('you@company.com')).toBeNull();
-    click('Connect work email');
+  it('signs up through Google from the sign-in card', async () => {
+    const { fake } = setup({ intent: 'signup' });
+    click('Continue with Google');
     await screen.findByText('new@acme.com new');
     expect(fake.calls()).toContain('sso:google:signup');
-    await googleSignup;
-  });
-
-  it('shows the email form inside the slides for an emailed sign-up link', () => {
-    setup({
-      intent: 'signup',
-      initialEmail: 'invitee@acme.com',
-      signupJourney: (slots) => <Journey {...slots} />,
-    });
-    expect(screen.getByTestId('showing-email').textContent).toBe('true');
-    expect(screen.getByDisplayValue('invitee@acme.com')).toBeTruthy();
-  });
-
-  it('lets the slides send a returning visitor to sign in', () => {
-    const { signIn } = setup({
-      intent: 'signup',
-      signupJourney: (slots) => <Journey {...slots} />,
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Sign in instead' }));
-    expect(signIn).toHaveBeenCalledOnce();
-  });
-
-  it('holds a pending frame while the session resolves, then shows the signed-out slides', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderWithFakeAuth(
-      () => (
-        <AuthView
-          intent="signup"
-          showApple={false}
-          compact={false}
-          signupJourney={(slots) => <Journey {...slots} />}
-          pending={() => <p data-testid="pending">Loading</p>}
-          signedIn={() => <p data-testid="signed-in" />}
-        />
-      ),
-      {},
-      { sessionLatencyMs: 300 }
-    );
-    expect(screen.getByTestId('pending')).toBeTruthy();
-    expect(
-      screen.queryByRole('button', { name: 'Connect work email' })
-    ).toBeNull();
-    await vi.advanceTimersByTimeAsync(300);
-    await screen.findByRole('button', { name: 'Connect work email' });
-    expect(screen.queryByTestId('pending')).toBeNull();
   });
 });
 

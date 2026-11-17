@@ -91,10 +91,7 @@ import { CodingPreferencesSetting } from './components/coding-preferences-settin
 import { AgentInstructionsEditor } from './components/instructions-editor';
 import { SettingsSelect } from './components/settings-select';
 import { WhereItRunsOption } from './components/where-it-runs-option';
-import {
-  ComputerWhereItRuns,
-  RunOnComputerRow,
-} from './computers/views/agent-computer-entry';
+import { ComputerWhereItRuns } from './computers/views/agent-computer-entry';
 import {
   type ApiKeyProvider,
   apiKeyProviderName,
@@ -464,7 +461,6 @@ export function Agents(props: {
                     />
                   )}
                 </For>
-                <RunOnComputerRow />
                 <Show when={agentsQuery.isPending}>
                   <p class="px-6 py-4 text-sm text-ink-muted">
                     Loading agents…
@@ -1483,7 +1479,6 @@ function AgentEditorPage(props: {
                     checked={computerHarnesses().some(
                       (harness) => harness.id === harnessId()
                     )}
-                    busy={busy()}
                     modelPicker={modelPicker()}
                     onSelect={handleHarnessChange}
                   />

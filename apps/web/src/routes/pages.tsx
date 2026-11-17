@@ -2,7 +2,6 @@ import { Login } from '@app/features/auth/auth';
 import { makeEmailAuthComponents } from '@app/features/auth/EmailAuth';
 import { MobileAuthWelcome } from '@app/features/mobile-onboarding/MobileAuthWelcome';
 import { MobileOnboarding } from '@app/features/mobile-onboarding/MobileOnboarding';
-import { Onboarding } from '@app/features/onboarding/onboarding';
 import {
   BookingReceiptPage,
   PublicBookingPage,
@@ -12,6 +11,7 @@ import { publishLoginSuccess } from '@core/auth/login-events';
 import { isMobile } from '@core/mobile/isMobile';
 import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
 import { getWebOrigin } from '@core/util/webOrigin';
+import { Navigate } from '@solidjs/router';
 import { Button } from '@ui';
 import { lazy, onCleanup, onMount } from 'solid-js';
 import {
@@ -52,8 +52,13 @@ export function WelcomePage() {
   return isNativeMobilePlatform() ? <MobileAuthWelcome /> : <Login />;
 }
 
+/** The phone app's sign-up; elsewhere an old `/onboarding` link opens Home. */
 export function OnboardingPage() {
-  return isNativeMobilePlatform() ? <MobileOnboarding /> : <Onboarding />;
+  return isNativeMobilePlatform() ? (
+    <MobileOnboarding />
+  ) : (
+    <Navigate href="/" />
+  );
 }
 
 export function LoginPopupSuccess() {

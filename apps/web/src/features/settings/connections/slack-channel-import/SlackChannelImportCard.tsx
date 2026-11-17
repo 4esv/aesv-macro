@@ -1,4 +1,3 @@
-import { hideImportPromotion } from '@app/features/connector-import/primitives/promotion';
 import { toast } from '@core/component/Toast/Toast';
 import { useUserId } from '@core/context/user';
 import { fireAndForget } from '@core/util/fireAndForget';
@@ -115,12 +114,6 @@ export function SlackChannelImportCard(
   const state = () => (query.isSuccess ? query.data : EMPTY_STATE);
   const run = () => state().runs.find((run) => run.source === 'slack');
   const rows = createMemo(() => buildRows(state(), userId()));
-  // The run mutation only queues work; wait for a server-confirmed import.
-  createEffect(() => {
-    if (query.isSuccess && rows().some((row) => row.status === 'imported')) {
-      hideImportPromotion(userId(), 'channels');
-    }
-  });
   const visible = createMemo(() =>
     filterRows(rows(), {
       search: search(),

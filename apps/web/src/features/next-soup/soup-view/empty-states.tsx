@@ -1,4 +1,3 @@
-import { DOCS_BASE } from '@app/constants/docs-links';
 import type { ListView } from '@app/constants/list-views';
 import {
   type CreatableName,
@@ -31,7 +30,6 @@ type FallbackContent = {
   graphic?: Component<{ class?: string }>;
   description?: JSXElement;
   create?: { label: string; blockName: CreatableName };
-  documentationUrl?: string;
 };
 
 /** Whether a failed request has no trustworthy local result to render. */
@@ -49,7 +47,6 @@ const FALLBACK_CONTENT: Partial<Record<ListView, FallbackContent>> = {
     description:
       'Write, collaborate, and share documents right inside Macro. Create notes, specs, or any long-form content and keep it alongside your conversations.',
     create: { label: 'New document', blockName: 'md' },
-    documentationUrl: `${DOCS_BASE}/product/docs`,
   },
   channels: {
     plural: 'channels',
@@ -57,7 +54,6 @@ const FALLBACK_CONTENT: Partial<Record<ListView, FallbackContent>> = {
     description:
       'Channels are shared spaces for team conversations organized by topic, project, or team. Create a channel to start collaborating with your team.',
     create: { label: 'New channel', blockName: 'channel' },
-    documentationUrl: `${DOCS_BASE}/product/channels`,
   },
   calls: {
     plural: 'calls',
@@ -69,7 +65,6 @@ const FALLBACK_CONTENT: Partial<Record<ListView, FallbackContent>> = {
         Calls are available to agents.
       </>
     ),
-    documentationUrl: `${DOCS_BASE}/product/calls`,
   },
 };
 
@@ -103,7 +98,6 @@ export function EmptyState(props: {
               : 'No results'
           }
           description="Search across messages, documents, tasks, and more. Try a different query or broaden your filters."
-          documentationUrl={`${DOCS_BASE}/product/search`}
         />
       </Match>
 
@@ -138,7 +132,6 @@ export function EmptyState(props: {
             label: 'Connect email',
             onClick: onConnectEmail,
           }}
-          documentationUrl={`${DOCS_BASE}/product/home`}
         />
       </Match>
 
@@ -151,7 +144,6 @@ export function EmptyState(props: {
             label: 'Connect email',
             onClick: onConnectEmail,
           }}
-          documentationUrl={`${DOCS_BASE}/product/email`}
         />
       </Match>
 
@@ -190,7 +182,6 @@ export function EmptyState(props: {
               graphic={EmptyStateInboxTrayGraphic}
               title={title}
               description={description}
-              documentationUrl={`${DOCS_BASE}/product/home`}
             />
           );
         })()}
@@ -201,7 +192,6 @@ export function EmptyState(props: {
           graphic={EmptyStateInboxTrayGraphic}
           title="Inbox zero"
           description="You're all caught up. New email will appear here as it arrives."
-          documentationUrl={`${DOCS_BASE}/product/email`}
         />
       </Match>
 
@@ -215,7 +205,6 @@ export function EmptyState(props: {
             icon: PlusIcon,
             onClick: () => runCreateAction('task'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/tasks`}
         />
       </Match>
 
@@ -231,7 +220,6 @@ export function EmptyState(props: {
             icon: PlusIcon,
             onClick: () => runCreateAction('routine'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/agents`}
         />
       </Match>
 
@@ -247,7 +235,6 @@ export function EmptyState(props: {
             icon: PlusIcon,
             onClick: () => runCreateAction('skill'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/agents`}
         />
       </Match>
 
@@ -261,7 +248,6 @@ export function EmptyState(props: {
             icon: PlusIcon,
             onClick: () => runCreateAction('agent'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/agents`}
         />
       </Match>
 
@@ -283,7 +269,6 @@ export function EmptyState(props: {
             icon: PlusIcon,
             onClick: () => runCreateAction('project'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/drive`}
         >
           <FolderDropZone />
         </EmptyStatePanel>
@@ -295,7 +280,6 @@ export function EmptyState(props: {
           graphic={EmptyStateNoSearchMatchGraphic}
           title="No items to show"
           description="Search across messages, documents, tasks, and more."
-          documentationUrl={`${DOCS_BASE}/product/search`}
         />
       </Match>
 
@@ -331,7 +315,6 @@ export function EmptyState(props: {
               title={`No ${fallback.plural} to show`}
               description={fallback.description}
               primaryAction={createAction()}
-              documentationUrl={fallback.documentationUrl}
             />
           );
         })()}

@@ -1,7 +1,5 @@
 import { match } from 'ts-pattern';
 
-export const MACRO_EMAIL_SIGNATURE = '-- Sent with Macro';
-
 export const MAX_ATTACHMENTS_BYTES_SIZE = 18_000_000;
 // Raw bytes the provider will still deliver once base64 adds about a third:
 // Gmail caps a message's attachments at 25 MB; Exchange Online sends at most

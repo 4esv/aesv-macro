@@ -21,9 +21,6 @@ vi.mock('@app/components/view-shell', async () => ({
 vi.mock('@app/components/view-shell/SidebarCreateButton', () => ({
   SidebarCreateHeader: () => null,
 }));
-vi.mock('@app/features/connector-import/connector-import', () => ({
-  ConnectorImportSidebar: () => null,
-}));
 vi.mock('@app/features/favorites/FavoriteContextMenu', () => ({
   FavoriteContextMenu: () => null,
 }));

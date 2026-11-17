@@ -43,7 +43,6 @@ const agentsPageProps = {
 
 // The real Lexical surface has its own Markdown round-trip suite.
 vi.mock('./computers/views/agent-computer-entry', () => ({
-  RunOnComputerRow: () => null,
   ComputerWhereItRuns: (props: { harnessId: string; checked: boolean }) => (
     <div
       data-testid="computer-where-it-runs"

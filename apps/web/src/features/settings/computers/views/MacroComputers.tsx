@@ -3,29 +3,23 @@ import { t } from '@app/lib/i18n';
 import { toast } from '@core/component/Toast/Toast';
 import { enableMacroComputers } from '@core/constant/featureFlags';
 import { fireAndForget } from '@core/util/fireAndForget';
-import HardDrivesIcon from '@icon/system/regular/hard-drives.svg';
 import { useAgentsQuery } from '@queries/agents/agents';
 import {
   useClaudeModeQuery,
   useClaudeSignOutMutation,
 } from '@queries/computers/claude';
 import {
-  useCancelComputerMutation,
   useReleaseComputerMutation,
-  useRestoreComputerMutation,
   useRetryComputerMutation,
   useSetComputerPowerMutation,
-  useUndoCancelComputerMutation,
 } from '@queries/computers/computers';
 import { useIsTeamAdmin } from '@queries/team/teams';
-import type { ComputerStatus, SizeOffer } from '@service-auth/computers';
+import type { ComputerStatus } from '@service-auth/computers';
 import type { Harness as RegisteredHarness } from '@service-storage/client';
-import { Button, confirmDialog } from '@ui';
+import { confirmDialog } from '@ui';
 import { createEffect, createSignal, For, on, Show } from 'solid-js';
-import { match } from 'ts-pattern';
 import { MachineCardError } from '../../components/connected-runtimes-section';
-import { HarnessIcon } from '../../integration-ui';
-import { IntegrationRow, SettingsCard } from '../../primitives';
+import { SettingsCard } from '../../primitives';
 import type { ComputerMenuItem } from '../components/computer-actions-menu';
 import {
   type ComputerClaudeState,
@@ -36,10 +30,6 @@ import { ReleaseComputerDialog } from '../components/release-computer-dialog';
 import {
   canTogglePower,
   computerFailureMessage,
-  formatComputerDate,
-  formatQuote,
-  type OffersFailure,
-  offersFailure,
 } from '../core/computer-display';
 import {
   computerSetupRequest,
@@ -49,78 +39,6 @@ import { useTeamComputers } from '../primitives/team-computers';
 import { ClaudeSignInDialog } from './claude-sign-in-dialog';
 import { ComputerBuyFlow } from './computer-buy-flow';
 import type { SetupStepId } from './computer-setup-dialog';
-
-/**
- * The offers failed for a reason Billing settles: a trial, or no paid plan.
- * The buy row says so instead of offering a dialog that would say the same.
- */
-export function offersBlockedByPlan(offers: {
-  isError: boolean;
-  error: unknown;
-}): OffersFailure | undefined {
-  if (!offers.isError) return undefined;
-  const failure = offersFailure(offers.error);
-  return failure.remedy === 'billing' ? failure : undefined;
-}
-
-/**
- * "From $20/month" (or "from $20/month" mid-line) for the cheapest size on
- * sale; "Included" when the team's computers are comped.
- */
-export function fromPriceText(
-  offers: readonly SizeOffer[] | undefined,
-  placement: 'leading' | 'inline'
-): string | undefined {
-  const offer = offers ? cheapestOffer(offers) : undefined;
-  if (!offer) return undefined;
-  if (offer.quote.amount === 0) return t('computers.included');
-  const price = formatQuote(offer.quote);
-  return placement === 'leading'
-    ? t('computers.fromPrice', { price })
-    : t('computers.fromPriceLower', { price });
-}
-
-/** The cheapest size on sale. */
-function cheapestOffer(offers: readonly SizeOffer[]): SizeOffer | undefined {
-  return offers
-    .filter((offer) => !offer.soldOut)
-    .reduce<SizeOffer | undefined>(
-      (cheapest, offer) =>
-        !cheapest || offer.quote.amount < cheapest.quote.amount
-          ? offer
-          : cheapest,
-      undefined
-    );
-}
-
-/**
- * A team's call to get a computer: one row like the others, with sizes and
- * prices in the picker it opens.
- */
-export function GetComputerRow(props: {
-  title: string;
-  description: string;
-  onGet: () => void;
-  /** Padding to match the list it sits in. */
-  class?: string;
-}) {
-  return (
-    <IntegrationRow
-      class={props.class}
-      icon={
-        <HarnessIcon>
-          <HardDrivesIcon />
-        </HarnessIcon>
-      }
-      title={props.title}
-      facts={props.description}
-    >
-      <Button type="button" variant="secondary" size="sm" onClick={props.onGet}>
-        {t('computers.getComputerAction')}
-      </Button>
-    </IntegrationRow>
-  );
-}
 
 /** One computer's row, with its Claude state and the actions the viewer has. */
 function ManagedComputerRow(props: {
@@ -141,9 +59,6 @@ function ManagedComputerRow(props: {
       : undefined
   );
   const power = useSetComputerPowerMutation();
-  const cancel = useCancelComputerMutation();
-  const undoCancel = useUndoCancelComputerMutation();
-  const restore = useRestoreComputerMutation();
   const retry = useRetryComputerMutation();
   const signOut = useClaudeSignOutMutation();
 
@@ -233,49 +148,6 @@ function ManagedComputerRow(props: {
     });
     if (confirmed) props.onSignIn();
   };
-  const cancelAtPeriodEnd = async () => {
-    try {
-      const updated = await cancel.mutateAsync(props.computer.id);
-      toast.success(
-        updated.cancelsAt
-          ? t('computers.cancelOn', {
-              name: props.computer.name,
-              date: formatComputerDate(updated.cancelsAt),
-            })
-          : t('computers.cancelAtPeriodEnd', { name: props.computer.name })
-      );
-    } catch (error) {
-      toast.failure(computerFailureMessage(error, t('computers.cancelFailed')));
-    }
-  };
-  const keep = async () => {
-    try {
-      await undoCancel.mutateAsync(props.computer.id);
-      toast.success(t('computers.keeping', { name: props.computer.name }));
-    } catch (error) {
-      toast.failure(computerFailureMessage(error, t('computers.keepFailed')));
-    }
-  };
-
-  const restoreBilling = async () => {
-    const confirmed = await confirmDialog({
-      title: t('computers.restoreTitle', { name: props.computer.name }),
-      body: props.computer.compReason
-        ? t('computers.restoreBodyComped')
-        : t('computers.restoreBody'),
-      confirmLabel: t('computers.restore'),
-    });
-    if (!confirmed) return;
-    try {
-      await restore.mutateAsync(props.computer.id);
-      toast.success(t('computers.restored', { name: props.computer.name }));
-    } catch (error) {
-      toast.failure(
-        computerFailureMessage(error, t('computers.restoreFailed'))
-      );
-    }
-  };
-
   const retrySetup = async () => {
     try {
       await retry.mutateAsync(props.computer.id);
@@ -285,41 +157,6 @@ function ManagedComputerRow(props: {
   };
 
   const run = (work: Promise<void>) => fireAndForget(work, 'macro-computers');
-  const billingPending = () =>
-    cancel.isPending || undoCancel.isPending || restore.isPending;
-
-  // Cancel, release and power wait until a purchase is confirmed.
-  const billingItem = (): ComputerMenuItem | undefined =>
-    match(props.computer.billing)
-      .returnType<ComputerMenuItem | undefined>()
-      .with('active', 'past_due', 'comped', () => ({
-        label: t('computers.cancelAtEnd'),
-        icon: 'cancel',
-        disabled: billingPending(),
-        onSelect: () => run(cancelAtPeriodEnd()),
-      }))
-      .with('ending', () =>
-        props.computer.canUndoCancel
-          ? {
-              label: t('computers.undoCancel'),
-              icon: 'undo',
-              disabled: billingPending(),
-              onSelect: () => run(keep()),
-            }
-          : undefined
-      )
-      .with('ended', () =>
-        props.computer.canRestore
-          ? {
-              label: t('computers.restore'),
-              icon: 'undo',
-              disabled: billingPending(),
-              onSelect: () => run(restoreBilling()),
-            }
-          : undefined
-      )
-      .with('purchasing', null, undefined, () => undefined)
-      .exhaustive(() => undefined);
 
   const menu = (): ComputerMenuItem[] => {
     const items: ComputerMenuItem[] = [];
@@ -369,8 +206,6 @@ function ManagedComputerRow(props: {
           onSelect: () => run(switchToAccount()),
         });
     }
-    const billing = billingItem();
-    if (props.canManage && billing) items.push(billing);
     if (props.canManage && computer.status !== 'purchasing') {
       items.push({
         label: t('computers.releaseNow'),
@@ -395,21 +230,16 @@ function ManagedComputerRow(props: {
 
 /**
  * The team's Macro computers on Settings → Machines: every member sees the
- * list; team admins also get the call to buy one and the power and billing
- * controls; whoever may manage a computer's Claude gets those.
+ * list; team admins also get the power controls; whoever may manage a
+ * computer's Claude gets those.
  */
 export function MacroComputers(props: {
   harnesses: readonly RegisteredHarness[];
-  /** Get a computer, at the top of Machines, opened the buy flow. */
-  buying: boolean;
-  onBuyingChange: (buying: boolean) => void;
 }) {
   const isAdmin = useIsTeamAdmin();
   const { enabled, computers, failed } = useTeamComputers();
   const release = useReleaseComputerMutation();
   const agents = useAgentsQuery();
-  const buying = () => props.buying;
-  const setBuying = (value: boolean) => props.onBuyingChange(value);
   const [settingUp, setSettingUp] = createSignal<string>();
   // Set when a setup notification reopens the flow: it lands on Bring your AI.
   const [resumeAt, setResumeAt] =
@@ -422,7 +252,6 @@ export function MacroComputers(props: {
   createEffect(
     on(computerSetupRequest, (request) => {
       if (!request) return;
-      setBuying(false);
       setResumeAt('claude');
       setSettingUp(request.computerId);
       consumeComputerSetupRequest(request.id);
@@ -504,14 +333,11 @@ export function MacroComputers(props: {
         </div>
       </Show>
 
-      {/* One dialog for buying and for Finish setup, so a computer bought
-          here reopens where its setup left off. */}
       <ComputerBuyFlow
-        open={buying() || !!settingUp()}
+        open={!!settingUp()}
         computerId={settingUp()}
         resumeStep={resumeAt()}
         onClose={() => {
-          setBuying(false);
           setSettingUp(undefined);
           setResumeAt(undefined);
         }}

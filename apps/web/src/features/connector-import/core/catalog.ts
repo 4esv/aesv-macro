@@ -22,15 +22,10 @@ import type {
   ImportProvider,
 } from './providers';
 
-// Order is promotion order: the sidebar card shows these left to right and
-// its copy names the first few. Sources with an import ledger lead.
-// Each pitch fills one line and most of a second at the default sidebar width.
+// Order is display order in the import dialog. Sources with an import ledger lead.
 export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
   files: {
     category: 'files',
-    headline: 'Bring your files to Macro',
-    pitch:
-      'Import docs and files from Notion, Google Drive, Dropbox, and more.',
     action: 'Import files',
     dialogDescription:
       'Connect an app, then pick what to bring into your Drive with the agent.',
@@ -78,9 +73,6 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
   },
   tasks: {
     category: 'tasks',
-    headline: 'Bring your tasks to Macro',
-    pitch:
-      'Import issues and tasks from Linear, Jira, Asana, GitHub, and more.',
     action: 'Import tasks',
     dialogDescription:
       'Connect an app, then pick which tasks to bring over with the agent.',
@@ -130,8 +122,6 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
   },
   crm: {
     category: 'crm',
-    headline: 'Bring your customers to Macro',
-    pitch: 'Import companies and contacts from HubSpot, Salesforce, and more.',
     action: 'Import customers',
     dialogDescription:
       'Connect an app, and the agent brings its companies and contacts into your CRM.',
@@ -166,9 +156,6 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
   },
   channels: {
     category: 'channels',
-    headline: 'Create or import channels',
-    pitch:
-      'Import Slack channels and members, with or without message history.',
     action: 'Import from Slack',
     dialogDescription:
       'Connect Slack to pick channels with the agent, or upload an export to bring history.',

@@ -18,7 +18,7 @@ type ModelSelectorProps = {
   /** Per-model availability. Defaults to all models available. */
   models?: ModelOption[];
   onSelect: (model: TModel) => void;
-  /** Called when an unavailable model is clicked (e.g. to open the paywall). */
+  /** Called when an unavailable model is clicked. */
   onLocked?: (model: TModel) => void;
   /** Collapse the trigger to just the provider icon (narrow inputs). */
   compact?: boolean;

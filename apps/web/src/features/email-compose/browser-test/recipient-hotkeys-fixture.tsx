@@ -30,8 +30,6 @@ import { createEmailComposer } from '../primitives/email-composer';
 import { ComposeLayout } from '../views/compose-layout';
 import { ReplyInputView } from '../views/reply-input';
 
-/** Free plans add the "Sent with Macro" watermark below the message. */
-const freePlan = new URLSearchParams(location.search).has('free');
 const directoryEnabled = new URLSearchParams(location.search).has('directory');
 const mobile = new URLSearchParams(location.search).has('mobile');
 const [directoryReads, setDirectoryReads] = createSignal(0);
@@ -162,8 +160,6 @@ const context: EmailComposeContext = {
   },
   connectivity: { looksOffline: () => false },
   presentation: {
-    viewerLoading: () => false,
-    onUpgrade: () => {},
     prepareSignatureLinks: () => {},
     isTouch: () => mobile,
     isMobile: () => mobile,
@@ -179,7 +175,6 @@ const context: EmailComposeContext = {
   viewerEmail: () => 'me@example.com',
   recipients: () => [],
   recipientName: (id) => id,
-  hasPaidAccess: () => !freePlan,
   recordMention: () => {},
 };
 

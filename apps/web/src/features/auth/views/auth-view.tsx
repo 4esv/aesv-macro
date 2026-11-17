@@ -1,13 +1,6 @@
 import { fireAndForget } from '@core/util/fireAndForget';
 import { Stepper } from '@ui/components/Stepper';
-import {
-  type Accessor,
-  type JSX,
-  Match,
-  onMount,
-  Show,
-  Switch,
-} from 'solid-js';
+import { type Accessor, type JSX, onMount, Show } from 'solid-js';
 import { EmailForm } from '../components/email-form';
 import { LoginCard } from '../components/login-card';
 import { LoginPicker } from '../components/login-picker';
@@ -19,18 +12,6 @@ import {
 } from '../context/auth-context';
 import { createEmailLogin, type EmailLogin } from '../primitives/email-login';
 import { redeemSessionToken } from '../primitives/session';
-
-/** What desktop sign-up hands onboarding's opening slides. */
-export type SignupJourneySlots = {
-  onGoogle: () => Promise<void>;
-  /** Absent while Microsoft sign-up is off. */
-  onMicrosoft?: () => Promise<void>;
-  onBackFromEmail: () => void;
-  onSignIn: () => void;
-  onAgentSignup: () => void;
-  emailForm: JSX.Element;
-  showingEmail: boolean;
-};
 
 /** Sign-in and sign-up: SSO or an emailed code, then whatever comes next. */
 export function AuthView(props: {
@@ -47,17 +28,6 @@ export function AuthView(props: {
   /** The session code an SSO return put on the URL. */
   token?: string;
   onVerified?: () => void;
-  /** Desktop sign-up: onboarding's slides host Google and the email form. */
-  signupJourney?: (slots: SignupJourneySlots) => JSX.Element;
-  /** Switches a returning visitor from sign-up to sign-in. */
-  onSignIn?: () => void;
-  /** Switches an agent from sign-up to the agent signup page. */
-  onAgentSignup?: () => void;
-  /**
-   * Shown while the session is still resolving on a cold load, instead of the
-   * signed-out screens a returning visitor would otherwise see flash by.
-   */
-  pending?: () => JSX.Element;
   /** What a signed-in visitor sees instead. */
   signedIn: (user: Accessor<AuthUser>) => JSX.Element;
 }) {
@@ -78,81 +48,42 @@ export function AuthView(props: {
   };
 
   const signedOut = () => (
-    <Switch>
-      <Match when={props.signupJourney}>
-        {(journey) =>
-          journey()({
-            onGoogle: () => context.startSso('google', 'signup'),
-            onMicrosoft: props.showMicrosoft
-              ? () => context.startSso('microsoft', 'signup')
-              : undefined,
-            onBackFromEmail: login.back,
-            onSignIn: () => props.onSignIn?.(),
-            onAgentSignup: () => props.onAgentSignup?.(),
-            showingEmail: login.step() !== 'choose',
-            emailForm: (
-              <Show when={login.step() !== 'choose'}>
-                <Stepper
-                  step={login.step() === 'verify' ? 1 : 0}
-                  transition={Stepper.transitions.scale}
-                >
-                  <Stepper.Step>
-                    <EmailStep login={login} />
-                  </Stepper.Step>
-                  <Stepper.Step>
-                    <VerifyStep login={login} />
-                  </Stepper.Step>
-                </Stepper>
-              </Show>
-            ),
-          })
-        }
-      </Match>
-      <Match when={true}>
-        <LoginCard
-          compact={props.compact}
-          agentSignup={props.intent === 'agent-signup'}
-        >
-          <Stepper
-            step={STEP_INDEX[login.step()]}
-            transition={Stepper.transitions.scale}
-          >
-            <Stepper.Step>
-              <LoginPicker
-                showApple={props.showApple}
-                showMicrosoft={props.showMicrosoft === true}
-                onGoogle={() =>
-                  fireAndForget(
-                    context.startSso('google', props.intent),
-                    'auth'
-                  )
-                }
-                onMicrosoft={() =>
-                  fireAndForget(
-                    context.startSso('microsoft', props.intent),
-                    'auth'
-                  )
-                }
-                onApple={() =>
-                  fireAndForget(context.startSso('apple', props.intent), 'auth')
-                }
-                onEmail={login.chooseEmail}
-              />
-            </Stepper.Step>
-            <Stepper.Step>
-              <EmailStep login={login} />
-            </Stepper.Step>
-            <Stepper.Step>
-              <VerifyStep login={login} />
-            </Stepper.Step>
-          </Stepper>
-        </LoginCard>
-      </Match>
-    </Switch>
+    <LoginCard
+      compact={props.compact}
+      agentSignup={props.intent === 'agent-signup'}
+    >
+      <Stepper
+        step={STEP_INDEX[login.step()]}
+        transition={Stepper.transitions.scale}
+      >
+        <Stepper.Step>
+          <LoginPicker
+            showApple={props.showApple}
+            showMicrosoft={props.showMicrosoft === true}
+            onGoogle={() =>
+              fireAndForget(context.startSso('google', props.intent), 'auth')
+            }
+            onMicrosoft={() =>
+              fireAndForget(context.startSso('microsoft', props.intent), 'auth')
+            }
+            onApple={() =>
+              fireAndForget(context.startSso('apple', props.intent), 'auth')
+            }
+            onEmail={login.chooseEmail}
+          />
+        </Stepper.Step>
+        <Stepper.Step>
+          <EmailStep login={login} />
+        </Stepper.Step>
+        <Stepper.Step>
+          <VerifyStep login={login} />
+        </Stepper.Step>
+      </Stepper>
+    </LoginCard>
   );
 
   return (
-    <Show when={context.session().t !== 'loading'} fallback={props.pending?.()}>
+    <Show when={context.session().t !== 'loading'}>
       <Show when={user()} fallback={signedOut()}>
         {(signedIn) => (
           // Refreshes update the existing workspace; only changing accounts

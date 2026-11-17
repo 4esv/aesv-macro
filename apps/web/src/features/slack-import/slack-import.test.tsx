@@ -15,7 +15,6 @@ const host = vi.hoisted(() => ({
   view: vi.fn(),
   openSettings: vi.fn(),
   requestConnect: vi.fn(),
-  hidePromotion: vi.fn(),
   props: undefined as
     | {
         onCompleted(job: ImportJob): Promise<void>;
@@ -32,10 +31,6 @@ vi.mock('@core/constant/featureFlags', () => ({
 }));
 vi.mock('@core/constant/SettingsState', () => ({
   useSettingsState: () => ({ openSettings: host.openSettings }),
-}));
-vi.mock('@core/context/user', () => ({ useUserId: () => () => 'me' }));
-vi.mock('@app/features/connector-import/primitives/promotion', () => ({
-  hideImportPromotion: host.hidePromotion,
 }));
 vi.mock('@core/pipedream/flag', () => ({
   usePipedreamMcpFlag: () => () => true,
@@ -143,36 +138,5 @@ describe('Slack import production boundary', () => {
     await waitFor(() => expect(host.view).toHaveBeenLastCalledWith('two'));
     setAdmin(false);
     expect(screen.queryByText('Mounted import')).toBeNull();
-  });
-
-  it.each(['failed', 'cancelled', 'completed_with_errors'] as const)(
-    'does not hide the promotion for %s imports without successful channels',
-    async (status) => {
-      render(() => <SlackImport teamId="team" isAdmin />);
-      await screen.findByText('Mounted import');
-      await host.props!.onCompleted(importReceipt({ status }));
-      expect(host.hidePromotion).not.toHaveBeenCalled();
-    }
-  );
-
-  it('hides the promotion after successful completion even if refreshing fails', async () => {
-    render(() => <SlackImport teamId="team" isAdmin />);
-    await screen.findByText('Mounted import');
-    host.invalidateChannels.mockRejectedValueOnce(new Error('Refresh failed'));
-    await expect(
-      host.props!.onCompleted(importReceipt({ status: 'completed' }))
-    ).rejects.toThrow('Refresh failed');
-    expect(host.hidePromotion).toHaveBeenCalledWith('me', 'channels');
-  });
-
-  it('hides after a partial import with a completed channel', async () => {
-    render(() => <SlackImport teamId="team" isAdmin />);
-    await screen.findByText('Mounted import');
-    const job = importReceipt({ status: 'completed_with_errors' });
-    await host.props!.onCompleted({
-      ...job,
-      conversations: [{ ...job.conversations[0], status: 'completed' }],
-    });
-    expect(host.hidePromotion).toHaveBeenCalledWith('me', 'channels');
   });
 });

@@ -16,7 +16,6 @@ const mocks = vi.hoisted(() => ({
   desktop: false,
   mobile: true,
   openDesktop: vi.fn(),
-  paywall: vi.fn(),
 }));
 
 vi.mock('@app/constants/routerBase', () => ({
@@ -33,10 +32,6 @@ vi.mock('@core/auth/native-auth', () => ({
 }));
 vi.mock('@core/component/Toast/Toast', () => ({
   toast: { success: mocks.success, failure: mocks.failure, alert: mocks.alert },
-}));
-vi.mock('@core/constant/PaywallState', () => ({
-  PaywallKey: { MULTI_INBOX: 'multi-inbox' },
-  usePaywallState: () => ({ showPaywall: mocks.paywall }),
 }));
 vi.mock('@core/mobile/isNativeMobilePlatform', () => ({
   isNativeMobilePlatform: () => mocks.mobile,
@@ -208,22 +203,15 @@ describe('desktop account linking', () => {
     expect(mocks.provision).not.toHaveBeenCalled();
   });
 
-  it.each(['PAYMENT_REQUIRED', 'TOO_MANY_PENDING_LINKS'])(
-    'does not open consent when the backend returns %s',
-    async (code) => {
-      mocks.start.mockResolvedValue(err([{ code }]));
-      await useAddInboxFlow()({ provider: 'GMAIL' });
-      expect(mocks.openDesktop).not.toHaveBeenCalled();
-      expect(mocks.provision).not.toHaveBeenCalled();
-      if (code === 'PAYMENT_REQUIRED') {
-        expect(mocks.paywall).toHaveBeenCalledWith('multi-inbox');
-      } else {
-        expect(mocks.failure).toHaveBeenCalledWith(
-          'Too many inbox connections in progress.'
-        );
-      }
-    }
-  );
+  it('does not open consent when the backend returns TOO_MANY_PENDING_LINKS', async () => {
+    mocks.start.mockResolvedValue(err([{ code: 'TOO_MANY_PENDING_LINKS' }]));
+    await useAddInboxFlow()({ provider: 'GMAIL' });
+    expect(mocks.openDesktop).not.toHaveBeenCalled();
+    expect(mocks.provision).not.toHaveBeenCalled();
+    expect(mocks.failure).toHaveBeenCalledWith(
+      'Too many inbox connections in progress.'
+    );
+  });
 });
 
 it('keeps web consent on the originating host', async () => {

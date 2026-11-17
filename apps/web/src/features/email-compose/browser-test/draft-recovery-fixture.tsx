@@ -126,7 +126,6 @@ function RecoveryEditor(props: { durable: boolean }) {
     connectivity: { looksOffline: () => false },
     editorFiles: { uploadDocuments: async () => [], makePublic: () => {} },
     viewerEmail: () => 'me@example.com',
-    hasPaidAccess: () => true,
     recipients: () => [],
     recipientName: (id) => id,
     initialTo: ['colleague@example.com'],

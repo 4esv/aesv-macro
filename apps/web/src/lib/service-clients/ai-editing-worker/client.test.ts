@@ -1,5 +1,4 @@
 import { toastAiEditResult } from '@app/features/block-md/queries/ai-edit';
-import { useAiUsageLimitState } from '@core/constant/AiUsageLimitState';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { hasActiveAiEdit, requestAiEdit } from './client';
 
@@ -22,19 +21,16 @@ vi.mock('@macro-inc/observability', () => ({
   Telemetry: { span: () => span },
 }));
 
-const state = useAiUsageLimitState();
 const fetch = vi.fn<typeof window.fetch>();
 
 beforeEach(() => {
   vi.clearAllMocks();
-  state.hideUsageLimit();
   permissionToken.mockResolvedValue('test-document-permission');
   vi.stubGlobal('fetch', fetch);
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 afterEach(() => {
-  state.hideUsageLimit();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
@@ -45,7 +41,7 @@ test.each([
   'ai_overage_limit_reached',
   'ai_overage_payment_failed',
 ])(
-  'opens the usage dialog for a rejected edit (%s) without applying ops or showing a generic toast',
+  'reports a refused edit (%s) as a failure without applying ops',
   async (code) => {
     fetch.mockResolvedValueOnce(
       Response.json({ code, error: 'Usage blocked' }, { status: 402 })
@@ -57,16 +53,13 @@ test.each([
       prompt: 'Improve this',
       onOps,
     });
-    expect(state.usageLimitOpen()).toBe(false);
     toastAiEditResult(result);
 
     expect(result).toEqual({
       kind: 'usage-limit',
       error: { code: 'AI_USAGE_LIMIT', reason: code, message: 'Usage blocked' },
     });
-    expect(state.usageLimitOpen()).toBe(true);
-    expect(state.usageLimitCode()).toBe(code);
-    expect(failure).not.toHaveBeenCalled();
+    expect(failure).toHaveBeenCalledWith('AI edit failed');
     expect(onOps).not.toHaveBeenCalled();
     expect(hasActiveAiEdit('document')).toBe(false);
     expect(span.end).toHaveBeenCalledOnce();
@@ -87,7 +80,6 @@ test.each([403, 500, 503])(
     toastAiEditResult(result);
 
     expect(result).toEqual({ kind: 'failed' });
-    expect(state.usageLimitOpen()).toBe(false);
     expect(failure).toHaveBeenCalledWith('AI edit failed');
     expect(hasActiveAiEdit('document')).toBe(false);
   }
@@ -115,7 +107,6 @@ test('keeps successful edits and clarification requests distinct from quota fail
   toastAiEditResult(result);
 
   expect(failure).toHaveBeenCalledWith('Which paragraph?');
-  expect(state.usageLimitOpen()).toBe(false);
 });
 
 test('runs the edit request under its explicitly supplied parent context', async () => {

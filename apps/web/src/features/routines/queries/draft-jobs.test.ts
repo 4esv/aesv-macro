@@ -39,9 +39,6 @@ vi.mock('@queries/client', async () => {
   const { QueryClient } = await import('@tanstack/solid-query');
   return { queryClient: new QueryClient() };
 });
-vi.mock('@app/features/paywall/ai-usage-limit-handling', () => ({
-  handleAiUsageLimitError: () => false,
-}));
 
 const KEY = scheduledActionKeys.draftJobs.queryKey;
 const REQUEST = 'When an invoice arrives, label it Finance.';

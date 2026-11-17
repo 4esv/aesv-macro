@@ -5,8 +5,6 @@ import {
   useSavedView,
   useSavedViews,
 } from '@app/features/saved-views/queries/saved-views';
-import { ViewTour, ViewTourAction } from '@app/features/tours/ViewTour';
-import { TutorialRow } from '@app/features/video-tutorials';
 import { SplitRouter, useNavigate, useParams } from '@app/lib/split-router';
 import { projectDetailRoute } from '@app/routes/routes';
 import { useSplitLayout } from '@components/app/split-layout/layout';
@@ -31,7 +29,6 @@ import { TASK_TABS } from './constants';
 import { isProjectTab } from './core/task-navigation';
 import { TasksContent, TasksLoading } from './tasks-content';
 import { TasksViewProvider, useTasksView } from './tasks-view-context';
-import { tasksTour } from './tour';
 import type { TasksViewStateOptions } from './types';
 import {
   TaskSavedViewFailure,
@@ -83,18 +80,6 @@ function TasksViewBreadcrumbs(props: ParentProps) {
   );
 }
 
-/** The tasks tour's shortcut for bringing existing issues over. */
-function ImportLinearAction() {
-  const { openWithSplit } = useSplitLayout();
-  return (
-    <ViewTourAction
-      onClick={() => openWithSplit({ type: 'component', id: 'import-linear' })}
-    >
-      Import from Linear
-    </ViewTourAction>
-  );
-}
-
 function TasksViewRoot() {
   const panel = useSplitPanelOrThrow();
   const { state, setState, projectsEnabled, savedViews } = useTasksView();
@@ -115,7 +100,6 @@ function TasksViewRoot() {
   const taskList = () => (
     <>
       <TasksHeader focusSearchResults={() => listElement()?.focus()} />
-      <ViewTour tour={tasksTour} actions={<ImportLinearAction />} />
       <ViewShell.Content class="flex flex-col">
         <Show
           when={savedViewReady()}
@@ -127,18 +111,7 @@ function TasksViewRoot() {
         >
           <TaskSavedViewWarning />
           <div class="min-h-0 flex-1">
-            <TasksContent
-              ref={setListElement}
-              listStart={
-                // Task rows lead with priority and status icons; the inset
-                // puts the play icon over the status icon and the label
-                // over the task titles, while the row's hover still spans
-                // the list like the task rows'.
-                <div class="[--tutorial-row-inset:2.25rem]">
-                  <TutorialRow tutorial="tasks" />
-                </div>
-              }
-            />
+            <TasksContent ref={setListElement} />
           </div>
         </Show>
       </ViewShell.Content>

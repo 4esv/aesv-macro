@@ -125,7 +125,6 @@ function LoadedEmailComposeView(
     connectivity: composeContext.connectivity,
     editorFiles: composeContext.editorFiles,
     viewerEmail: composeContext.viewerEmail,
-    hasPaidAccess: composeContext.hasPaidAccess,
     recipients: composeContext.recipients,
     recipientName: composeContext.recipientName,
     host: props.host,
@@ -179,8 +178,6 @@ function LoadedEmailComposeView(
     isMobile: composeContext.presentation.isMobile,
     scheduleEnabled: composeContext.presentation.scheduleEnabled,
     calendarEvents: composeContext.calendarEvents,
-    onUpgrade: composeContext.presentation.onUpgrade,
-    viewerLoading: composeContext.presentation.viewerLoading,
     signaturePreview: () => (
       <Show
         when={

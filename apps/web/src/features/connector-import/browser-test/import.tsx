@@ -1,5 +1,4 @@
 import '@app/index.css';
-import { PromoCard } from '@app/features/sidebar-promotion/components/promo-card';
 import { applyTheme } from '@app/features/theme/utils/themeUtils';
 import FileCsvIcon from '@icon/system/regular/file-csv.svg';
 import FileZipIcon from '@icon/system/regular/file-zip.svg';
@@ -40,26 +39,19 @@ const context: ConnectorImportContext = {
 
 function Sidebar(props: { category: ImportCategory }) {
   const [open, setOpen] = createSignal(false);
-  const [hidden, setHidden] = createSignal(false);
   const config = IMPORT_CATEGORIES[props.category];
   return (
     <aside
       class="flex h-[440px] w-64 flex-col bg-panel px-2 py-3"
       aria-label={`${props.category} sidebar`}
     >
-      <p class="px-2 text-sm font-semibold text-ink">{config.action}</p>
-      <div class="mt-auto">
-        {hidden() ? null : (
-          <PromoCard
-            logos={config.providers}
-            headline={config.headline}
-            pitch={config.pitch}
-            action={{ label: config.action, onClick: () => setOpen(true) }}
-            dismissLabel={`Dismiss ${config.action.toLowerCase()}`}
-            onDismiss={() => setHidden(true)}
-          />
-        )}
-      </div>
+      <button
+        type="button"
+        class="mt-auto rounded-md border border-edge px-2 py-1 text-sm text-ink"
+        onClick={() => setOpen(true)}
+      >
+        {config.action}
+      </button>
       <ConnectorImportDialog
         config={config}
         open={open()}

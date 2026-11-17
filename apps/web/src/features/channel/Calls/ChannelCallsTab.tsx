@@ -6,7 +6,6 @@ import {
   useListInteractions,
 } from '@app/components/list';
 import { SearchBar } from '@app/components/view-shell';
-import { LIST_VIEW_DOCS_URL } from '@app/constants/docs-links';
 import {
   resolveEntityActionViewContext,
   toEntityActionListState,
@@ -320,7 +319,6 @@ function ChannelCallsList(props: { channelId: string }) {
                         ? 'Search matches call names and transcripts in this channel.'
                         : 'Recordings, transcriptions, and summaries of calls in this channel will appear here.'
                     }
-                    documentationUrl={LIST_VIEW_DOCS_URL.calls}
                   />
                 </div>
               </Match>

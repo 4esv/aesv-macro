@@ -1,4 +1,3 @@
-import { handleAiUsageLimitError } from '@app/features/paywall/ai-usage-limit-handling';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { thrownResultErrorHasCode, throwOnErr } from '@core/util/result';
 import { sleep } from '@core/util/sleep';
@@ -176,7 +175,6 @@ export async function startDraftJob(
       span.setAttr('routine.draft.outcome', 'request_failed');
       span.setAttr('routine.draft.error', response.error[0]?.code ?? 'unknown');
       span.error('Routine draft start failed');
-      handleAiUsageLimitError(response.error);
       if (response.error.some((error) => error.code === 'TOO_MANY')) {
         return TOO_MANY;
       }

@@ -388,8 +388,6 @@ export interface EmailComposeAccounts {
 
 /** View wiring; controllers do not receive these presentation capabilities. */
 export interface EmailComposePresentation {
-  viewerLoading: Accessor<boolean>;
-  onUpgrade(): void;
   prepareSignatureLinks(root: ShadowRoot): void;
   isTouch: Accessor<boolean>;
   isMobile: Accessor<boolean>;
@@ -451,7 +449,6 @@ export interface EmailComposeContext {
   /** Each open To/Cc/Bcc selector owns its personal suggestion source. */
   createRecipientSource: EmailRecipientSourceFactory | undefined;
   recipientName(id: string): string;
-  hasPaidAccess: Accessor<boolean>;
   recordMention(sourceId: string, targetId: string): void;
 }
 

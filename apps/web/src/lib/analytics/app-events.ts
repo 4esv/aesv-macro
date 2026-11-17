@@ -31,13 +31,7 @@ export type AccountDeletionReason =
 
 export type AppEvents = {
   // --- Acquisition & auth -------------------------------------------------
-  /**
-   * Account creation, browser side (GA only). The authoritative PostHog
-   * `sign_up` is emitted server-side from the create-user webhook; the
-   * browser fires this GA event plus the ad conversions when the backend
-   * flags the session via the `signed_up=true` redirect param. See
-   * signupCompletion.ts.
-   */
+  /** Account creation. */
   sign_up: Record<string, unknown>;
   /** Signup intent: user clicked a sign-up CTA (pre-redirect, may not convert). */
   sign_up_click: { method?: string } & Record<string, unknown>;
@@ -50,16 +44,6 @@ export type AppEvents = {
   login_from_onboarding: Record<string, unknown>;
   mobile_web_welcome_viewed: Record<string, unknown>;
   mobile_web_signup_sent_viewed: Record<string, unknown>;
-
-  // --- Interactive tutorial (optional; decoupled from acquisition) ---------
-  tutorial_started: { isFirstTime: boolean };
-  tutorial_step: {
-    id: string;
-    index: number;
-    state: 'viewed' | 'completed' | 'skipped';
-  };
-  tutorial_completed: { isFirstTime: boolean };
-  tutorial_skipped: Record<string, unknown>;
 
   // --- Onboarding v4 (the full-screen /onboarding stepper) -----------------
   /** A GTM invite welcome page resolved its link (`/invite?token=`). */
@@ -298,31 +282,6 @@ export type AppEvents = {
   channel_reaction: {
     emoji: string;
     action: 'add' | 'remove';
-  };
-
-  // In-product tutorial videos (the pinned row at the top of an inbox).
-  tutorial_video: {
-    /** `macro-<id>` for each id in features/video-tutorials/core/tutorial-id.ts. */
-    tutorial:
-      | 'macro-mail'
-      | 'macro-home'
-      | 'macro-chat'
-      | 'macro-tasks'
-      | 'macro-docs'
-      | 'macro-spreadsheets'
-      | 'macro-databases'
-      | 'macro-canvas'
-      | 'macro-drive'
-      | 'macro-crm'
-      | 'macro-calendar'
-      | 'macro-calls'
-      | 'macro-agents'
-      | 'macro-macrod'
-      | 'macro-github'
-      | 'macro-scheduling'
-      | 'macro-whatsapp';
-    /** `support_clicked`: the dialog's "Talk to us" link under the video. */
-    action: 'opened' | 'played' | 'dismissed' | 'support_clicked';
   };
 
   // --- Calls ---------------------------------------------------------------

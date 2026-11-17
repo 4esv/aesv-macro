@@ -1,4 +1,3 @@
-import { handleAiUsageLimitError } from '@app/features/paywall/ai-usage-limit-handling';
 import type { TModel } from '@core/component/AI/constant';
 import { databaseSqlAnswer } from '@core/database-sql/answer';
 import { databaseSqlSchema } from '@core/database-sql/catalog';
@@ -63,10 +62,9 @@ function generateDatabaseQuery(
     .andThen((cognition) =>
       parent
         .run(() => cognition.generateDatabaseQuery(input, model))
-        .mapErr((failure) => {
-          handleAiUsageLimitError(failure.errors);
-          return generationFailure(serviceError(failure.errors).message);
-        })
+        .mapErr((failure) =>
+          generationFailure(serviceError(failure.errors).message)
+        )
     )
     .andThen(parseQueryProposal);
 }

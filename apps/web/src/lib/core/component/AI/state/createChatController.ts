@@ -1,4 +1,3 @@
-import { isAiDenyCode } from '@app/lib/service-clients/ai-usage-limit';
 import type { ChatMessageWithAttachments } from '@core/component/AI/types';
 import { asChatMessage } from '@core/component/AI/util/message';
 import {
@@ -61,13 +60,6 @@ export type ChatController = {
 };
 
 export type ChatControllerOptions = {
-  onShowPaywall?: () => void;
-  /**
-   * The send was refused by the AI billing gate (allowance used up, usage
-   * billing cap reached, or a failed usage charge). `reason` is the backend
-   * code; hosts open the usage-limit dialog.
-   */
-  onShowUsageLimit?: (reason: string) => void;
   /**
    * Switch the chat to a model from a different provider. When provided, a
    * provider-outage error toast offers a "Switch model" button that calls this.
@@ -130,10 +122,6 @@ export function createChatController(
             toast.failure(e.message);
           }
         })
-        .with({ type: 'show_paywall' }, () => options?.onShowPaywall?.())
-        .with({ type: 'show_usage_limit' }, (e) =>
-          options?.onShowUsageLimit?.(e.reason)
-        )
         .exhaustive();
     }
   }
@@ -165,19 +153,6 @@ export function createChatController(
                   attachments: r.attachments,
                 });
               })
-              .with(
-                {
-                  type: 'chat_message_response',
-                  content: { type: 'toolCallErr' },
-                },
-                ({ content }) => {
-                  // Tool refusals can arrive inside an otherwise successful
-                  // stream. The backend prefixes their description with its
-                  // stable admission code.
-                  const code = content.description.split(':', 1)[0];
-                  if (isAiDenyCode(code)) options?.onShowUsageLimit?.(code);
-                }
-              )
               .otherwise(() => {});
           }
         }

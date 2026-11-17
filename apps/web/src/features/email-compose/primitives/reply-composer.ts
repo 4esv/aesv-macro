@@ -1,16 +1,9 @@
-import {
-  attachmentLimitBytes,
-  MACRO_EMAIL_SIGNATURE,
-} from '@app/features/email-compose/core/constants';
+import { attachmentLimitBytes } from '@app/features/email-compose/core/constants';
 import type { EmailMessage } from '@app/features/email-message/core/email-message';
 import type { UserMentionRecord } from '@core/component/LexicalMarkdown/utils/mentionsUtils';
 import { setEditorStateFromHtml } from '@core/component/LexicalMarkdown/utils/setEditorStateFromHtml';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { $generateHtmlFromNodes } from '@lexical/html';
-import {
-  $appendWatermarkNodeToLast,
-  $removeAllWatermarkNodes,
-} from '@macro-inc/lexical-core';
 import type { LexicalEditor } from 'lexical';
 import { $addUpdateTag, $getRoot } from 'lexical';
 import {
@@ -127,7 +120,6 @@ export type ReplyComposerOptions = {
   connectivity: EmailConnectivity;
   editorFiles: Pick<EmailEditorFiles, 'uploadDocuments' | 'makePublic'>;
   viewerEmail: Accessor<string | undefined>;
-  hasPaidAccess: Accessor<boolean>;
   recordMention(sourceId: string, targetId: string): void;
   focusAfterReplyRequest: Accessor<boolean>;
   session: EmailReplySession;
@@ -617,7 +609,6 @@ export function createReplyComposer(
   const appendsQuotedThread = () => !!replyTarget && !form.replyAppended();
 
   function collectDraft(forDelivery = false) {
-    if (!forDelivery) $removeAllWatermarkNodes(editor());
     // A saved forward keeps its forwarded message even while it is hidden:
     // the header is the only record that the draft is a forward.
     const appendsToBody = forDelivery || form.replyType() === 'forward';
@@ -975,18 +966,7 @@ export function createReplyComposer(
 
   const saveForSchedule = async () => {
     if (deliveryBlocked()) return undefined;
-    const currentEditor = editor();
-    const cleanupWatermark = $appendWatermarkNodeToLast(
-      currentEditor,
-      !hasPaidAccess() ? MACRO_EMAIL_SIGNATURE : undefined
-    );
-    try {
-      return persistence.confirmed(
-        await autosave.save(captureSave(false, true))
-      );
-    } finally {
-      cleanupWatermark();
-    }
+    return persistence.confirmed(await autosave.save(captureSave(false, true)));
   };
 
   schedule = createEmailSendSchedule({
@@ -1077,8 +1057,6 @@ export function createReplyComposer(
     }
     untrack(scheduleDraftSave);
   };
-
-  const hasPaidAccess = props.hasPaidAccess;
 
   const sendEmail = async (markDone = false) => {
     if (sendLocked() || restoring()) return;
@@ -1268,7 +1246,7 @@ export function createReplyComposer(
       if (pendingInlineMedia(editor()))
         return refuseSend(props.notices, 'media-not-uploaded');
 
-      // Snapshot editor state before watermark so undo-send can restore it.
+      // Snapshot editor state so undo-send can restore it.
       // Remember by draft so sends in separate composers cannot replace each other.
       rememberCurrentReply();
 
@@ -1276,14 +1254,8 @@ export function createReplyComposer(
         return;
       }
 
-      // Append watermark after all validation passes so failed sends don't
-      // leave orphaned watermark nodes in the editor tree.
       const restoration = prepareEmailBody(currentEditor);
       const restoreMacro = bodyMacro();
-      const cleanupWatermark = $appendWatermarkNodeToLast(
-        currentEditor,
-        !hasPaidAccess() ? MACRO_EMAIL_SIGNATURE : undefined
-      );
 
       const replyingTo = replyTarget;
 
@@ -1296,10 +1268,7 @@ export function createReplyComposer(
             }
           : undefined
       );
-      if (!prepared) {
-        cleanupWatermark();
-        return;
-      }
+      if (!prepared) return;
 
       const processedMacroBody = prepareMacroBody(bodyMacro());
 
@@ -1355,7 +1324,6 @@ export function createReplyComposer(
           session.isStale(epochBeforeSave)
         )
           return;
-        cleanupWatermark();
         autosave.cancel();
         if (mounted && currentDraftId) {
           const snapshot = replyUndo.peek(currentDraftId);
@@ -1376,8 +1344,6 @@ export function createReplyComposer(
         clearDraftState();
       } catch (error) {
         props.notices.reportError(error);
-      } finally {
-        cleanupWatermark();
       }
       autosave.cancel();
       const draftId = result.draftId;
@@ -1841,7 +1807,6 @@ export function createReplyComposer(
     collectDraft,
     scheduleDraftSave,
     persistDraftOnSenderSwitch,
-    hasPaidAccess,
     sendEmail,
     deleteDraftAndReset,
     handleAddAttachments,

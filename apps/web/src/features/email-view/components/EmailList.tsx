@@ -1,4 +1,3 @@
-import { TutorialRow } from '@app/features/video-tutorials';
 import { usePending } from '@app/observability/flow';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';
 import { markRowNotificationsSeenOnOpen } from '@notifications/mark-row-seen';
@@ -72,7 +71,7 @@ import {
   soupNavigationTouchHighlight,
 } from '../../next-soup/soup-view/soup-navigation-touch-highlight';
 import { openEntityInSplitFromUnifiedList } from '../../next-soup/utils';
-import { canSearchEmailTab, isExcludedEmailFolder } from '../constants';
+import { isExcludedEmailFolder } from '../constants';
 import {
   type EmailListActivationMetadata,
   useEmailView,
@@ -226,7 +225,7 @@ export function EmailList(props: EmailListProps) {
   const [topSpacer, setTopSpacer] = createSignal<HTMLDivElement>();
   const topSpacerSize = createElementSize(topSpacer);
   // The virtualizer's item offsets exclude this; its scroll offset includes it.
-  // The top spacer holds the touch inset and the pinned tutorial row.
+  // The top spacer holds the touch inset.
   const listStartMargin = () => topSpacerSize.height ?? 0;
   const [emptyViewport, setEmptyViewport] = createSignal<HTMLDivElement>();
   const [grid, setGrid] = createSignal<HTMLDivElement>();
@@ -568,11 +567,6 @@ export function EmailList(props: EmailListProps) {
   }
 
   const hasEmailRows = () => rows().some((row) => row.kind === 'entity');
-  // The tutorial introduces the inbox; search results are not the inbox.
-  const showsTutorial = () =>
-    state.tab === 'important' &&
-    !(canSearchEmailTab(state.tab) && state.search.trim());
-
   function showsEmptyViewport() {
     return (
       forceEmptyState() ||
@@ -783,12 +777,6 @@ export function EmailList(props: EmailListProps) {
                   ref={setEmptyViewport}
                   class="min-h-0 flex-1 overflow-y-auto touch:pb-(--mobile-content-inset-bottom)"
                 >
-                  {/* New inboxes start empty, which is when the tutorial
-                      matters most. Touch devices show no tutorial, so there
-                      the empty state keeps its own top inset. */}
-                  <Show when={showsTutorial()}>
-                    <TutorialRow tutorial="mail" />
-                  </Show>
                   <EmailEmptyState />
                 </div>
               </Match>
@@ -809,9 +797,6 @@ export function EmailList(props: EmailListProps) {
                       aria-hidden="true"
                       class="h-0 touch:h-(--mobile-content-inset-top)"
                     />
-                    <Show when={showsTutorial()}>
-                      <TutorialRow tutorial="mail" />
-                    </Show>
                   </div>
                   {/* A row subtree that suspends (the project crumb's preview query, say)
                       detaches only itself, not the list and its scroll position. */}

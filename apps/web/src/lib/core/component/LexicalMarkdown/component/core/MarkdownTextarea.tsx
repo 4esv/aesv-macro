@@ -18,7 +18,6 @@ import {
   type Accessor,
   createEffect,
   createSignal,
-  type JSX,
   on,
   onCleanup,
   Show,
@@ -107,7 +106,6 @@ interface MarkdownTextareaProps {
   initialValue?: string;
   initialHtml?: string;
   placeholder?: string;
-  watermark?: JSX.Element;
   type?: EditorType;
   onEnter?: (e: KeyboardEvent, value: string) => boolean;
   focusOnMount?: boolean;
@@ -421,11 +419,6 @@ export function MarkdownTextarea(props: MarkdownTextareaProps) {
             <p class="pointer-events-none my-1.5">
               {props.placeholder ?? '...'}
             </p>
-          </div>
-        </Show>
-        <Show when={props.watermark}>
-          <div class="text-ink/50 mt-[1lh]" data-watermark>
-            {props.watermark}
           </div>
         </Show>
 

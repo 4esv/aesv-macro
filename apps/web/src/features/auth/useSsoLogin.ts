@@ -139,9 +139,7 @@ export function useSsoLogin(opts?: {
   const { initEmailLink } = useEmailLinks();
 
   return async (idp_name: string) => {
-    // Both events are pre-redirect *intent*. The authoritative sign_up (and
-    // the ad conversions) fire post-auth when the backend marks the session
-    // as a freshly created account — see lib/analytics/signupCompletion.ts.
+    // Both events are pre-redirect *intent*.
     const analyticsEvent = opts?.signupMode ? 'sign_up_click' : 'login';
 
     const authUrl = new URL(`${SERVER_HOSTS['auth-service']}/login/sso`);

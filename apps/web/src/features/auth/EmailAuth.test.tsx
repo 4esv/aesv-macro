@@ -18,7 +18,6 @@ const mocks = vi.hoisted(() => ({
   alert: vi.fn(),
   linkId: 'oauth-link',
   searchParams: {} as Record<string, string | string[]>,
-  tutorialComplete: true as boolean,
   restore: vi.fn(),
   track: vi.fn(),
   openAddInbox: vi.fn(),
@@ -65,14 +64,8 @@ vi.mock('@core/email-link/return-layout', () => ({
   consumeInboxLinkReturn: mocks.restore,
 }));
 vi.mock('@core/mobile/isMobile', () => ({ isMobile: () => false }));
-vi.mock('@core/mobile/isNativeMobilePlatform', () => ({
-  isNativeMobilePlatform: () => false,
-}));
 vi.mock('@queries/auth/user-info', () => ({
   invalidateAllAfterLogin: vi.fn(),
-  useUserInfoQuery: () => ({
-    data: { tutorialComplete: mocks.tutorialComplete },
-  }),
 }));
 vi.mock('@ui', () => ({
   Button: (props: JSX.ButtonHTMLAttributes<HTMLButtonElement>) => (
@@ -118,7 +111,6 @@ const { EmailLinkCallback } = makeEmailAuthComponents({
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.linkId = 'oauth-link';
-  mocks.tutorialComplete = true;
   mocks.searchParams = { link_id: mocks.linkId };
   mocks.fetchProviders.mockResolvedValue({
     gmail: true,
@@ -418,27 +410,5 @@ describe('consent that ended without a grant', () => {
     expect(mocks.openAddInbox).toHaveBeenCalledOnce();
     expect(mocks.restore).not.toHaveBeenCalled();
     expect(mocks.navigate).toHaveBeenCalledOnce();
-  });
-
-  it('returns a first-run user to the deep-linked onboarding step', async () => {
-    mocks.tutorialComplete = false;
-    mocks.searchParams = { link_id: 'oauth-link', step: 'plan' };
-    render(() => <EmailLinkCallback />);
-    await waitFor(() =>
-      expect(mocks.navigate).toHaveBeenCalledWith('/onboarding?step=plan', {
-        replace: true,
-      })
-    );
-  });
-
-  it('drops an unknown step when returning a first-run user to onboarding', async () => {
-    mocks.tutorialComplete = false;
-    mocks.searchParams = { link_id: 'oauth-link', step: 'nope' };
-    render(() => <EmailLinkCallback />);
-    await waitFor(() =>
-      expect(mocks.navigate).toHaveBeenCalledWith('/onboarding', {
-        replace: true,
-      })
-    );
   });
 });

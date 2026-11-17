@@ -79,13 +79,6 @@ single selection and stopping after replacement login. Unit coverage separately
 checks 500-label serialization, storage-generation changes and the real task creation
 helper's guarded local publication. No live imports or backend task writes are claimed.
 
-`/?onboarding-contacts` mounts the real onboarding team step and bounded teammate
-query source over synthetic local-host membership pages. It follows five empty continuations,
-stops after six eligible emails, excludes self/domain aliases, and keeps manual form
-edits when the domain source refreshes. A declined domain issues no contact query.
-Both desktop and phone are covered; auth scope and team writes are fixture adapters,
-not a live authorization or invitation-delivery test.
-
 `/?task-list-labels` mounts the real inline checklist bar and scoped label source
 with supplied document/task data and persistence. It resolves 501 referenced IDs
 in 500/1 batches, keeps malformed IDs local, filters by a late resolved name, and

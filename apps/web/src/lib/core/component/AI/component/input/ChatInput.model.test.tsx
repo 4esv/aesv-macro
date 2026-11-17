@@ -44,9 +44,6 @@ vi.mock('@core/component/AI/util/uploadToChat', () => ({
 vi.mock('@core/component/AI/util/chatAttachmentMention', () => ({}));
 vi.mock('@core/component/Toast/Toast', () => ({}));
 vi.mock('@core/constant/allBlocks', () => ({}));
-vi.mock('@core/constant/PaywallState', () => ({
-  usePaywallState: () => ({ showPaywall: vi.fn() }),
-}));
 vi.mock('@core/mobile/isMobile', () => ({ isMobile: () => mocks.mobile }));
 vi.mock('@core/mobile/isTouchDevice', () => ({
   isTouchDevice: () => mocks.mobile,
