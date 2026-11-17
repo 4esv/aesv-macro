@@ -43,8 +43,21 @@ jobs:
             experimental-features = nix-command flakes
             max-jobs = 2
             cores = 2
+      # NOTE: the store is cached between runs, so a rebuild skips the
+      # dependency and service derivations that did not change. The build step
+      # stops before the job limit, so even a failed run saves what it built.
+      - uses: nix-community/cache-nix-action/restore@v7
+        with:
+          primary-key: aesv-nix-${{ github.sha }}
+          restore-prefixes-first-match: aesv-nix-
       - name: Build
+        timeout-minutes: 300
         run: nix build --print-build-logs .#local-stack-binaries
+      - uses: nix-community/cache-nix-action/save@v7
+        if: always()
+        with:
+          primary-key: aesv-nix-${{ github.sha }}-${{ github.run_attempt }}
+          gc-max-store-size-linux: 9G
       - name: Pack as a binary cache
         run: |
           out=$(readlink -f result)
