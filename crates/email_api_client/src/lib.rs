@@ -6,7 +6,11 @@
 pub mod domain;
 
 /// Provider-specific outbound adapters.
-#[cfg(any(feature = "outbound-gmail", feature = "outbound-outlook"))]
+#[cfg(any(
+    feature = "outbound-gmail",
+    feature = "outbound-outlook",
+    feature = "outbound-imap"
+))]
 pub mod outbound;
 
 #[cfg(feature = "outbound-gmail")]

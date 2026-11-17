@@ -269,6 +269,7 @@ async-openai = { version = "0.36.1", features = [
   "completions",
   "embedding",
 ] }
+async-imap = { version = "0.12.0", default-features = false, features = ["runtime-tokio"] }
 async-stream = "0.3.6"
 async-trait = "0.1.86"
 automod = "1"

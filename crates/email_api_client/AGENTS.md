@@ -22,6 +22,13 @@ Outlook (Microsoft Graph) outbound adapters.
   which owns request headers, provider error mapping, write-failure logs,
   and one `outlook.graph_request` span per attempt (with an
   `outlook.graph_admission` child for the per-mailbox gate wait).
+- `src/outbound/imap.rs`: the IMAP and SMTP adapter for mailboxes linked
+  with an address and app password, such as iCloud Mail (feature
+  `outbound-imap`). It implements the same folder ports as the Graph
+  adapter, so the folder sync engine drives it: `imap/catalog.rs` maps
+  `LIST` onto folder roles, `imap/cursor.rs` is a folder stream's position
+  (UIDVALIDITY, UIDNEXT, HIGHESTMODSEQ and the UID set), and
+  `imap/normalize.rs` turns a message source and its flags into a snapshot.
 - `src/outbound/microsoft_gate.rs`: the Redis admission every Graph request
   passes (window, concurrency, cooldown), which also counts admitted requests
   per sync generation.
@@ -50,7 +57,10 @@ Outlook (Microsoft Graph) outbound adapters.
 
 ## Checks
 
-- `cargo test -p email_api_client --all-features`. The Outlook calendar
+- `cargo test -p email_api_client --all-features`.
+- The IMAP adapter's server tests are ignored by default. Start the
+  iCloud-shaped Dovecot and a Mailpit sink with `just icloud-mail-test-servers`,
+  then run `cargo test -p email_api_client --features outbound-imap -- --ignored imap`. The Outlook calendar
   mutation tests in `src/outbound/outlook/calendar/test/mutations.rs` drive the
   calendar domain service against Postgres through `#[sqlx::test]`, so they
   need the local test database from
