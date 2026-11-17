@@ -224,6 +224,18 @@ fn static_build_command(mode: Mode) -> Command {
 /// Bundles are cached machine-wide by everything the build reads (see
 /// [`bundle_cache`]), so an unchanged frontend is staged without rebuilding.
 pub fn build_static(stage: &Stage, instance: &Instance, mode: Mode) -> Result<()> {
+    // NOTE: aesv builds the bundle in CI (`frontend-bundle`, run by
+    // .github/workflows/aesv-binaries.yml), so the host that runs the stack
+    // compiles neither the wasm packages nor the app.
+    if let Some(dir) = macro_env_var::maybe_read_env("AESV_FRONTEND_BUNDLE") {
+        let bundle = PathBuf::from(dir);
+        anyhow::ensure!(
+            bundle.join("index.html").exists(),
+            "no index.html in AESV_FRONTEND_BUNDLE ({})",
+            bundle.display()
+        );
+        return stage_bundle(stage, instance, &bundle);
+    }
     // Held through staging: `dist/` is shared until it's copied out.
     let _build_lock = lock_checkout_build(stage)?;
     prepare_dependencies(stage)?;
@@ -273,6 +285,10 @@ pub fn build_static(stage: &Stage, instance: &Instance, mode: Mode) -> Result<()
             stored.context("the cached frontend bundle was pruned before it could be staged")?
         }
     };
+    stage_bundle(stage, instance, &bundle)
+}
+
+fn stage_bundle(stage: &Stage, instance: &Instance, bundle: &Path) -> Result<()> {
     stage.run_step("Staging frontend bundle", || {
         let staged = static_dir(instance);
         if staged.exists() {
@@ -280,8 +296,17 @@ pub fn build_static(stage: &Stage, instance: &Instance, mode: Mode) -> Result<()
                 .with_context(|| format!("clearing {}", staged.display()))?;
         }
         instance.ensure_artifact_dir()?;
-        bundle_cache::copy_tree(&bundle, &staged)
+        bundle_cache::copy_tree(bundle, &staged)
     })
+}
+
+/// `cargo x frontend-bundle`: build the local stack's static bundle into `out`,
+/// for a host that stages it with `AESV_FRONTEND_BUNDLE`.
+pub fn build_bundle(out: &Path) -> Result<()> {
+    let stage = Stage::from_env();
+    prepare_dependencies(&stage)?;
+    stage.run("Building frontend bundle", &mut static_build_command(Mode::Local))?;
+    bundle_cache::copy_tree(&app_dir().join("dist"), out)
 }
 
 /// The env the dev server runs with. Both local and dev point the whole app at
