@@ -1,0 +1,60 @@
+# Builds the service binaries the local stack runs (`.#local-stack-binaries`),
+# so the host never compiles them. The output is a Nix binary cache holding the
+# binaries and everything they link, because the stack mounts them with
+# /nix/store. The host imports it and starts the stack with --binaries-dir:
+#   nix copy --no-check-sigs --from file://<dir> $(cat <dir>/STORE_PATH)
+# A pull request into `aesv` keeps it as a workflow artifact. A push to `aesv`
+# also attaches it to a prerelease named local-stack-<sha7>.
+name: aesv binaries
+
+on:
+  push:
+    branches: [aesv]
+  pull_request:
+    branches: [aesv]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aesv-binaries-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      # NOTE: the workspace's release build outgrows the runner's free disk.
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Build
+        run: nix build --print-build-logs .#local-stack-binaries
+      - name: Pack as a binary cache
+        run: |
+          out=$(readlink -f result)
+          nix copy --to "file://$PWD/cache?compression=zstd" "$out"
+          echo "$out" > cache/STORE_PATH
+          ls "$out/bin"
+          tar -cf local-stack-binaries.tar -C cache .
+          du -h local-stack-binaries.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: local-stack-binaries
+          path: local-stack-binaries.tar
+          retention-days: 14
+          compression-level: 0
+      - name: Release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="local-stack-${GITHUB_SHA::7}"
+          gh release create "$tag" local-stack-binaries.tar --target "$GITHUB_SHA" \
+            --prerelease --title "$tag" --notes "Local stack binaries for $GITHUB_SHA."
