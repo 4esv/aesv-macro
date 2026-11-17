@@ -410,14 +410,7 @@ export function Account() {
             buildAccountDeletionFeedbackPayload(
               deleteReason(),
               deleteFeedback()
-            ),
-            ['posthog'],
-            {
-              posthog: {
-                send_instantly: true,
-                transport: 'sendBeacon',
-              },
-            }
+            )
           );
           setDeleteFeedbackCaptured(true);
         },

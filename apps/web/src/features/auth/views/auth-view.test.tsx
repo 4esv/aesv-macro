@@ -167,7 +167,6 @@ describe('email sign-in', () => {
         'sendCode:returning@acme.com',
         'verify:returning@acme.com:424242',
         'completeLogin',
-        'identify:macro|returning@acme.com',
       ])
     );
     expect(fake.events()).toContainEqual({

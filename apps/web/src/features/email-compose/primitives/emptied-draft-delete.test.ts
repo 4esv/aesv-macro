@@ -24,7 +24,7 @@ const network = vi.hoisted(() => ({
 }));
 
 vi.mock('@app/lib/analytics', () => ({
-  analytics: { track: vi.fn(), posthog: { captureException: vi.fn() } },
+  analytics: { track: vi.fn() },
 }));
 vi.mock('@queries/client', () => ({
   queryClient: {

@@ -1,5 +1,3 @@
-import { analytics } from '@app/lib/analytics';
-
 /**
  * This constant reflects whether the app is running locally: under the Vite
  * dev server with hot reload (`just run_local`, `bun run dev`), or as the
@@ -108,10 +106,7 @@ export const enableCarouselCreateMenu = defineFlag({
  */
 export function isFeatureEnabled(flag: Flag): boolean {
   if ('key' in flag) {
-    if (flag.override !== undefined) {
-      return flag.override;
-    }
-    return analytics.posthog.isFeatureEnabled(flag.key) ?? false;
+    return flag.override ?? false;
   }
   return flag.enabled;
 }

@@ -20,9 +20,10 @@ const native = vi.hoisted(() => ({ active: false }));
 vi.mock('@core/util/platform', () => ({ isTauri: () => native.active }));
 const telemetry = vi.hoisted(() => ({
   track: vi.fn(),
-  posthog: { captureException: vi.fn() },
+  error: vi.fn(),
 }));
 vi.mock('@app/lib/analytics', () => ({ analytics: telemetry }));
+
 const stagedUpload = vi.hoisted(() =>
   vi.fn<() => { previewSrc: string; size: number } | undefined>()
 );
@@ -92,7 +93,9 @@ beforeEach(async () => {
   stagedUpload.mockReset();
   native.active = false;
   telemetry.track.mockClear();
-  telemetry.posthog.captureException.mockClear();
+  telemetry.error.mockClear();
+  const { Telemetry } = await import('@macro-inc/observability');
+  vi.spyOn(Telemetry, 'error').mockImplementation(telemetry.error);
   runtime = await import('./local-drafts');
   await runtime.localDraftStore.clear();
 });
@@ -396,10 +399,7 @@ describe('draft queue recovery', () => {
       visibility: document.visibilityState,
       online: navigator.onLine,
     };
-    expect(telemetry.posthog.captureException).toHaveBeenCalledExactlyOnceWith(
-      error,
-      context
-    );
+    expect(telemetry.error).toHaveBeenCalledExactlyOnceWith(error, context);
     await runtime.saveLocalDraft(input('Private content'));
     expect(telemetry.track).toHaveBeenCalledExactlyOnceWith(
       'email_draft_storage_recovered',

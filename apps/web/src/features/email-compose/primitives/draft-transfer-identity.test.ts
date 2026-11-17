@@ -12,7 +12,7 @@ import { mountEmailComposer } from '../tests/composer';
 import { mountReplyComposer } from '../tests/reply';
 
 vi.mock('@app/lib/analytics', () => ({
-  analytics: { track: vi.fn(), posthog: { captureException: vi.fn() } },
+  analytics: { track: vi.fn() },
 }));
 vi.mock('@queries/client', () => ({
   queryClient: {

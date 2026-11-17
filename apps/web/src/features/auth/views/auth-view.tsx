@@ -18,10 +18,7 @@ import {
   useAuthContext,
 } from '../context/auth-context';
 import { createEmailLogin, type EmailLogin } from '../primitives/email-login';
-import {
-  createSessionIdentity,
-  redeemSessionToken,
-} from '../primitives/session';
+import { redeemSessionToken } from '../primitives/session';
 
 /** What desktop sign-up hands onboarding's opening slides. */
 export type SignupJourneySlots = {
@@ -72,7 +69,6 @@ export function AuthView(props: {
     onVerified: props.onVerified,
     fallbackNotice: props.ssoFallbackNotice,
   });
-  createSessionIdentity(context);
   redeemSessionToken(context, () => props.token);
   onMount(() => context.pageView(props.intent));
 

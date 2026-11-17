@@ -35,7 +35,7 @@ export const localDraftStore = createLocalDraftStore(undefined, (event) => {
     online: navigator.onLine,
   };
   if (event.type === 'failed') {
-    analytics.posthog.captureException(event.error, context);
+    Telemetry.error(event.error, context);
   } else {
     analytics.track('email_draft_storage_' + event.type, context);
   }

@@ -1,4 +1,1 @@
-export {
-  type AnalyticsProvider,
-  analytics,
-} from './analytics';
+export { analytics } from './analytics';
