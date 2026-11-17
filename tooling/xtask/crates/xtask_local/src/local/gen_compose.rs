@@ -408,6 +408,10 @@ fn add_localstack_service(
             image: Some(AWSROUTER_IMAGE.to_string()),
             command: args(&["python", "/app/awsrouter.py"]),
             volumes: router_volumes,
+            // Bring-ups name `localstack` alone; this starts what it routes to.
+            depends_on: dct::DependsOnOptions::Simple(
+                ["s3store", "dynamodb", "localstack-core"].map(String::from).to_vec(),
+            ),
             // The health path goes through to `localstack-core`, so a healthy
             // router means queues and KMS answer too.
             healthcheck: Some(dct::Healthcheck {
