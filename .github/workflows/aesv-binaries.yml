@@ -31,11 +31,18 @@ jobs:
       # NOTE: the workspace's release build outgrows the runner's free disk.
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      # NOTE: with Nix's defaults every service built at once on every core,
+      # and the 16 GB runner was killed (exit 143) after 1h45m. Two builds of
+      # two cores each, with swap, keep the peak inside it.
+      - name: Add swap
+        run: sudo fallocate -l 16G /swap2 && sudo chmod 600 /swap2 && sudo mkswap /swap2 && sudo swapon /swap2 && free -h
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
+            max-jobs = 2
+            cores = 2
       - name: Build
         run: nix build --print-build-logs .#local-stack-binaries
       - name: Pack as a binary cache
