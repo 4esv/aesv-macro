@@ -3,14 +3,16 @@ use super::{models::*, ports::*};
 use uuid::Uuid;
 
 /// Provider composition without leaking either transport into callers.
-pub struct CalendarProviders<G, O> {
+pub struct CalendarProviders<G, O, I> {
     /// Google Calendar adapter.
     pub google: G,
     /// Microsoft Graph adapter.
     pub outlook: O,
+    /// iCloud CalDAV adapter.
+    pub icloud: I,
 }
-impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationProvider
-    for CalendarProviders<G, O>
+impl<G: CalendarMutationProvider, O: CalendarMutationProvider, I: CalendarMutationProvider>
+    CalendarMutationProvider for CalendarProviders<G, O, I>
 {
     async fn delete_created_event(
         &self,
@@ -23,6 +25,7 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             CalendarProvider::Outlook => {
                 self.outlook.delete_created_event(token, target, key).await
             }
+            CalendarProvider::ICloud => self.icloud.delete_created_event(token, target, key).await,
         }
     }
     async fn create_event(
@@ -36,6 +39,7 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             CalendarProvider::Outlook => {
                 self.outlook.create_event(access_token, target, draft).await
             }
+            CalendarProvider::ICloud => self.icloud.create_event(access_token, target, draft).await,
         }
     }
     async fn update_event(
@@ -56,6 +60,11 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
                     .update_event(access_token, target, provider_event_id, patch)
                     .await
             }
+            CalendarProvider::ICloud => {
+                self.icloud
+                    .update_event(access_token, target, provider_event_id, patch)
+                    .await
+            }
         }
     }
     async fn refresh_event(
@@ -72,6 +81,11 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             }
             CalendarProvider::Outlook => {
                 self.outlook
+                    .refresh_event(access_token, target, master_provider_event_id)
+                    .await
+            }
+            CalendarProvider::ICloud => {
+                self.icloud
                     .refresh_event(access_token, target, master_provider_event_id)
                     .await
             }
@@ -108,6 +122,17 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
                     )
                     .await
             }
+            CalendarProvider::ICloud => {
+                self.icloud
+                    .update_event_instance(
+                        access_token,
+                        target,
+                        master_provider_event_id,
+                        original_start,
+                        patch,
+                    )
+                    .await
+            }
         }
     }
     async fn delete_event(
@@ -124,6 +149,11 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             }
             CalendarProvider::Outlook => {
                 self.outlook
+                    .delete_event(access_token, target, provider_event_id)
+                    .await
+            }
+            CalendarProvider::ICloud => {
+                self.icloud
                     .delete_event(access_token, target, provider_event_id)
                     .await
             }
@@ -149,6 +179,16 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             }
             CalendarProvider::Outlook => {
                 self.outlook
+                    .delete_event_instance(
+                        access_token,
+                        target,
+                        master_provider_event_id,
+                        original_start,
+                    )
+                    .await
+            }
+            CalendarProvider::ICloud => {
+                self.icloud
                     .delete_event_instance(
                         access_token,
                         target,
@@ -187,6 +227,16 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
                     )
                     .await
             }
+            CalendarProvider::ICloud => {
+                self.icloud
+                    .truncate_recurring_event(
+                        access_token,
+                        target,
+                        master_provider_event_id,
+                        original_start,
+                    )
+                    .await
+            }
         }
     }
     async fn rsvp_event(
@@ -213,6 +263,18 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
             }
             CalendarProvider::Outlook => {
                 self.outlook
+                    .rsvp_event(
+                        access_token,
+                        target,
+                        master_provider_event_id,
+                        actor,
+                        response,
+                        scope,
+                    )
+                    .await
+            }
+            CalendarProvider::ICloud => {
+                self.icloud
                     .rsvp_event(
                         access_token,
                         target,
@@ -259,6 +321,18 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
                     )
                     .await
             }
+            CalendarProvider::ICloud => {
+                self.icloud
+                    .add_attendees(
+                        access_token,
+                        target,
+                        master_provider_event_id,
+                        actor,
+                        guests,
+                        scope,
+                    )
+                    .await
+            }
         }
     }
     async fn import_event(
@@ -276,6 +350,9 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
                     .import_event(access_token, target, source)
                     .await
             }
+            CalendarProvider::ICloud => {
+                self.icloud.import_event(access_token, target, source).await
+            }
         }
     }
     async fn stop_watch_channel(
@@ -291,8 +368,11 @@ impl<G: CalendarMutationProvider, O: CalendarMutationProvider> CalendarMutationP
     }
 }
 
-impl<G: Send + Sync + 'static, O: super::replacement::CalendarReplacementProvider>
-    super::replacement::CalendarReplacementProvider for CalendarProviders<G, O>
+impl<
+    G: Send + Sync + 'static,
+    O: super::replacement::CalendarReplacementProvider,
+    I: Send + Sync + 'static,
+> super::replacement::CalendarReplacementProvider for CalendarProviders<G, O, I>
 {
     async fn inspect_replacement(
         &self,

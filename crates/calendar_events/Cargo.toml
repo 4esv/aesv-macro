@@ -25,6 +25,8 @@ dispatch = ["dep:tokio", "dep:tokio-util"]
 # The worker plus the SQS adapter that backs it.
 dispatch-sqs = ["dep:aws-sdk-sqs", "dispatch"]
 google = ["dep:macro_service_urls", "dep:reqwest", "dep:urlencoding"]
+# The iCloud CalDAV adapter.
+caldav = ["dep:reqwest", "dep:rrule"]
 # The calendar-service HTTP adapter implementing the mutation port, for hosts
 # that are not the calendar write authority.
 mutation-client = ["dep:reqwest"]
@@ -67,6 +69,7 @@ reqwest = { workspace = true, optional = true }
 macro_event_broker = { path = "../macro_event_broker", default-features = false }
 macro_event_topics = { path = "../macro_event_topics" }
 rootcause = { workspace = true }
+rrule = { workspace = true, optional = true }
 schemars = { workspace = true, optional = true }
 specta = { workspace = true, optional = true, features = ["chrono", "uuid"] }
 serde = { workspace = true }

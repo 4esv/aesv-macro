@@ -1245,6 +1245,8 @@ pub enum CalendarEventSource {
     Google(ProviderEventSource),
     /// Event fetched from Microsoft Outlook Calendar.
     Outlook(ProviderEventSource),
+    /// Event fetched from an iCloud calendar over CalDAV.
+    ICloud(ProviderEventSource),
 }
 
 impl CalendarEventSource {
@@ -1253,18 +1255,19 @@ impl CalendarEventSource {
         match self {
             Self::Google(_) => "google",
             Self::Outlook(_) => "outlook",
+            Self::ICloud(_) => "icloud",
         }
     }
     /// Provider identity and raw source facts, independent of its transport.
     pub fn details(&self) -> &ProviderEventSource {
         match self {
-            Self::Google(source) | Self::Outlook(source) => source,
+            Self::Google(source) | Self::Outlook(source) | Self::ICloud(source) => source,
         }
     }
     /// Mutable source facts used when constructing a normalized projection.
     pub fn details_mut(&mut self) -> &mut ProviderEventSource {
         match self {
-            Self::Google(source) | Self::Outlook(source) => source,
+            Self::Google(source) | Self::Outlook(source) | Self::ICloud(source) => source,
         }
     }
 }
@@ -1279,6 +1282,9 @@ pub enum CalendarProvider {
     Google,
     /// Microsoft Graph calendar attached to an Outlook grant.
     Outlook,
+    /// iCloud calendar reached over CalDAV with an app-specific password.
+    #[serde(rename = "icloud")]
+    ICloud,
 }
 impl CalendarProvider {
     /// Parse the owning email domain's stored provider discriminator.
@@ -1286,7 +1292,16 @@ impl CalendarProvider {
         match value {
             "GMAIL" => Some(Self::Google),
             "OUTLOOK" => Some(Self::Outlook),
+            "ICLOUD" => Some(Self::ICloud),
             _ => None,
+        }
+    }
+    /// Parse `calendar_accounts.provider`, where Google is the original default.
+    pub fn from_account(value: &str) -> Self {
+        match value {
+            "outlook" => Self::Outlook,
+            "icloud" => Self::ICloud,
+            _ => Self::Google,
         }
     }
     /// Discriminator used by the authentication service's provider cache.
@@ -1294,6 +1309,7 @@ impl CalendarProvider {
         match self {
             Self::Google => "GMAIL",
             Self::Outlook => "OUTLOOK",
+            Self::ICloud => "ICLOUD",
         }
     }
 }
@@ -1686,6 +1702,18 @@ impl CalendarCapabilities {
             email_reminders: true,
             custom_recurrence: false,
             reset_rsvp: false,
+            guest_policy: false,
+        }
+    }
+    /// CalDAV carries no conferencing, guest policy or auto-decline.
+    pub fn icloud() -> Self {
+        Self {
+            conference_provider: None,
+            remove_conference: false,
+            auto_decline: false,
+            email_reminders: false,
+            custom_recurrence: true,
+            reset_rsvp: true,
             guest_policy: false,
         }
     }

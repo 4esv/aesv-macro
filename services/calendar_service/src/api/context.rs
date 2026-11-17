@@ -41,6 +41,7 @@ pub type CalendarMutationSvc = CalendarMutationServiceImpl<
     calendar_events::domain::providers::CalendarProviders<
         GoogleCalendarClient<RedisCalendarRequestGate>,
         email_api_client::OutlookApiClientRepository,
+        calendar_events::outbound::caldav::CalDavCalendarClient,
     >,
     CalendarTokenProviderAdapter,
     CalendarEventBroker,

@@ -60,5 +60,8 @@ fn require_policy_support(provider: CalendarProvider) -> Result<(), CalendarMuta
         CalendarProvider::Outlook => Err(CalendarMutationError::ProviderRejected(
             OUTLOOK_HAS_NO_GUEST_POLICY.to_string(),
         )),
+        CalendarProvider::ICloud => Err(CalendarMutationError::ProviderRejected(
+            "iCloud calendars have no guest policy".to_string(),
+        )),
     }
 }
