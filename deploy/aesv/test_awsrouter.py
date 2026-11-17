@@ -115,6 +115,23 @@ class EndToEnd(unittest.TestCase):
         call("GET", "/static-file-storage/a.png")
         self.assertEqual([s[0] for s in Fake.seen], ["dynamodb", "core", "core", "s3"])
 
+    def test_one_content_length_reaches_upstream(self):
+        call("POST", "/", b'{"a":1}', {"Authorization": sig("dynamodb"), "content-length": "7"})
+        [(_, _, _, headers, body)] = Fake.seen
+        self.assertEqual(body, b'{"a":1}')
+        self.assertEqual([k for k in headers if k.lower() == "content-length"], ["Content-Length"])
+
+    def test_cors_is_answered_by_the_router(self):
+        self.assertEqual(call("PUT", "/bucket?cors", b"<CORSConfiguration/>", {"Authorization": sig("s3")})[0], 200)
+        self.assertEqual(call("OPTIONS", "/bucket/k", b"", {"Origin": "http://x", "Access-Control-Request-Method": "PUT"})[0], 200)
+        self.assertEqual(Fake.seen, [], "the S3 server never sees CORS")
+        conn = http.client.HTTPConnection("127.0.0.1", router.server_port, timeout=5)
+        conn.request("GET", "/bucket/k")
+        resp = conn.getresponse()
+        resp.read()
+        self.assertEqual(resp.getheader("Access-Control-Allow-Origin"), "*")
+        self.assertEqual(resp.getheader("Access-Control-Expose-Headers"), "ETag")
+
     def test_put_sends_an_s3_event_to_sqs(self):
         self.assertEqual(call("PUT", "/bucket?notification", NOTIFY, {"Authorization": sig("s3")})[0], 200)
         status, xml = call("GET", "/bucket?notification", b"", {"Authorization": sig("s3")})

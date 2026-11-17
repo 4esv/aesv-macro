@@ -35,6 +35,14 @@ STATE = os.environ.get("STATE_FILE", "/state/notifications.json")
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 NS = "{http://s3.amazonaws.com/doc/2006-03-01/}"
 HOP = {"connection", "keep-alive", "proxy-connection", "transfer-encoding", "te", "trailer", "upgrade"}
+# NOTE: the local stack sets one allow-all CORS rule on every bucket, and the S3
+# server has no CORS, so the router answers for it with that rule.
+CORS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, PUT, POST, DELETE, HEAD",
+    "Access-Control-Expose-Headers": "ETag",
+    "Access-Control-Max-Age": "3600",
+}
 SCOPE = re.compile(r"Credential=[^/,\s]+/\d{8}/[^/]+/([^/]+)/aws4_request")
 
 _lock = threading.Lock()
@@ -184,8 +192,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length") or 0)
         return self.rfile.read(length) if length else b""
 
-    def reply(self, status, body=b"", content_type="application/xml"):
+    def reply(self, status, body=b"", content_type="application/xml", extra=None):
         self.send_response(status)
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -206,7 +216,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             key = urllib.parse.unquote(parts[1]) if len(parts) > 1 else ""
             if bucket and not key and "notification" in query:
                 return self.notification(bucket, body)
-            status = self.forward(S3_UPSTREAM, body)
+            if self.command == "OPTIONS":
+                return self.reply(200, extra={
+                    **CORS,
+                    "Access-Control-Allow-Headers": self.headers.get("Access-Control-Request-Headers", "*"),
+                })
+            if bucket and not key and "cors" in query:
+                return self.reply(200 if self.command == "PUT" else 204 if self.command == "DELETE" else 200)
+            status = self.forward(S3_UPSTREAM, body, extra=CORS)
             if 200 <= status < 300 and bucket and key:
                 self.after_write(bucket, key, query, body)
             return
@@ -241,10 +258,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.command == "DELETE" and "uploadId" not in query:
             emit(bucket, key, "ObjectRemoved:Delete", 0, "")
 
-    def forward(self, upstream, body):
+    def forward(self, upstream, body, extra=None):
         host, port = upstream.split(":")
         conn = http.client.HTTPConnection(host, int(port), timeout=300)
-        headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP}
+        # The body is re-sent whole, so its length replaces the client's in any case.
+        headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP and k.lower() != "content-length"}
         headers["Content-Length"] = str(len(body))
         self._last_headers = {}
         try:
@@ -257,10 +275,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         finally:
             conn.close()
         self._last_headers = {k.lower(): v for k, v in resp.getheaders()}
+        if resp.status >= 400:
+            print(f"{self.command} {self.path} -> {upstream}: {resp.status} {data[:300]!r}", file=sys.stderr, flush=True)
         self.send_response(resp.status, resp.reason)
         for k, v in resp.getheaders():
-            if k.lower() not in HOP and k.lower() != "content-length":
+            # send_response already wrote this server's Server and Date.
+            if k.lower() not in HOP and k.lower() not in ("content-length", "server", "date"):
                 self.send_header(k, v)
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         if self.command != "HEAD":
