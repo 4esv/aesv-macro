@@ -96,7 +96,6 @@ describe('createAttachmentLinkOffer', () => {
   ) {
     const confirm = vi.fn(async () => confirmed);
     const uploadDocuments = vi.fn(async () => [report]);
-    const makePublic = vi.fn();
     const links = createRoot((dispose) => {
       disposers.push(dispose);
       return {
@@ -105,12 +104,12 @@ describe('createAttachmentLinkOffer', () => {
           canEdit,
           version,
           notices: { confirm },
-          editorFiles: { uploadDocuments, makePublic },
+          editorFiles: { uploadDocuments },
         }),
         dispose,
       };
     });
-    return { ...links, confirm, uploadDocuments, makePublic };
+    return { ...links, confirm, uploadDocuments };
   }
 
   it('uploads nothing when the user declines', async () => {
@@ -119,28 +118,24 @@ describe('createAttachmentLinkOffer', () => {
     await share([huge], MAX_ATTACHMENTS_BYTES_SIZE);
     expect(confirm).toHaveBeenCalledExactlyOnceWith({
       title: 'Attachments exceed 18 MB',
-      body: '"huge.mov" won\'t fit as an attachment. Upload it to Macro and share a view-only link instead?',
+      body: '"huge.mov" won\'t fit as an attachment. Upload it to aesv and add a link? Only people with access can open it.',
       confirmLabel: 'Share link',
     });
     expect(uploadDocuments).not.toHaveBeenCalled();
     expect(outline(editor)).toEqual(['text:Hi']);
   });
 
-  it('uploads, opens, and links each confirmed file', async () => {
+  it('uploads and links each confirmed file', async () => {
     const editor = createEmailEditor('Hi');
-    const { share, confirm, uploadDocuments, makePublic } = offerFor(
-      editor,
-      true
-    );
+    const { share, confirm, uploadDocuments } = offerFor(editor, true);
     await share([huge, small], MAX_ATTACHMENTS_BYTES_SIZE);
     expect(confirm).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: "2 files won't fit as attachments. Upload them to Macro and share view-only links instead?",
+        body: "2 files won't fit as attachments. Upload them to aesv and add links? Only people with access can open them.",
         confirmLabel: 'Share links',
       })
     );
     expect(uploadDocuments).toHaveBeenCalledExactlyOnceWith([huge, small]);
-    expect(makePublic).toHaveBeenCalledExactlyOnceWith('doc-1');
     expect(outline(editor)).toEqual(['text:Hi', 'link:doc-1']);
   });
 
@@ -214,13 +209,12 @@ describe('createAttachmentLinkOffer', () => {
       if (change === 'readonly') editor.setEditable(false);
       pending.resolve([report]);
       await sharing;
-      expect(links.makePublic).not.toHaveBeenCalled();
       expect(outline(editor)).toEqual(['text:Frozen']);
       expect(links.uploading()).toBe(false);
     }
   );
 
-  it('keeps a file private and unlinked when the composer moved on mid-upload', async () => {
+  it('leaves a file unlinked when the composer moved on mid-upload', async () => {
     const editor = createEmailEditor('Hi');
     const pending = Promise.withResolvers<(typeof report)[]>();
     const links = offerFor(editor, true);
@@ -230,7 +224,6 @@ describe('createAttachmentLinkOffer', () => {
     links.detach();
     pending.resolve([report]);
     await sharing;
-    expect(links.makePublic).not.toHaveBeenCalled();
     expect(outline(editor)).toEqual(['text:Hi']);
   });
 });
@@ -305,7 +298,6 @@ describe('oversized attachments in the composers', () => {
       await composer.deleteDraftAndReset();
       pending.resolve([report]);
       await adding;
-      expect(context.editorFiles.makePublic).not.toHaveBeenCalled();
       expect(outline(composer.editor)).toEqual(['text:']);
     } finally {
       composer.dispose();
@@ -323,9 +315,6 @@ describe('oversized attachments in the composers', () => {
       expect(
         context.editorFiles.uploadDocuments
       ).toHaveBeenCalledExactlyOnceWith([huge]);
-      expect(context.editorFiles.makePublic).toHaveBeenCalledExactlyOnceWith(
-        'doc-1'
-      );
       expect(composer.form.attachments.list()).toEqual([]);
       expect(outline(composer.editor)).toEqual([
         'text:Ready to send',

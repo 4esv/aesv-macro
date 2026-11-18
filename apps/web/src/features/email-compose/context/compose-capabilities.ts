@@ -388,8 +388,6 @@ export interface EmailComposeAccounts {
 
 /** View wiring; controllers do not receive these presentation capabilities. */
 export interface EmailComposePresentation {
-  viewerLoading: Accessor<boolean>;
-  onUpgrade(): void;
   prepareSignatureLinks(root: ShadowRoot): void;
   isTouch: Accessor<boolean>;
   isMobile: Accessor<boolean>;
@@ -406,7 +404,6 @@ export interface UploadedDocument {
 
 export interface EmailEditorFiles {
   readDroppedFiles: import('./editor-capabilities').ComposeBodyActions['readDroppedFiles'];
-  makePublic(id: string): void;
   /** Stores files as documents; resolves with the ones that succeeded after reporting the rest. */
   uploadDocuments(files: File[]): Promise<UploadedDocument[]>;
   uploadEditorFiles(input: {
@@ -451,7 +448,6 @@ export interface EmailComposeContext {
   /** Each open To/Cc/Bcc selector owns its personal suggestion source. */
   createRecipientSource: EmailRecipientSourceFactory | undefined;
   recipientName(id: string): string;
-  hasPaidAccess: Accessor<boolean>;
   recordMention(sourceId: string, targetId: string): void;
 }
 

@@ -1,6 +1,5 @@
 import { useFeatureFlag } from '@app/lib/analytics/posthog';
 import { t } from '@app/lib/i18n';
-import { useHasPaidAccess } from '@core/auth';
 import {
   createFilesReadyHandler,
   getDragDropPosition,
@@ -12,8 +11,7 @@ import {
   enableGraphqlSoup,
   isFeatureEnabled,
 } from '@core/constant/featureFlags';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
-import { useEmail, useUserContext, useUserId } from '@core/context/user';
+import { useEmail, useUserId } from '@core/context/user';
 import { isMobile } from '@core/mobile/isMobile';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
 import { trackMention } from '@core/signal/mention';
@@ -106,7 +104,6 @@ import {
 import { localDraftReadyForDelivery } from './core/local-draft';
 import { readDroppedEmailFiles, withVideoAttachments } from './editor-adapter';
 import { useCreateEmailEvent } from './email-event';
-import { makeAttachmentPublic } from './make-attachment-public';
 import {
   emailDraftLifecycleSource,
   publishDraftLifecycleChange,
@@ -157,8 +154,6 @@ export function createEmailComposeContext(
   // Attach handlers run as event handlers, which have no Solid owner of
   // their own; the dialog needs the surface's.
   const dialogOwner = getOwner();
-  const user = useUserContext();
-  const paywall = usePaywallState();
   const viewerEmail = useEmail();
   const viewerId = useUserId();
   const primaryId = () =>
@@ -264,11 +259,8 @@ export function createEmailComposeContext(
     viewerEmail,
     recipients: () => [],
     createRecipientSource: useContactRecipientSource,
-    hasPaidAccess: useHasPaidAccess(),
     presentation: {
-      viewerLoading: user.isLoading,
       prepareSignatureLinks: interceptMailtoLinks,
-      onUpgrade: () => paywall.showPaywall(PaywallKey.REMOVE_SIGNATURE),
       isTouch: isTouchDevice,
       isMobile,
       scheduleEnabled: ENABLE_EMAIL_SCHEDULED_SEND,
@@ -276,7 +268,6 @@ export function createEmailComposeContext(
     },
     editorFiles: {
       readDroppedFiles: readDroppedEmailFiles,
-      makePublic: makeAttachmentPublic,
       uploadDocuments: uploadAttachmentDocuments,
       uploadEditorFiles(input) {
         if (!input.editor) return;

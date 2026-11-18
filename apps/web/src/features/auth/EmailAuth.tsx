@@ -2,7 +2,6 @@ import { DEFAULT_ROUTE } from '@app/constants/defaultRoute';
 import { openAddInboxDialog } from '@app/features/inbox/AddInboxDialog';
 import { AdminConsentRequiredDialog } from '@app/features/inbox/AdminConsentRequiredDialog';
 import { ShareInboxConflictDialog } from '@app/features/inbox/ShareInboxConflictDialog';
-import { onboardingPathWithStep } from '@app/features/onboarding/core/next-target';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
 import type { AppEvents } from '@app/lib/analytics/app-events';
 import { t } from '@app/lib/i18n';
@@ -23,7 +22,6 @@ import {
   readInboxLinkReturn,
 } from '@core/email-link/return-layout';
 import { isMobile } from '@core/mobile/isMobile';
-import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { whenSettled } from '@core/util/whenSettled';
 import ArrowCounterClockwise from '@icon/system/regular/arrow-counter-clockwise.svg?component-solid';
@@ -31,10 +29,7 @@ import EnvelopeIcon from '@icon/system/regular/envelope.svg';
 import SpinnerIcon from '@icon/system/regular/spinner-gap.svg';
 import { Telemetry } from '@macro-inc/observability';
 import { fetchEmailConnectionProviders } from '@queries/auth/outlook-link';
-import {
-  invalidateAllAfterLogin,
-  useUserInfoQuery,
-} from '@queries/auth/user-info';
+import { invalidateAllAfterLogin } from '@queries/auth/user-info';
 import type { ConsentScopes } from '@service-auth/client';
 import { useNavigate, useSearchParams } from '@solidjs/router';
 import { Button } from '@ui';
@@ -233,8 +228,6 @@ function EmailLinkCallback(props: Pick<EmailAuthParams, 'successPath'>) {
     navigate(props.successPath, { replace: true });
   };
 
-  const userInfoQuery = useUserInfoQuery();
-
   const linkId = stringParam(searchParams.link_id);
   // What the flow stashed against this attempt, if it stashed anything: the
   // layout it left from (the callback replaced the layout URL) and, for a
@@ -250,24 +243,11 @@ function EmailLinkCallback(props: Pick<EmailAuthParams, 'successPath'>) {
     return true;
   };
 
-  // Where the callback hands the user off, in order of preference: back into
-  // onboarding for a first-run user, then the layout they left, then a
-  // form-factor default — the list view on mobile, where the desktop settings
-  // split doesn't exist and the toast is the confirmation.
+  // Where the callback hands the user off, in order of preference: the layout
+  // they left, then a form-factor default — the list view on mobile, where the
+  // desktop settings split doesn't exist and the toast is the confirmation.
   const navigateAfterLink = () => {
     if (disposed) return;
-    // A first-run user connected this inbox from the onboarding flow:
-    // return straight to it. Landing in mail settings would mount the app
-    // shell mid-onboarding just for NewOnboardingRedirect to bounce back.
-    if (
-      !isMobile() &&
-      !isNativeMobilePlatform() &&
-      userInfoQuery.data?.tutorialComplete === false &&
-      !userInfoQuery.data.isAgent
-    ) {
-      navigate(onboardingPathWithStep(searchParams.step), { replace: true });
-      return;
-    }
     if (restoreLayoutBeforeConsent()) return;
     if (isMobile()) {
       navigateToSuccess();
@@ -304,14 +284,6 @@ function EmailLinkCallback(props: Pick<EmailAuthParams, 'successPath'>) {
               emailAddress: err.emailAddress,
               ownerEmail: err.ownerEmail,
             });
-            return;
-          }
-          if (err.tag === 'PaymentRequired') {
-            trackOutcome('payment_required');
-            toast.failure(
-              'A professional subscription is required to add another inbox.'
-            );
-            navigateAfterLink();
             return;
           }
           if (err.tag === 'NoGmailGrant') {

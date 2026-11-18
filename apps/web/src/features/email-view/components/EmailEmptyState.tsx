@@ -1,4 +1,3 @@
-import { DOCS_BASE } from '@app/constants/docs-links';
 import { useAddInboxFlow, useEmailLinksStatus } from '@core/email-link';
 import { fireAndForget } from '@core/util/fireAndForget';
 import EmptyStateEmailGraphic from '@design/empty-state-email.svg';
@@ -12,8 +11,6 @@ import { match } from 'ts-pattern';
 import { canSearchEmailTab } from '../constants';
 import { useEmailView } from '../email-view-context';
 import type { EmailTab } from '../types';
-
-const EMAIL_DOCS_URL = `${DOCS_BASE}/product/email`;
 
 function tabCopy(tab: EmailTab): { title: string; description: string } {
   return match(tab)
@@ -104,7 +101,6 @@ export function EmailEmptyState() {
             label: 'Connect email',
             onClick: () => fireAndForget(startAddInbox(), 'add-inbox'),
           }}
-          documentationUrl={EMAIL_DOCS_URL}
         />
       </Match>
 
@@ -132,7 +128,6 @@ export function EmailEmptyState() {
                 ? 'Focus search covers subjects, senders, and previews. Try a different query.'
                 : 'Search across subjects, senders, and message content. Try a different query.'
             }
-            documentationUrl={`${DOCS_BASE}/product/search`}
           />
         )}
       </Match>
@@ -166,7 +161,6 @@ export function EmailEmptyState() {
                   }
                 : undefined
             }
-            documentationUrl={EMAIL_DOCS_URL}
           />
         )}
       </Match>

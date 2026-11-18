@@ -1,5 +1,3 @@
-import { analytics } from '@app/lib/analytics';
-
 /**
  * This constant reflects whether the app is running locally: under the Vite
  * dev server with hot reload (`just run_local`, `bun run dev`), or as the
@@ -108,10 +106,7 @@ export const enableCarouselCreateMenu = defineFlag({
  */
 export function isFeatureEnabled(flag: Flag): boolean {
   if ('key' in flag) {
-    if (flag.override !== undefined) {
-      return flag.override;
-    }
-    return analytics.posthog.isFeatureEnabled(flag.key) ?? false;
+    return flag.override ?? false;
   }
   return flag.enabled;
 }
@@ -221,13 +216,6 @@ export const enableAgentTeammates = defineFlag({
   key: 'enable-agent-teammates',
   env: 'ENABLE_AGENT_TEAMMATES',
   default: DEV_MODE_ENV || undefined,
-});
-
-/** Sidebar prompt cards: imports, calendars, repositories, and Home setup. */
-export const enableSidebarPromotions = defineFlag({
-  key: 'enable-sidebar-promotions',
-  env: 'ENABLE_SIDEBAR_PROMOTIONS',
-  default: onInDev,
 });
 
 /**
@@ -479,11 +467,6 @@ export const ENABLE_CLIENT_EMAIL_SIGNAL_FILTER = defineFlag({
 
 /** Desktop download settings rollout on web; native desktop always shows it. */
 export const desktopApp = defineFlag({ key: 'desktop-app' });
-
-export const ENABLE_APP_STORE_QR_CODE = defineFlag({
-  env: 'ENABLE_APP_STORE_QR_CODE',
-  default: true,
-}).enabled;
 
 export const ENABLE_PR_DISCUSSION_INPUT = defineFlag({
   env: 'ENABLE_PR_DISCUSSION_INPUT',
@@ -1154,30 +1137,6 @@ export const enableDictation = defineFlag({
   key: 'enable-dictation',
   env: 'ENABLE_DICTATION',
   default: onInDev,
-});
-
-/**
- * AI usage billing UI: enables production Usage controls and the usage-limit
- * dialog, plus the "$N of AI usage" plan copy. Dev and local Usage remain
- * interactive regardless of this flag. Presentation only:
- * backend quota admission and settlement are gated separately by
- * `ENABLE_AI_USAGE_ENFORCEMENT` and `ENABLE_AI_USAGE_BILLING`. On in dev;
- * production follows PostHog. Override with VITE_ENABLE_AI_USAGE_BILLING.
- */
-export const enableAiUsageBilling = defineFlag({
-  key: 'enable-ai-usage-billing',
-  env: 'ENABLE_AI_USAGE_BILLING',
-  default: onInDev,
-});
-
-/**
- * Automatic in-app feature tours on desktop views (`features/tours`). Follows
- * PostHog everywhere, including the local dev server; set
- * VITE_ENABLE_IN_APP_TOURS=true to turn tours on locally.
- */
-export const enableInAppTours = defineFlag({
-  key: 'enable-in-app-tours',
-  env: 'ENABLE_IN_APP_TOURS',
 });
 
 /**

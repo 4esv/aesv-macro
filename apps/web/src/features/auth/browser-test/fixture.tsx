@@ -1,16 +1,10 @@
 import { ssoFallbackNotice } from '../core/sso-fallback';
 import '@fontsource-variable/inter';
 import '../../../index.css';
-import { createSignal, For, Match, onMount, Show, Switch } from 'solid-js';
+import { createSignal, For, Match, onMount, Switch } from 'solid-js';
 import { unwrap } from 'solid-js/store';
 import { render } from 'solid-js/web';
-import { OnboardingProvider } from '../../onboarding/context/onboarding-context';
-import { createFakeOnboarding } from '../../onboarding/tests/fake-onboarding-context';
-import { renderInviteOfferStub } from '../../onboarding/tests/invite-offer-stub';
-import { OnboardingFlowView } from '../../onboarding/views/onboarding-flow-view';
-import { OnboardingPendingView } from '../../onboarding/views/onboarding-pending-view';
-import { SignupJourneyView } from '../../onboarding/views/signup-journey-view';
-import { AuthProvider, type AuthUser } from '../context/auth-context';
+import { AuthProvider } from '../context/auth-context';
 import { sessionTokenParam } from '../core/email-code';
 import {
   createFakeAuth,
@@ -112,34 +106,6 @@ if (params.cleanupFailure === 'once') {
 }
 write(FIXTURE_KEYS.auth, structuredClone(unwrap(auth.world)));
 
-/** The onboarding backend, which sees the account auth just signed in. */
-function createOnboardingFor(user: AuthUser) {
-  const fake = createFakeOnboarding(
-    read<Parameters<typeof createFakeOnboarding>[0]>(
-      FIXTURE_KEYS.onboarding
-    ) ?? {
-      viewer: {
-        id: user.id,
-        email: user.email ?? '',
-        tutorialComplete: user.tutorialComplete,
-        licensed: false,
-      },
-      inboxesToConnect: user.email ? [user.email] : [],
-    },
-    {
-      onChange: (world) => write(FIXTURE_KEYS.onboarding, world),
-      roundTrip: async (apply) => {
-        apply();
-        location.reload();
-        await new Promise(() => {});
-      },
-      latencyMs,
-    }
-  );
-  write(FIXTURE_KEYS.onboarding, structuredClone(unwrap(fake.world)));
-  return fake;
-}
-
 declare global {
   interface Window {
     authFixture: {
@@ -153,37 +119,10 @@ window.authFixture = {
   calls: auth.calls,
 };
 
-/** Desktop first-run users continue into onboarding; everyone else enters the app. */
-function SignedIn(props: { user: AuthUser }) {
-  const onboarding = createOnboardingFor(props.user);
-  return (
-    <Show when={!props.user.tutorialComplete} fallback={<EnterApp />}>
-      <OnboardingProvider value={onboarding.context}>
-        <OnboardingFlowView
-          next={undefined}
-          checkoutReturn={undefined}
-          onNavigate={land}
-          onRedirect={(url) => location.assign(url)}
-          onSignedOut={() => land('/login')}
-          renderInviteOffer={renderInviteOfferStub}
-        />
-      </OnboardingProvider>
-    </Show>
-  );
-}
-
+/** Every signed-in user, new or returning, enters the app at Home. */
 function EnterApp() {
   onMount(() => land('/'));
   return null;
-}
-
-/** The signed-out slides only read presentation state; nothing to persist. */
-function SignupJourney(props: Parameters<typeof SignupJourneyView>[0]) {
-  return (
-    <OnboardingProvider value={createFakeOnboarding({ viewer: null }).context}>
-      <SignupJourneyView {...props} />
-    </OnboardingProvider>
-  );
 }
 
 function Fixture() {
@@ -211,16 +150,7 @@ function Fixture() {
             initialEmail={params.email}
             token={sessionTokenParam(params.token)}
             ssoFallbackNotice={ssoFallbackNotice(params.sso_error)}
-            signupJourney={
-              page === 'signup'
-                ? (slots) => <SignupJourney {...slots} />
-                : undefined
-            }
-            onSignIn={() => location.assign(`${location.pathname}?page=login`)}
-            pending={
-              page === 'signup' ? () => <OnboardingPendingView /> : undefined
-            }
-            signedIn={(user) => <SignedIn user={user()} />}
+            signedIn={() => <EnterApp />}
           />
         </Match>
       </Switch>

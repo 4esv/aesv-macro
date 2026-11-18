@@ -159,7 +159,6 @@ export function useLogout() {
     await raceTimeout(unregisterPushRegistrationsForLogout(), 3000);
     await Promise.all([clearLocalAuthSession(), authServiceClient.logout()]);
     analytics.track('sign_out');
-    analytics.reset();
 
     // The Tauri shell (desktop and mobile alike) can never navigate to the
     // identity provider: its navigation plugin treats any off-origin URL as

@@ -1,4 +1,3 @@
-import { hideImportPromotion } from '@app/features/connector-import/primitives/promotion';
 import {
   IntegrationRow,
   SettingsSurface,
@@ -7,7 +6,6 @@ import { useFeatureFlag } from '@app/lib/analytics/posthog';
 import { enableSlackArchiveImport } from '@core/constant/featureFlags';
 import { useSettingsState } from '@core/constant/SettingsState';
 import { useChannelsContext } from '@core/context/channels';
-import { useUserId } from '@core/context/user';
 import { usePipedreamMcpFlag } from '@core/pipedream/flag';
 import { requestConnectApp } from '@core/pipedream/pendingConnect';
 import { SLACK_CONNECT_SLUG } from '@core/pipedream/slugs';
@@ -23,7 +21,6 @@ import { storageServiceClient } from '@service-storage/client';
 import { getGraphqlSoupClient } from '@service-storage/graphql-soup';
 import { uploadSlackImport } from '@service-storage/slack-import-upload';
 import { type JSX, Show, Suspense } from 'solid-js';
-import type { ImportJob } from './context/contracts';
 import { ImportProvider } from './context/import-context';
 import {
   createArchiveSource,
@@ -81,7 +78,6 @@ function SlackImportSettings(props: {
 }): JSX.Element {
   // A second query handle here would hold its own copy of the channel list.
   const { channelsById } = useChannelsContext();
-  const userId = useUserId();
   const client = getGraphqlSoupClient();
   const pipedreamEnabled = usePipedreamMcpFlag();
   const { openSettings } = useSettingsState();
@@ -93,16 +89,7 @@ function SlackImportSettings(props: {
     if (!channelsById()[id]) return undefined;
     return `/app/channel/${encodeURIComponent(id)}`;
   }
-  async function onCompleted(job: ImportJob): Promise<void> {
-    if (
-      job.status === 'completed' ||
-      (job.status === 'completed_with_errors' &&
-        job.conversations.some(
-          (conversation) => conversation.status === 'completed'
-        ))
-    ) {
-      hideImportPromotion(userId(), 'channels');
-    }
+  async function onCompleted(): Promise<void> {
     invalidateAllSoup();
     await Promise.all([
       invalidateListChannels(),

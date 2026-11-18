@@ -1,4 +1,3 @@
-import { handleAiUsageLimitError } from '@app/features/paywall/ai-usage-limit-handling';
 import { isAiUsageLimitError } from '@app/lib/service-clients/ai-usage-limit';
 import type { ResultError } from '@core/util/result';
 import { sleep } from '@core/util/sleep';
@@ -114,7 +113,6 @@ export async function requestDraft(
       span.setAttr('routine.draft.outcome', 'request_failed');
       span.setAttr('routine.draft.error', response.error[0]?.code ?? 'unknown');
       span.error('Routine draft request failed');
-      handleAiUsageLimitError(response.error);
       return requestFailure(response.error, failure);
     }
     span.setAttr('routine.draft.outcome', response.value.outcome);

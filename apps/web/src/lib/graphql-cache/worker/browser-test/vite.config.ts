@@ -51,7 +51,6 @@ export default defineConfig(({ command }) => ({
           'exact-production-host.html',
           'cache-lifecycle.html',
           'parking.html',
-          'graphql-soup-rollout.html',
           'cache-recovery.html',
           'notification-projection.html',
           'mail-projection.html',

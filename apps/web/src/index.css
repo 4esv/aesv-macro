@@ -6,7 +6,7 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('./features/onboarding/assets/roboto-slab-variable.woff2') format('woff2');
+  src: url('./features/auth/assets/roboto-slab-variable.woff2') format('woff2');
 }
 
 @source inline("{data-highlighted:}text-{comment,note,canvas,html,folder,email,code,pdf,image,write,chat,video,rss,calendar,contact,default},{tauri-ios:}{hidden}");

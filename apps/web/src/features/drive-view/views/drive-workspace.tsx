@@ -4,7 +4,7 @@ import { SplitRouter } from '@app/lib/split-router';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import { SplitPanel } from '@components/app/split-panel';
 import SpinnerIcon from '@icon/system/regular/spinner.svg';
-import { createMemo, type JSX, Show, Suspense } from 'solid-js';
+import { createMemo, Show, Suspense } from 'solid-js';
 import { DriveFileDropzone } from '../components/drive-file-dropzone';
 import { useDriveView } from '../context/drive-context';
 import { driveLocationBreadcrumbs } from '../core/breadcrumbs';
@@ -41,7 +41,7 @@ function DriveBrowser() {
   );
 }
 
-export function DriveWorkspace(props: { tour?: JSX.Element }) {
+export function DriveWorkspace() {
   const { state, sidebar, actions } = useDriveView();
 
   const breadcrumbs = createMemo(() =>
@@ -86,7 +86,6 @@ export function DriveWorkspace(props: { tour?: JSX.Element }) {
                 fallback={
                   <>
                     <DriveHeader />
-                    {props.tour}
                     <ViewShell.Content>
                       <Suspense fallback={<DriveLoading />}>
                         <FolderDropZone folderId={state.projectId()}>

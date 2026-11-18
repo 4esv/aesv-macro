@@ -16,9 +16,7 @@ import {
 import { TEAM_OOO_SOURCE_ID } from '@app/features/calendar/types';
 import { SidebarRoutineSuggestions } from '@app/features/routine-suggestions/routine-suggestions';
 import { CalendarSchedulingActions } from '@app/features/scheduling/calendar-actions';
-import { TutorialSidebarItem } from '@app/features/video-tutorials';
 import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
-import { t } from '@app/lib/i18n';
 import { UserIcon } from '@core/component/UserIcon';
 import { enableCalendarTeamOoo } from '@core/constant/featureFlags';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
@@ -39,7 +37,6 @@ import {
   CalendarCreateEventItem,
 } from './CalendarCreateItems';
 import { CalendarCreateMenu } from './CalendarCreateMenu';
-import { ConnectCalendarsPromotion } from './ConnectCalendarsPromotion';
 
 export function CalendarMiniCalendar() {
   const calendarView = useCalendarView();
@@ -361,12 +358,6 @@ export function CalendarSidebar() {
       </ViewSidebar.Primary>
       <ViewSidebar.Content class="pt-2">
         <SidebarRoutineSuggestions surface="calendar" />
-        <ViewSidebar.Nav
-          aria-label={t('tutorials.watchTutorial')}
-          class="empty:hidden"
-        >
-          <TutorialSidebarItem tutorial="calendar" />
-        </ViewSidebar.Nav>
         <CalendarMiniCalendar />
         <Show when={shell.breakpoints.narrow?.()}>
           <CalendarSchedulingActions sidebar />
@@ -377,8 +368,6 @@ export function CalendarSidebar() {
           <CalendarTeamOooSection />
         </ShowFeatureFlag>
       </ViewSidebar.Content>
-      {/* Outside the scrolling list, so a long list never slides it under Settings. */}
-      <ConnectCalendarsPromotion class="px-(--sidebar-gutter) pt-2" />
       <ViewSidebar.Footer class="border-0 touch:pb-[calc(var(--mobile-content-inset-bottom,0px)+0.75rem)]">
         <ViewSidebar.Nav aria-label="Calendar tools">
           <CalendarSettingsDropdown sidebar />

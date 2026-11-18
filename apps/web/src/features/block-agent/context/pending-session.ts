@@ -22,7 +22,6 @@
  * they already handle while the GET is in flight.
  */
 
-import { handleAiUsageLimitError } from '@app/features/paywall/ai-usage-limit-handling';
 import { analytics } from '@app/lib/analytics';
 import { AgentSession } from '@core/agent-session/AgentSession';
 import {
@@ -49,7 +48,6 @@ import type {
 } from '@service-agent-harness/generated/schemas';
 import { type Accessor, createSignal } from 'solid-js';
 import { v7 as uuidv7 } from 'uuid';
-import { issueSessionAction } from '../queries/issue-session-action';
 import {
   configureSessionModel,
   sessionConfigReported,
@@ -240,7 +238,6 @@ export function startPendingSession(
       createWithFallback()
         .then(async (result) => {
           if (result.isErr()) {
-            handleAiUsageLimitError(result.error);
             fail(
               result.error.map((error) => error.message).join(' ') ||
                 'The agent session could not be created.'
@@ -310,11 +307,10 @@ export function startPendingSession(
                 });
                 options.onDelivered?.();
               } else if (firstPrompt) {
-                const delivered = await issueSessionAction(
-                  session,
-                  firstPrompt,
-                  { userId, trace }
-                );
+                const delivered = await session.issue(firstPrompt, {
+                  userId,
+                  trace,
+                });
                 if (delivered.isErr()) {
                   fail(
                     delivered.error.map((error) => error.message).join(' ') ||

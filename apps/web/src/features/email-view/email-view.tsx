@@ -7,7 +7,6 @@ import {
   useSavedView,
   useSavedViews,
 } from '@app/features/saved-views/queries/saved-views';
-import { ViewTour } from '@app/features/tours/ViewTour';
 import { useFeatureFlag } from '@app/lib/analytics/posthog';
 import { SplitRouter } from '@app/lib/split-router';
 import { TraceFlow } from '@app/observability/flow';
@@ -47,7 +46,6 @@ import { EmailViewProvider, useEmailView } from './email-view-context';
 import { EMAIL_SAVED_VIEW_KIND } from './filters/email-saved-view';
 import type { EmailListPane } from './reader-pane';
 import { createEmailSearchSuggestions } from './search/create-email-search-suggestions';
-import { emailTour } from './tour';
 import type { EmailTab, EmailViewStateOptions } from './types';
 import { useEmailSearchHotkeys } from './use-email-search-hotkeys';
 import { useEmailViewHotkeys } from './use-email-view-hotkeys';
@@ -149,7 +147,6 @@ function EmailPanes(props: {
         registerSearch={search.registerListSearch}
         searchSuggestions={searchSuggestions()}
       />
-      <ViewTour tour={emailTour} />
       <Show when={searchSuggestions()}>
         {(suggestions) => (
           <EmailRecentSearches

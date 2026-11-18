@@ -174,8 +174,8 @@ describe('settings entry points', () => {
 
   it('opens requested sections, supports back, and resets the next session to the index', () => {
     const { state, mobile } = mountSettings();
-    state.openSettings('Billing');
-    expect(mobile.page()).toBe('Billing');
+    state.openSettings('Notifications');
+    expect(mobile.page()).toBe('Notifications');
     state.selectTab('Appearance');
     expect(mobile.page()).toBe('Appearance');
     mobile.selectPage();
@@ -195,9 +195,9 @@ describe('settings entry points', () => {
   it('reads the same mobile page that entry points and sheet navigation select', () => {
     const { state, mobile } = mountSettings();
     const page = screen.getByLabelText('Active settings page');
-    state.openSettings('Billing');
-    expect(state.activeTabId()).toBe('Billing');
-    expect(page.textContent).toBe('Billing');
+    state.openSettings('Notifications');
+    expect(state.activeTabId()).toBe('Notifications');
+    expect(page.textContent).toBe('Notifications');
     state.selectTab('Appearance');
     expect(state.activeTabId()).toBe('Appearance');
     expect(page.textContent).toBe('Appearance');
@@ -212,9 +212,9 @@ describe('settings entry points', () => {
 
   it('keeps selection in mobile state even when the sheet is closed', () => {
     const { state, mobile } = mountSettings();
-    state.selectTab('Billing');
-    expect(state.activeTabId()).toBe('Billing');
-    expect(mobile.page()).toBe('Billing');
+    state.selectTab('Notifications');
+    expect(state.activeTabId()).toBe('Notifications');
+    expect(mobile.page()).toBe('Notifications');
     expect(state.settingsOpen()).toBe(false);
     expect(splitActiveTabId()).toBe('Account');
     state.openSettings();
@@ -226,7 +226,7 @@ describe('settings entry points', () => {
     const { state } = mountSettings();
     expect(state.settingsOpen()).toBe(false);
     state.closeSettings();
-    state.openSettings('Billing');
+    state.openSettings('Notifications');
     expect(state.settingsOpen()).toBe(true);
     state.closeSettings();
     expect(state.settingsOpen()).toBe(false);
@@ -236,28 +236,31 @@ describe('settings entry points', () => {
   it('ignores retained mobile state when using desktop settings', () => {
     mocks.mobile = false;
     const { state, mobile } = mountSettings();
-    mobile.openSettings('Billing');
+    mobile.openSettings('Notifications');
     expect(state.settingsOpen()).toBe(false);
     expect(state.activeTabId()).toBe('Account');
     state.selectTab('Appearance');
     expect(state.activeTabId()).toBe('Appearance');
     expect(splitActiveTabId()).toBe('Appearance');
-    expect(mobile.page()).toBe('Billing');
+    expect(mobile.page()).toBe('Notifications');
   });
 
   it('opens desktop settings in the active split like any other view', () => {
     mocks.mobile = false;
     const { state, mobile } = mountSettings();
-    state.openSettings('Billing');
+    state.openSettings('Notifications');
     expect(mobile.open()).toBe(false);
-    expect(state.activeTabId()).toBe('Billing');
+    expect(state.activeTabId()).toBe('Notifications');
     expect(mocks.navigate).not.toHaveBeenCalled();
     expect(mocks.openWithSplit).toHaveBeenCalledWith(
       {
         type: 'component',
         id: 'settings',
         entryMetadata: {
-          route: paneRoute({ id: 'settings', params: { tab: 'billing' } }),
+          route: paneRoute({
+            id: 'settings',
+            params: { tab: 'notifications' },
+          }),
         },
       },
       { allowDuplicate: false, mergeHistory: false }
@@ -279,8 +282,8 @@ describe('settings entry points', () => {
     mocks.mobile = false;
     mocks.hasSettingsSplit = true;
     const { state } = mountSettings();
-    state.openSettings('Billing');
-    expect(state.activeTabId()).toBe('Billing');
+    state.openSettings('Notifications');
+    expect(state.activeTabId()).toBe('Notifications');
     expect(mocks.updateCurrentEntry).toHaveBeenCalledTimes(1);
     expect(mocks.activateSplit).toHaveBeenCalledWith('settings-split');
     expect(mocks.openWithSplit).not.toHaveBeenCalled();

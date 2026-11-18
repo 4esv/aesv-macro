@@ -22,7 +22,7 @@ const DEBUG_FAKE_GITHUB_USERNAME = 'octocat';
 
 /**
  * Onboarding step 1 — connect additional accounts once the user is signed in:
- * extra Gmail inboxes (up to the free limit, then the paywall) and their
+ * extra Gmail inboxes and their
  * GitHub account. The bottom of the page lists everything currently connected.
  */
 export function OnboardingConnectAccounts() {

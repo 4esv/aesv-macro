@@ -280,7 +280,6 @@ function ProviderFailureDemoInner(props: {
       controllerOptions={{
         onSwitchModel,
         hasAlternateModel: () => nextModel() !== undefined,
-        onShowPaywall: () => {},
       }}
     >
       <ProviderFailureDemoBody
@@ -329,7 +328,7 @@ function ProviderFailureDemoBody(props: {
         selected={input.model()}
         isAvailable={props.isAvailable}
         onSelect={(id) => input.setModel(id as Model)}
-        onLocked={(id) => console.log('paywall for locked model', id)}
+        onLocked={(id) => console.log('locked model', id)}
       />
       <div data-chat-scroll class="min-h-0 max-h-72 w-full overflow-y-auto">
         <ChatMessages />

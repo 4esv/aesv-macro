@@ -1,6 +1,6 @@
-import { MacroMarkIcon } from '@app/features/onboarding/components/macro-mark-icon';
-import { OnboardingShell } from '@app/features/onboarding/components/onboarding-shell';
 import { type JSX, Show } from 'solid-js';
+import { MacroMarkIcon } from './macro-mark-icon';
+import { OnboardingShell } from './onboarding-shell';
 
 /** The centered sign-in card, framed and styled like onboarding's slides. */
 export function LoginCard(props: {
@@ -30,7 +30,7 @@ export function LoginCard(props: {
             tabindex="-1"
             class="mt-8 font-[Roboto_Slab_Variable] text-[30px] font-[315] leading-[1.2] tracking-[-.025em] outline-none [text-wrap:balance] sm:text-[36px]"
           >
-            {props.agentSignup ? 'Sign up as an agent' : 'Welcome to Macro'}
+            {props.agentSignup ? 'Sign up as an agent' : 'Welcome to aesv'}
           </h1>
           <p class="mt-4 font-[Inter_Variable] text-sm leading-6 text-ink-muted sm:text-[15px]">
             {props.agentSignup

@@ -131,7 +131,7 @@ export function BookingPageEditor(props: {
           <PublicBookingLayout
             branding={
               <div class="flex translate-y-7 self-start">
-                <PublicBookingBrand target="_blank" />
+                <PublicBookingBrand />
               </div>
             }
           >

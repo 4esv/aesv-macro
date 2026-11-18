@@ -6,7 +6,6 @@ interface ImportMetaEnv {
   readonly __GIT_BRANCH__: string;
 
   readonly VITE_SEGMENT_WRITE_KEY: string;
-  readonly VITE_POSTHOG_API_KEY: string;
 
   /** `true` in bundles `just stack` builds, which count as local (`LOCAL_ONLY`). */
   readonly VITE_LOCAL_ONLY?: string;

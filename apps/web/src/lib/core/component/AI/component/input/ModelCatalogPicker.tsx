@@ -31,7 +31,7 @@ type ModelCatalogPickerProps = {
   value: string | null;
   options: CatalogModelOption[];
   onSelect: (id: string) => void;
-  /** Called instead of `onSelect` for a `locked` option, e.g. to open the paywall. */
+  /** Called instead of `onSelect` for a `locked` option. */
   onLocked?: (id: string) => void;
   onCloseAutoFocus?: (event: Event) => void;
   modelRow?: Component<ModelRowProps>;

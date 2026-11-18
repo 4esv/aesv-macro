@@ -10,7 +10,7 @@ const COPY = new Proxy({} as AgentSetupCopy, {
 });
 
 describe('agentSetupMarkdown', () => {
-  it('sends the agent through macrod setup with clickable docs and source', () => {
+  it('sends the agent through macrod setup with a clickable source link', () => {
     const markdown = agentSetupMarkdown({
       copy: COPY,
       apiKey: 'token',
@@ -26,12 +26,10 @@ describe('agentSetupMarkdown', () => {
       markdownParts(markdown).flatMap((part) =>
         part.t === 'link' ? [part.url] : []
       )
-    ).toEqual(
-      expect.arrayContaining([
-        'https://docs.macro.com/AI/bring-your-own',
-        'https://github.com/macro-inc/macro/tree/main/crates/coding_agent_worker',
-      ])
-    );
+    ).toEqual([
+      'https://github.com/macro-inc/macro/tree/main/crates/coding_agent_worker',
+      'https://app.test/done',
+    ]);
   });
 });
 

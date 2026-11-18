@@ -1,11 +1,9 @@
-import { DOCS_BASE } from '@app/constants/docs-links';
 import {
   runCreateAction,
   useCreatableEnabled,
 } from '@app/features/command/Launcher';
 import { openNewChannelModal } from '@channel/CreateChannelModal';
 import EmptyStateChannelsGraphic from '@design/empty-state-channels.svg';
-import BookOpenIcon from '@icon/system/regular/book-open.svg';
 import PlusIcon from '@icon/system/regular/plus.svg';
 import { type EmptyStateAction, EmptyStatePanel } from '@ui';
 import type { ChannelsQueryScope } from '../types';
@@ -73,8 +71,6 @@ export function ChannelsEmptyState(props: {
       primaryAction={
         isCreatableEnabled('channel') ? content().action : undefined
       }
-      documentationUrl={`${DOCS_BASE}/product/channels`}
-      documentationIcon={BookOpenIcon}
       class={
         props.topAligned
           ? 'px-4 pt-4 @4xl:px-4 [&>div:first-child]:basis-0'

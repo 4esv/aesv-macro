@@ -31,7 +31,6 @@ const mocks = vi.hoisted(() => ({
   touch: false,
   freePlan: false,
   modelsPending: false,
-  tier: 'max',
   currentEffort: 'low',
   openSettings: vi.fn(),
   capabilitiesPending: false,
@@ -102,14 +101,6 @@ vi.mock('../queries/repository-branches', () => ({
 }));
 vi.mock('../components/AgentGlyph', () => ({ AgentIcon: () => <span /> }));
 
-vi.mock('@queries/auth/ai-billing', () => ({
-  useAiBillingSummaryQuery: () => ({
-    isSuccess: true,
-    get data() {
-      return { tier: mocks.tier };
-    },
-  }),
-}));
 vi.mock('@queries/agents/capabilities', () => ({
   useAgentCapabilitiesQuery: (
     target: () => { model?: string } | undefined
@@ -331,7 +322,6 @@ describe('agent-led new conversation', () => {
     mocks.capabilitiesPending = false;
     mocks.freePlan = false;
     mocks.modelsPending = false;
-    mocks.tier = 'max';
     mocks.currentEffort = 'low';
     mocks.touch = false;
     localStorage.clear();
@@ -1454,28 +1444,19 @@ describe('agent-led new conversation', () => {
     expect(mocks.openSettings).toHaveBeenCalledWith('Harness');
     expect(screen.getByRole('button', { name: 'Agent' }).title).toBe(before);
   });
-  it.each(['free', 'premium', 'max'])(
-    'uses the correct initial effort for %s',
-    async (tier) => {
-      mocks.tier = tier;
-      mocks.currentEffort = 'ultra';
-      const send = page(true, [], false, [], 'code');
-      const models = await hoverAgent('Cursor');
-      fireEvent.keyDown(models.getByRole('menuitem', { name: /^GPT-5/ }), {
-        key: 'Enter',
-      });
-      await waitFor(() => expect(screen.queryByRole('menu')).toBeNull());
-      fireEvent.click(screen.getByRole('button', { name: 'Send' }));
-      expect(send).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          effortOverride:
-            tier === 'max'
-              ? undefined
-              : { configId: 'cursor_effort', value: 'low' },
-        })
-      );
-    }
-  );
+  it('sends no effort override until one is picked', async () => {
+    mocks.currentEffort = 'ultra';
+    const send = page(true, [], false, [], 'code');
+    const models = await hoverAgent('Cursor');
+    fireEvent.keyDown(models.getByRole('menuitem', { name: /^GPT-5/ }), {
+      key: 'Enter',
+    });
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(send).toHaveBeenLastCalledWith(
+      expect.objectContaining({ effortOverride: undefined })
+    );
+  });
   it('passes opaque effort and clears it with the model override after sending', async () => {
     const send = page(true, [], false, [], 'code');
     const models = await hoverAgent('Cursor');

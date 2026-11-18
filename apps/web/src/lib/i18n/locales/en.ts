@@ -32,14 +32,12 @@ import routineSuggestions from './en/routine-suggestions';
 import runtimeSharing from './en/runtime-sharing';
 import settingsBilling from './en/settings-billing';
 import settingsLanguage from './en/settings-language';
-import settingsMobileApp from './en/settings-mobile-app';
 import settingsNav from './en/settings-nav';
 import splitMenu from './en/split-menu';
 import subRoutines from './en/sub-routines';
 import suggestions from './en/suggestions';
 import tabs from './en/tabs';
 import teamAgents from './en/team-agents';
-import tutorials from './en/tutorials';
 import viewMenus from './en/view-menus';
 
 /**
@@ -82,12 +80,10 @@ export default {
   settingsBilling,
   runtimeSharing,
   settingsLanguage,
-  settingsMobileApp,
   settingsNav,
   splitMenu,
   subRoutines,
   tabs,
   teamAgents,
-  tutorials,
   viewMenus,
 };

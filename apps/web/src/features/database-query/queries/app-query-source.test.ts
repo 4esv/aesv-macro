@@ -20,9 +20,6 @@ vi.mock('@service-connection/client', () => ({
 vi.mock('@queries/storage/databases-sync', () => ({
   useDatabaseTableChanges: vi.fn(),
 }));
-vi.mock('@app/features/paywall/ai-usage-limit-handling', () => ({
-  handleAiUsageLimitError: vi.fn(),
-}));
 
 const databases: DatabaseDetail[] = ['first', 'second'].map((id) => ({
   database: {

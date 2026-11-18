@@ -22,9 +22,6 @@ const MACROD_PAIRING_CODE = `grep '"event":"pairing"' ~/.macrod/agent.log`;
 
 const MACROD_APPROVE = `await macro.harnesses.pairing('<code>').approve();`;
 
-const PRODUCT_DOCS_URL = 'https://docs.macro.com';
-const SDK_DOCS_URL = 'https://sdk.macro.com';
-const MACROD_DOCS_URL = 'https://docs.macro.com/AI/bring-your-own';
 const MACROD_SOURCE_URL =
   'https://github.com/macro-inc/macro/tree/main/crates/coding_agent_worker';
 
@@ -35,16 +32,12 @@ export type AgentSetupCopy = {
   teamJoinFailed: string;
   tokenLabel: string;
   useToken: string;
-  docsHeading: string;
-  productDocs: string;
-  sdkDocs: string;
   setProfile: string;
   macrod: string;
   macrodInstall: string;
   macrodStart: string;
   macrodApprove: string;
   macrodNext: string;
-  macrodDocs: string;
   macrodSource: string;
   anotherToken: string;
   anotherTokenSettings: string;
@@ -85,12 +78,10 @@ export function agentSetupMarkdown(input: {
     codeBlock(MACROD_PAIRING_CODE, 'sh'),
     codeBlock(MACROD_APPROVE, 'ts'),
     copy.macrodNext,
-    `- [${copy.macrodDocs}](${MACROD_DOCS_URL})\n- [${copy.macrodSource}](${MACROD_SOURCE_URL})`,
+    `- [${copy.macrodSource}](${MACROD_SOURCE_URL})`,
     `## ${copy.anotherToken}`,
     codeBlock(NEW_TOKEN_SNIPPET, 'ts'),
     copy.anotherTokenSettings,
-    `## ${copy.docsHeading}`,
-    `- [${copy.productDocs}](${PRODUCT_DOCS_URL})\n- [${copy.sdkDocs}](${SDK_DOCS_URL})`,
     `## ${copy.openApp}`,
     `[${copy.openAppLink}](${openAppUrl})`,
   ].join('\n\n');

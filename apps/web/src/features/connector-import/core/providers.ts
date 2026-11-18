@@ -26,11 +26,7 @@ export type ImportProvider = {
 };
 
 type ImportCategoryCopy = {
-  /** Sidebar card heading. */
-  headline: string;
-  /** Sidebar card body; names the leading providers. */
-  pitch: string;
-  /** Sidebar card button and dialog title. */
+  /** Import button and dialog title. */
   action: string;
   dialogDescription: string;
   /** Plural noun for imported items, as used in agent prompts. */

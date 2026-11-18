@@ -10,11 +10,3 @@ export function allOf(...parts: Verdict[]): Verdict {
   if (parts.includes(undefined)) return undefined;
   return true;
 }
-
-/** A feature flag read: unknown until PostHog has answered. */
-export function flagVerdict(flag: {
-  enabled: boolean;
-  loading: boolean;
-}): Verdict {
-  return flag.loading ? undefined : flag.enabled;
-}

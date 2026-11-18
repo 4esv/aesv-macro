@@ -40,8 +40,6 @@ export function EventTypesPanel(props: {
   onDelete: (event: EventType) => void;
   onCopy: (event: EventType) => void;
   link: (event: EventType) => string;
-  /** Pinned above the links, such as the scheduling tutorial row. */
-  listStart?: JSX.Element;
 }) {
   const [localSearch, setSearch] = createSignal('');
   const search = () => (props.search ?? localSearch()).trim();
@@ -192,7 +190,6 @@ export function EventTypesPanel(props: {
           class="mb-3 max-w-md"
         />
       </Show>
-      {props.listStart}
       <div>
         <For
           each={filtered()}

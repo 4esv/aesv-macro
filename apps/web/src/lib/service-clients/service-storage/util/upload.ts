@@ -7,7 +7,6 @@ import {
   type UploadProgressHandle,
 } from '@core/component/UploadProgress/uploadProgress';
 import { blockAcceptedMimetypeToFileExtension } from '@core/constant/allBlocks';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
 import {
   getUploadFileSize,
   nativeUploadChecksum,
@@ -127,8 +126,6 @@ async function uploadWithProgress(
   options: UploadFileOptions | undefined,
   progress: UploadProgressHandle | undefined
 ): Promise<UploadSuccess> {
-  const { showPaywall } = usePaywallState();
-
   // TODO: remove toast logic from dss upload util
   const handleUploadError = (err: ResultError<string>[] | Error | string) => {
     if (Array.isArray(err) && err[0]?.code === DOCUMENT_NAME_TOO_LONG_CODE) {
@@ -140,13 +137,6 @@ async function uploadWithProgress(
         maxLength = undefined;
       }
       throw new DocumentNameTooLongError(maxLength);
-    }
-
-    const isPaywallError = Array.isArray(err) && err[0].message.includes('403');
-
-    if (isPaywallError) {
-      showPaywall(PaywallKey.FILE_LIMIT);
-      throw new Error('Forbidden');
     }
 
     const errorMessage = Array.isArray(err)

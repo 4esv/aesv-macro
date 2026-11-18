@@ -1,5 +1,3 @@
-import { saveSignupDraft } from '@app/features/onboarding/primitives/flow-storage';
-import { stubOnboardingBrowser } from '@app/features/onboarding/tests/render';
 import {
   cleanup,
   fireEvent,
@@ -36,31 +34,6 @@ vi.mock('./create-app-auth-context', async () => {
   };
 });
 
-// The real sign-up slides, on a fake onboarding backend.
-vi.mock('@app/features/onboarding/onboarding', async () => {
-  const { OnboardingProvider } = await import(
-    '@app/features/onboarding/context/onboarding-context'
-  );
-  const { createFakeOnboarding } = await import(
-    '@app/features/onboarding/tests/fake-onboarding-context'
-  );
-  const { SignupJourneyView } = await import(
-    '@app/features/onboarding/views/signup-journey-view'
-  );
-  return {
-    OnboardingSignup: (props: Parameters<typeof SignupJourneyView>[0]) => (
-      <OnboardingProvider
-        value={createFakeOnboarding({ viewer: null }).context}
-      >
-        <SignupJourneyView {...props} />
-      </OnboardingProvider>
-    ),
-    OnboardingPending: () => null,
-    Onboarding: () => null,
-    clearSignupDraft: () => {},
-  };
-});
-
 vi.mock('@solidjs/router', async (original) => ({
   ...(await original<typeof import('@solidjs/router')>()),
   useSearchParams: () => [{}, vi.fn()],
@@ -70,7 +43,6 @@ vi.mock('@solidjs/router', async (original) => ({
 beforeEach(() => {
   sessionStorage.clear();
   localStorage.clear();
-  stubOnboardingBrowser();
   world.microsoftSignup = false;
   world.auth = undefined;
 });
@@ -101,27 +73,16 @@ describe('Continue with Microsoft, behind enable-microsoft-signup', () => {
     );
   });
 
-  it('keeps the sign-up work step Google-only, with its old copy, while the flag is off', async () => {
-    saveSignupDraft({ step: 'work' });
-    render(() => <Login signupMode />);
-    await screen.findByRole('button', { name: 'Connect work email' });
-    expect(
-      screen.getByRole('heading', { name: /Connect your work/ })
-    ).toBeTruthy();
-    expect(microsoftButton()).toBeNull();
-    expect(screen.queryByText('Continuing with Microsoft')).toBeNull();
-    expect(screen.getByText('Google account connection')).toBeTruthy();
-  });
-
-  it('offers Microsoft sign-up and explains it under Read more once the flag is on', async () => {
-    world.microsoftSignup = true;
-    saveSignupDraft({ step: 'work' });
+  it('keeps sign-up Google-only while the flag is off', async () => {
     render(() => <Login signupMode />);
     await screen.findByRole('button', { name: 'Continue with Google' });
-    expect(
-      screen.getByRole('heading', { name: /Continue with your work/ })
-    ).toBeTruthy();
-    expect(screen.getByText('Continuing with Microsoft')).toBeTruthy();
+    expect(microsoftButton()).toBeNull();
+  });
+
+  it('offers Microsoft sign-up once the flag is on', async () => {
+    world.microsoftSignup = true;
+    render(() => <Login signupMode />);
+    await screen.findByRole('button', { name: 'Continue with Google' });
     const microsoft = microsoftButton();
     expect(microsoft).toBeTruthy();
     if (microsoft) fireEvent.click(microsoft);

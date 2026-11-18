@@ -54,7 +54,6 @@ it('shows and fetches no computers with enable-macro-computers off', async () =>
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   expect(teamComputers?.enabled()).toBe(false);
-  expect(teamComputers?.canPurchase()).toBe(false);
   expect(teamComputers?.computers()).toEqual([]);
   expect(mocks.listComputers).not.toHaveBeenCalled();
 });

@@ -3,7 +3,6 @@ import { type JSX, type ParentProps, Show } from 'solid-js';
 
 export function PublicBookingLayout(
   props: ParentProps<{
-    brandTarget?: '_blank';
     branding?: JSX.Element;
     embedded?: boolean;
   }>
@@ -18,9 +17,7 @@ export function PublicBookingLayout(
       >
         <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col">
           <Show when={!props.embedded}>
-            {props.branding ?? (
-              <PublicBookingBrand target={props.brandTarget} />
-            )}
+            {props.branding ?? <PublicBookingBrand />}
           </Show>
           <div
             class={cn(
@@ -40,16 +37,10 @@ export function PublicBookingLayout(
   );
 }
 
-export function PublicBookingBrand(props: { target?: '_blank' }) {
+export function PublicBookingBrand() {
   return (
-    <a
-      href="https://macro.com"
-      aria-label="Macro Scheduling"
-      target={props.target}
-      rel={props.target ? 'noopener noreferrer' : undefined}
-      class="inline-flex items-center gap-2 self-start text-sm font-semibold tracking-tight"
-    >
+    <span class="inline-flex items-center gap-2 self-start text-sm font-semibold tracking-tight">
       Macro <span class="font-normal text-ink-muted">/ Scheduling</span>
-    </a>
+    </span>
   );
 }

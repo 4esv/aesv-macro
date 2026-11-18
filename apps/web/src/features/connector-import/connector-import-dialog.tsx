@@ -1,5 +1,5 @@
 import { openChatWithInput } from '@app/features/chat/ChatWithAgentButton';
-import { nativeToolSlug } from '@app/features/onboarding/queries/connected-tools';
+import { QUICK_CONNECT_SERVERS } from '@core/component/AI/constant/mcpServers';
 import { assignOauthUrl, reserveOauthPopup } from '@core/pipedream/oauth-popup';
 import { Telemetry } from '@macro-inc/observability';
 import {
@@ -21,6 +21,13 @@ import {
   ConnectorImportDialog,
   type ImportAlternative,
 } from './views/import-dialog';
+
+/** Identify native providers by endpoint, not their editable display name. */
+function nativeToolSlug(server: { url: string }): string | undefined {
+  return QUICK_CONNECT_SERVERS.find(
+    (preset) => preset.url === server.url.replace(/\/+$/, '')
+  )?.app_slug;
+}
 
 function useProductionContext(
   config: Accessor<ImportCategoryConfig>

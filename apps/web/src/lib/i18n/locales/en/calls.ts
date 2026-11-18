@@ -26,7 +26,7 @@ export default {
   permissionHelpSafari:
     'In Safari, open Settings for This Website and allow the microphone or camera, then try again. On iPhone, use Website Settings in the page menu.',
   permissionHelpNative:
-    'Allow Macro to use this device in your system privacy settings, then try again.',
+    'Allow aesv to use this device in your system privacy settings, then try again.',
   permissionHelpOther:
     'Allow microphone or camera access in this site’s browser permissions, then try again.',
   layout: 'Layout',
@@ -134,7 +134,7 @@ export default {
   display: 'Display {{number}}',
   noWindows: 'No other windows are open.',
   screenAccessNeeded:
-    'Macro needs Screen Recording access. Turn on Macro in System Settings › Privacy & Security › Screen & System Audio Recording, then reopen Macro.',
+    'aesv needs Screen Recording access. Turn on aesv in System Settings › Privacy & Security › Screen & System Audio Recording, then reopen aesv.',
   share: 'Share',
   presenterSharing: '{{name}} is sharing',
   youAreSharing: "You're sharing your screen",
@@ -158,7 +158,7 @@ export default {
   detailNamedGuest: '{{name}} (guest)',
   detailCallAgain: 'Call again',
   detailJoinCall: 'Join call',
-  detailAttribution: 'Written by Macro after the call',
+  detailAttribution: 'Written by aesv after the call',
   detailGeneratingSummary: 'Generating summary…',
   detailLoadingChat: 'Loading chat…',
   detailEmptyChat: 'No messages were sent during this call.',
@@ -208,10 +208,10 @@ export default {
   detailSharingStarter: 'Only the person who started the call can change this.',
   microphoneAccessTitle: 'Microphone access is off',
   microphoneAccessMobile:
-    'Macro needs the microphone for calls. Turn it on in Settings.',
+    'aesv needs the microphone for calls. Turn it on in Settings.',
   microphoneAccessDesktop:
-    'Macro needs the microphone for calls. Turn it on in your system settings.',
+    'aesv needs the microphone for calls. Turn it on in your system settings.',
   microphoneAccessBrowser:
-    'Macro needs the microphone for calls. Allow it in your browser’s site settings.',
+    'aesv needs the microphone for calls. Allow it in your browser’s site settings.',
   openSettings: 'Open Settings',
 };

@@ -9,14 +9,12 @@ import {
 
 const telemetry = vi.hoisted(() => ({
   track: vi.fn(),
-  register: vi.fn(),
   recordSample: vi.fn(),
   span: { setAttr: vi.fn(), end: vi.fn() },
 }));
 vi.mock('@app/lib/analytics', () => ({
   analytics: {
     track: telemetry.track,
-    posthog: { register: telemetry.register },
   },
 }));
 vi.mock('@macro-inc/observability', () => ({
@@ -171,7 +169,6 @@ describe('native WebView startup diagnostics', () => {
       native_bundle_reload_dispatches: 1,
       native_bundle_reload_last_source: 'run_event_resumed',
     });
-    expect(telemetry.register).toHaveBeenCalledWith(expected);
     expect(telemetry.track).toHaveBeenCalledWith(
       'native_webview_started',
       expected

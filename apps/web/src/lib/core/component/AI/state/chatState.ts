@@ -16,12 +16,7 @@ export type ChatEvent =
       type: 'send_started';
       optimisticMessage: ChatMessageWithAttachments;
     }
-  | {
-      type: 'send_failed';
-      paymentError?: boolean;
-      /** Refused by the AI billing gate; the backend's reason code. */
-      usageLimit?: string;
-    }
+  | { type: 'send_failed' }
   | { type: 'stream_connected' }
   | {
       type: 'stream_user_message';
@@ -38,15 +33,12 @@ export type ChatEvent =
       streamError: string | undefined;
     };
 
-export type SideEffect =
-  | {
-      type: 'toast';
-      message: string;
-      /** When set, the toast offers a "Switch model" action button. */
-      offerModelSwitch?: boolean;
-    }
-  | { type: 'show_paywall' }
-  | { type: 'show_usage_limit'; reason: string };
+export type SideEffect = {
+  type: 'toast';
+  message: string;
+  /** When set, the toast offers a "Switch model" action button. */
+  offerModelSwitch?: boolean;
+};
 
 // --- Transition result ---
 
@@ -100,13 +92,9 @@ export function transition(
       effects: [],
     }))
 
-    .with([{ type: 'sending' }, { type: 'send_failed' }], ([, e]) => ({
+    .with([{ type: 'sending' }, { type: 'send_failed' }], () => ({
       phase: { type: 'idle' as const },
-      effects: e.usageLimit
-        ? ([{ type: 'show_usage_limit', reason: e.usageLimit }] as SideEffect[])
-        : e.paymentError
-          ? ([{ type: 'show_paywall' }] as SideEffect[])
-          : [],
+      effects: [],
     }))
 
     .with(
