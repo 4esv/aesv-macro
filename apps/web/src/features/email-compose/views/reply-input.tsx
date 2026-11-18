@@ -275,10 +275,7 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
     .namespace('email-base-input-markdown')
     .withMentions({
       onUserMention: state.handleUserMention,
-      onDocumentMention: (item) => {
-        composeContext.editorFiles.makePublic(item.id);
-        scheduleDraftSave();
-      },
+      onDocumentMention: () => scheduleDraftSave(),
     })
     .withEmojis()
     .withLinks({ floatingMenu: true, autoLinkMatchMode: 'common-tlds' })
@@ -300,10 +297,7 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
           sourceId: props.sourceEntityId,
           files,
           directories,
-          onUploaded: (ids) => {
-            ids.forEach(composeContext.editorFiles.makePublic);
-            scheduleDraftSave();
-          },
+          onUploaded: () => scheduleDraftSave(),
           onVideos: handleAddAttachments,
         });
       },
@@ -689,9 +683,8 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
                   files,
                   directories,
                   dropEvent: event,
-                  onUploaded: (ids) => {
+                  onUploaded: () => {
                     setIsDragging(false);
-                    ids.forEach(composeContext.editorFiles.makePublic);
                     scheduleDraftSave();
                   },
                   onVideos: handleAddAttachments,

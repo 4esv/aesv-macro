@@ -80,7 +80,7 @@ function MobileComposePanel(props: { onLeave: () => void }) {
       primaryId: () => 'inbox',
     },
     connectivity: { looksOffline: () => false },
-    editorFiles: { uploadDocuments: async () => [], makePublic: () => {} },
+    editorFiles: { uploadDocuments: async () => [] },
     viewerEmail: () => 'me@example.com',
     recipients: () => [],
     recipientName: (id) => id,

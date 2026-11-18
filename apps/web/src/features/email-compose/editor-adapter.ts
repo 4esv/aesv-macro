@@ -13,7 +13,6 @@ import {
 import { Telemetry } from '@macro-inc/observability';
 import { type FocusableElement, tabbable } from 'tabbable';
 import type { ComposeBodyActions } from './context/editor-capabilities';
-import { makeAttachmentPublic } from './make-attachment-public';
 
 export function createPanelFocusSibling() {
   const panel = useSplitPanel();
@@ -79,7 +78,7 @@ export function createComposeBodyActions(): ComposeBodyActions {
             dropEvent
               ? () => getDragDropPosition(editor, dropEvent, true)
               : undefined,
-            (ids) => ids.forEach(makeAttachmentPublic),
+            undefined,
             { width: 542, height: 542 }
           ),
           onVideos

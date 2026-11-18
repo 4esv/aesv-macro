@@ -113,7 +113,7 @@ export type EmailComposerOptions = {
   notices: EmailComposeFeedback;
   accounts: EmailComposeAccounts;
   connectivity: EmailConnectivity;
-  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments' | 'makePublic'>;
+  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments'>;
   viewerEmail: Accessor<string | undefined>;
   recipients: Accessor<EmailRecipient[]>;
   recipientName(id: string): string;

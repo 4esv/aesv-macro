@@ -58,7 +58,6 @@ export function createComposeContext(): EmailComposeContext & {
     },
     editorFiles: {
       readDroppedFiles: vi.fn(),
-      makePublic: vi.fn(),
       uploadEditorFiles: vi.fn(),
       uploadDocuments: vi.fn(async () => []),
     },

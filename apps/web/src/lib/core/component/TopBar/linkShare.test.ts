@@ -10,6 +10,7 @@ import {
   getTeamShareScope,
   isTeamShareSupportedForItem,
   LINK_SHARE_SCOPE_OPTIONS,
+  linkShareScopeOptionsFor,
   TEAM_SHARE_SCOPE_OPTIONS,
   teamShareScopeOptionsForItem,
 } from './linkShare';
@@ -105,6 +106,15 @@ describe('link share copy', () => {
     expect(LINK_SHARE_SCOPE_OPTIONS).toEqual([
       { value: 'NONE', label: 'Only people with access' },
       { value: 'TEAM', label: 'Team members with the link' },
+    ]);
+  });
+
+  it('shows PUBLIC only on an item that is already public', () => {
+    expect(linkShareScopeOptionsFor('NONE')).toBe(LINK_SHARE_SCOPE_OPTIONS);
+    expect(linkShareScopeOptionsFor('PUBLIC').map((o) => o.value)).toEqual([
+      'NONE',
+      'TEAM',
+      'PUBLIC',
     ]);
   });
 

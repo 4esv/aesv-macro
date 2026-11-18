@@ -16,7 +16,6 @@ import type { EmailRecipient } from '@app/features/email-compose/core/email-reci
 import { fromInboxOptions } from '@app/features/email-compose/core/email-sender';
 import { convertContactInfoToEmailRecipient } from '@app/features/email-compose/core/recipient-conversion';
 import { createComposeBodyActions } from '@app/features/email-compose/editor-adapter';
-import { makeAttachmentPublic } from '@app/features/email-compose/make-attachment-public';
 import { partitionByAttachmentLimit } from '@app/features/email-compose/primitives/attachment-limit';
 import { createAttachmentLinkOffer } from '@app/features/email-compose/primitives/attachment-links';
 import type {
@@ -267,10 +266,7 @@ export function EmailDraftComposer(props: EmailDraftComposerProps) {
     notices: {
       confirm: (input) => confirmDialog(input, { owner: dialogOwner }),
     },
-    editorFiles: {
-      uploadDocuments: uploadAttachmentDocuments,
-      makePublic: makeAttachmentPublic,
-    },
+    editorFiles: { uploadDocuments: uploadAttachmentDocuments },
   });
 
   function collectArgs(): SendEmail {

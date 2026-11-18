@@ -168,7 +168,6 @@ const context: EmailComposeContext = {
   },
   editorFiles: {
     readDroppedFiles: () => {},
-    makePublic: () => {},
     uploadEditorFiles: () => {},
     uploadDocuments: async () => [],
   },

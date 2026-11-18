@@ -1,8 +1,8 @@
 import { toast } from '@core/component/Toast/Toast';
 import {
   getLinkShareScope,
-  LINK_SHARE_SCOPE_OPTIONS,
   type LinkShareScope,
+  linkShareScopeOptionsFor,
   NO_LINK_SHARE,
 } from '@core/component/TopBar/linkShare';
 import { getWebOrigin } from '@core/util/webOrigin';
@@ -401,11 +401,13 @@ export function TeamGeneral(props: { team: TeamSummary }) {
                   aria-label="Default link sharing scope"
                   size="sm"
                   value={defaultLinkShare()}
-                  options={LINK_SHARE_SCOPE_OPTIONS.map((option) => ({
-                    ...option,
-                    disabled:
-                      patchTeamMutation.isPending || teamQuery.isLoading,
-                  }))}
+                  options={linkShareScopeOptionsFor(defaultLinkShare()).map(
+                    (option) => ({
+                      ...option,
+                      disabled:
+                        patchTeamMutation.isPending || teamQuery.isLoading,
+                    })
+                  )}
                   onChange={handleChangeDefaultLinkShare}
                 />
               </SettingsRow>

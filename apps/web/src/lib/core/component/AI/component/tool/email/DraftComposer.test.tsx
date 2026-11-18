@@ -81,9 +81,6 @@ vi.mock('@ui', () => ({
 vi.mock('@app/features/email-compose/editor-adapter', () => ({
   createComposeBodyActions: () => ({}),
 }));
-vi.mock('@app/features/email-compose/make-attachment-public', () => ({
-  makeAttachmentPublic: vi.fn(),
-}));
 vi.mock('@app/features/email-compose/upload-documents', () => ({
   uploadAttachmentDocuments: vi.fn(async () => []),
 }));

@@ -404,7 +404,6 @@ export interface UploadedDocument {
 
 export interface EmailEditorFiles {
   readDroppedFiles: import('./editor-capabilities').ComposeBodyActions['readDroppedFiles'];
-  makePublic(id: string): void;
   /** Stores files as documents; resolves with the ones that succeeded after reporting the rest. */
   uploadDocuments(files: File[]): Promise<UploadedDocument[]>;
   uploadEditorFiles(input: {

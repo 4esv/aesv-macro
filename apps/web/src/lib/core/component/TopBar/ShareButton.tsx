@@ -151,9 +151,9 @@ import {
   getTeamShareScope,
   getTeamShareScopeCopy,
   isTeamShareSupportedForItem,
-  LINK_SHARE_SCOPE_OPTIONS,
   type LinkSharePayload,
   type LinkShareScope,
+  linkShareScopeOptionsFor,
   type ShareItemType,
   type TeamSharePayload,
   type TeamShareScope,
@@ -514,7 +514,7 @@ function LinkSharingControls(props: LinkSharingControlsProps) {
             aria-label="Link sharing scope"
             size="sm"
             value={scope()}
-            options={LINK_SHARE_SCOPE_OPTIONS}
+            options={linkShareScopeOptionsFor(scope())}
             onChange={props.setLinkShareScope}
           />
         </div>

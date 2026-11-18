@@ -118,7 +118,7 @@ export type ReplyComposerOptions = {
   notices: EmailComposeFeedback;
   accounts: EmailComposeAccounts;
   connectivity: EmailConnectivity;
-  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments' | 'makePublic'>;
+  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments'>;
   viewerEmail: Accessor<string | undefined>;
   recordMention(sourceId: string, targetId: string): void;
   focusAfterReplyRequest: Accessor<boolean>;

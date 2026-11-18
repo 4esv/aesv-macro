@@ -104,7 +104,6 @@ import {
 import { localDraftReadyForDelivery } from './core/local-draft';
 import { readDroppedEmailFiles, withVideoAttachments } from './editor-adapter';
 import { useCreateEmailEvent } from './email-event';
-import { makeAttachmentPublic } from './make-attachment-public';
 import {
   emailDraftLifecycleSource,
   publishDraftLifecycleChange,
@@ -269,7 +268,6 @@ export function createEmailComposeContext(
     },
     editorFiles: {
       readDroppedFiles: readDroppedEmailFiles,
-      makePublic: makeAttachmentPublic,
       uploadDocuments: uploadAttachmentDocuments,
       uploadEditorFiles(input) {
         if (!input.editor) return;

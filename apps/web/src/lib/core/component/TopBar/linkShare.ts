@@ -128,6 +128,16 @@ export const LINK_SHARE_SCOPE_OPTIONS = (['NONE', 'TEAM'] as const).map(
   })
 );
 
+/** Adds PUBLIC only when it is already set, so the owner sees it and can turn it off. */
+export function linkShareScopeOptionsFor(current: LinkShareScope) {
+  return current === 'PUBLIC'
+    ? [
+        ...LINK_SHARE_SCOPE_OPTIONS,
+        { value: 'PUBLIC' as const, label: LINK_SHARE_SCOPE_COPY.PUBLIC.label },
+      ]
+    : LINK_SHARE_SCOPE_OPTIONS;
+}
+
 export const TEAM_SHARE_SCOPE_OPTIONS = (
   ['NONE', 'view', 'comment', 'edit'] as const
 ).map((scope) => ({

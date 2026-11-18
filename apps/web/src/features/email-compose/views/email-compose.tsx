@@ -171,8 +171,7 @@ function LoadedEmailComposeView(
         composeContext.editorFiles.uploadEditorFiles({
           editor,
           ...input,
-          onUploaded: (ids) =>
-            ids.forEach(composeContext.editorFiles.makePublic),
+          onUploaded: () => {},
         }),
     },
     isMobile: composeContext.presentation.isMobile,

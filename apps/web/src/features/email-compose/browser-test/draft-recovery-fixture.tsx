@@ -124,7 +124,7 @@ function RecoveryEditor(props: { durable: boolean }) {
       primaryId: () => 'inbox',
     },
     connectivity: { looksOffline: () => false },
-    editorFiles: { uploadDocuments: async () => [], makePublic: () => {} },
+    editorFiles: { uploadDocuments: async () => [] },
     viewerEmail: () => 'me@example.com',
     recipients: () => [],
     recipientName: (id) => id,
