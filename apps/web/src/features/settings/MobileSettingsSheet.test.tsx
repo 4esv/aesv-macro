@@ -79,7 +79,7 @@ function setup(tab: SettingsTab) {
 }
 
 describe('unavailable mobile settings sections', () => {
-  it.each<SettingsTab>(['Admin', 'CRM', 'Subscription'])(
+  it.each<SettingsTab>(['Admin', 'CRM', 'Organization'])(
     'shows a recovery action for unavailable %s without mounting its form',
     async (tab) => {
       const { settings, onClose, renderPage } = setup(tab);

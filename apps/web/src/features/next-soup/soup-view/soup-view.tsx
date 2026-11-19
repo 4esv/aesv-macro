@@ -1,6 +1,5 @@
 import { StickyVirtualizer } from '@app/components/list/StickyVirtualizer';
 import { ListHeaderSearch } from '@app/components/view-shell/ListHeader';
-import { LIST_VIEW_DOCS_URL } from '@app/constants/docs-links';
 import { isListViewID, type ListView } from '@app/constants/list-views';
 import { MobileAgentComposer } from '@app/features/agents-view/mobile-agent-composer';
 import {
@@ -85,7 +84,6 @@ import { registerHotkey, useHotkeyDOMScope } from '@core/hotkey/hotkeys';
 import { TOKENS } from '@core/hotkey/tokens';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
 import type { DateValue } from '@core/util/date';
-import { openExternalUrl } from '@core/util/url';
 import { useIsKeyPressActive } from '@core/util/useIsKeyPressActive';
 import {
   type EntityData,
@@ -99,13 +97,12 @@ import {
 import type { SoupRowFamily } from '@entity/composed/list-entity/row-geometry';
 import ChevronRightIcon from '@icon/system/regular/caret-right.svg';
 import CheckIcon from '@icon/system/regular/check.svg';
-import InfoIcon from '@icon/system/regular/info.svg';
 import Spinner from '@icon/system/regular/spinner.svg';
 import { Telemetry } from '@macro-inc/observability';
 import { markRowNotificationsSeenOnOpen } from '@notifications/mark-row-seen';
 import { createElementSize } from '@solid-primitives/resize-observer';
 import { debounce } from '@solid-primitives/scheduled';
-import { Button, cn, Layer } from '@ui';
+import { cn, Layer } from '@ui';
 import { tourTarget } from '@ui/components/Tour';
 import {
   type Accessor,
@@ -241,8 +238,6 @@ interface SoupViewProps {
    * preset whose `clientFilters` include a predicate that matches them.
    */
   additionalEntities?: Accessor<EntityData[]>;
-  /** The view's tour, e.g. `<ViewTour tour={callsTour} />`. */
-  tour?: JSX.Element;
   /**
    * Replaces the split-header title, tabs, search, and filter toolbar for
    * views that compose their own chrome (e.g. a sidebar layout).
@@ -250,8 +245,6 @@ interface SoupViewProps {
   header?: JSX.Element;
   /** Compose a detail outlet while keeping the list's state initialized. */
   renderContent?: (list: () => JSX.Element) => JSX.Element;
-  /** Pinned above the list's rows, such as a block's tutorial row. */
-  listStart?: JSX.Element;
 }
 
 export const SoupView = (props: SoupViewProps) => {
@@ -371,11 +364,6 @@ export const SoupView = (props: SoupViewProps) => {
     return id && isListViewID(id) ? id : undefined;
   });
 
-  const docsUrl = createMemo(() => {
-    const view = activeListView();
-    return view ? LIST_VIEW_DOCS_URL[view] : undefined;
-  });
-
   const [filterOpen, setFilterOpen] = createSignal(false);
   let focusSearch: (() => void) | undefined;
 
@@ -419,20 +407,6 @@ export const SoupView = (props: SoupViewProps) => {
               <Show when={!isTouchDevice()}>
                 <div class="flex items-center gap-1">
                   <span class="text-sm font-semibold">{props.viewName}</span>
-                  <Show when={docsUrl()}>
-                    {(url) => (
-                      <Button
-                        aria-label="View documentation"
-                        tooltip="View documentation"
-                        size="icon-sm"
-                        variant="ghost"
-                        class="@max-[380px]/split-header:hidden"
-                        onClick={() => openExternalUrl(url())}
-                      >
-                        <InfoIcon class="size-3.5 touch:size-6 shrink-0 pointer-events-none" />
-                      </Button>
-                    )}
-                  </Show>
                 </div>
               </Show>
               <Show when={!isComponentListView('search')}>
@@ -510,7 +484,6 @@ export const SoupView = (props: SoupViewProps) => {
         </div>
         <SoupFiltersBar variant={props.filterBarVariant} />
       </Show>
-      {props.tour}
       <Show when={soupView.source.cachedMail?.()}>
         <p role="status" class="px-4 py-1 text-xs text-ink-muted">
           Showing cached mail. Only synchronized messages are available.
@@ -518,7 +491,7 @@ export const SoupView = (props: SoupViewProps) => {
       </Show>
       <div class="relative grow min-h-1 flex max-sm:flex-col flex-row size-full">
         <Suspense>
-          <SoupViewList listStart={props.listStart} />
+          <SoupViewList />
         </Suspense>
       </div>
       <Suspense>
@@ -546,8 +519,6 @@ export const SoupView = (props: SoupViewProps) => {
 interface SoupViewListProps {
   rowEntry?: SoupRowEntry;
   listHeader?: JSX.Element;
-  /** Scrolls above the rows, outside them, so list focus skips it. */
-  listStart?: JSX.Element;
   groupHeader?: import('solid-js').Component<
     GroupHeaderProps & { highlighted?: boolean }
   >;
@@ -582,7 +553,6 @@ export const SoupViewList = (props: SoupViewListProps) => (
     <SoupViewListContent
       rowEntry={props.rowEntry}
       listHeader={props.listHeader}
-      listStart={props.listStart}
       groupHeader={props.groupHeader}
       customScrollbarHidden={props.customScrollbarHidden}
       scopeId={props.scopeId}
@@ -1244,7 +1214,6 @@ const SoupViewListContent = (props: SoupViewListProps) => {
                         scrollerRef={setListScrollerRef}
                         virtualizerClass="scrollbar-hidden"
                         class="overflow-hidden flex min-w-0"
-                        start={props.listStart}
                         virtualizerRef={registerVirtualizerHandler}
                         onScrollBottom={debouncedFetchMore}
                         scrollBottomOffset={300}

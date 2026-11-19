@@ -17,7 +17,7 @@ import { createEmailEditor, setEmailEditorText } from '../tests/editor';
 import { EmailComposeView } from './email-compose';
 
 vi.mock('@app/lib/analytics', () => ({
-  analytics: { track: vi.fn(), posthog: { captureException: vi.fn() } },
+  analytics: { track: vi.fn() },
 }));
 vi.mock('@queries/client', () => ({
   queryClient: {

@@ -9,16 +9,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { Permissions } from '../SharePermissions';
 import { openShareModal, useShareModal } from './shareModal';
 
-// The real flag provider owns its normal context; only its transport is inert here.
-vi.mock('@app/lib/analytics/analytics-context', () => ({
-  useAnalytics: () => ({
-    posthog: {
-      featureFlags: { getFlags: () => [] },
-      onFeatureFlags: () => () => {},
-    },
-  }),
-}));
-
 let observedOrchestrator:
   | ReturnType<typeof useGlobalBlockOrchestrator>
   | undefined;

@@ -1,15 +1,8 @@
-import {
-  attachmentLimitBytes,
-  MACRO_EMAIL_SIGNATURE,
-} from '@app/features/email-compose/core/constants';
+import { attachmentLimitBytes } from '@app/features/email-compose/core/constants';
 import { startUiOperation } from '@app/observability/ui-operation';
 import { setEditorStateFromHtml } from '@core/component/LexicalMarkdown/utils/setEditorStateFromHtml';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { $generateHtmlFromNodes } from '@lexical/html';
-import {
-  $appendWatermarkNodeToLast,
-  $removeAllWatermarkNodes,
-} from '@macro-inc/lexical-core';
 import * as EmailValidator from 'email-validator';
 import type { LexicalEditor } from 'lexical';
 import {
@@ -120,9 +113,8 @@ export type EmailComposerOptions = {
   notices: EmailComposeFeedback;
   accounts: EmailComposeAccounts;
   connectivity: EmailConnectivity;
-  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments' | 'makePublic'>;
+  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments'>;
   viewerEmail: Accessor<string | undefined>;
-  hasPaidAccess: Accessor<boolean>;
   recipients: Accessor<EmailRecipient[]>;
   recipientName(id: string): string;
   host?: EmailComposeHost;
@@ -157,7 +149,6 @@ export function createEmailComposer(props: EmailComposerOptions) {
   // view's composer for the same, still scheduled draft must leave it be.
   const restoredSnapshot =
     props.draftId && !props.draft ? composeUndo.take(props.draftId) : undefined;
-  const hasPaidAccess = props.hasPaidAccess;
 
   const form = createEmailFormState(
     {
@@ -357,8 +348,7 @@ export function createEmailComposer(props: EmailComposerOptions) {
 
   // --- Draft persistence ---
 
-  function collectDraft(forDelivery = false) {
-    if (!forDelivery) $removeAllWatermarkNodes(editor());
+  function collectDraft() {
     const prepared = prepareEmailBody(editor());
     if (!prepared) {
       props.notices.reportError(
@@ -598,24 +588,15 @@ export function createEmailComposer(props: EmailComposerOptions) {
 
   const saveForSchedule = async () => {
     if (deliveryBlocked()) return undefined;
-    const currentEditor = editor();
-    const cleanupWatermark = $appendWatermarkNodeToLast(
-      currentEditor,
-      !hasPaidAccess() ? MACRO_EMAIL_SIGNATURE : undefined
+    return persistence.confirmed(
+      await autosave.save({
+        draft: collectDraft(),
+        inboxId: activeInboxId(),
+        generation: identityVersion,
+        revision: editVersion,
+        attachments: [...form.attachments.list()],
+      })
     );
-    try {
-      return persistence.confirmed(
-        await autosave.save({
-          draft: collectDraft(true),
-          inboxId: activeInboxId(),
-          generation: identityVersion,
-          revision: editVersion,
-          attachments: [...form.attachments.list()],
-        })
-      );
-    } finally {
-      cleanupWatermark();
-    }
   };
 
   schedule = createEmailSendSchedule({
@@ -780,7 +761,7 @@ export function createEmailComposer(props: EmailComposerOptions) {
   const [refusedRequirement, setRefusedRequirement] =
     createSignal<(typeof sendRequirements)[number]>();
 
-  // Snapshot the form before any watermark so an undo can reopen it as it was.
+  // Snapshot the form so an undo can reopen it as it was.
   const rememberForUndo = (draftId: string, inboxId: string) => {
     const currentEditor = editor();
     if (!currentEditor) return;
@@ -1018,89 +999,71 @@ export function createEmailComposer(props: EmailComposerOptions) {
       if (pendingInlineMedia(editor()))
         return refuseSend(props.notices, 'media-not-uploaded');
 
-      // Snapshot editor state before watermark so undo-send can restore it
+      // Snapshot editor state so undo-send can restore it
       if (draftId) rememberForUndo(draftId, currentLink.id);
 
-      // Append watermark after all validation passes so failed sends don't
-      // leave orphaned watermark nodes in the editor tree.
       const restoration = prepareEmailBody(currentEditor);
       const restoreMacro = content();
-      const cleanupWatermark = $appendWatermarkNodeToLast(
-        currentEditor,
-        !hasPaidAccess() ? MACRO_EMAIL_SIGNATURE : undefined
-      );
 
       const prepared = prepareEmailBody(currentEditor);
-      if (!prepared) {
-        cleanupWatermark();
-        return;
-      }
+      if (!prepared) return;
 
       const bodyMacro = content();
 
-      try {
-        setSendPhase('sending');
-        const result = await props.delivery.sendMessage({
-          expectedLocalVersion,
-          clientHandles: {
-            draftId: currentDraftId()!,
-            threadId: currentThreadId(),
-          },
-          attachmentIds: form.attachments
-            .list()
-            .filter((a) => a.type === 'local' || a.type === 'remote')
-            .flatMap((a) => (a.attachmentId ? [a.attachmentId] : [])),
-          forwardedAttachmentIds: form.attachments
-            .list()
-            .filter((a) => a.type === 'forwarded' || a.type === 'native')
-            .flatMap((a) => (a.attachmentId ? [a.attachmentId] : [])),
-          restoreBodyHtml: restoration?.bodyHtml,
-          restoreBodyText: restoration?.bodyText,
-          restoreBodyMacro: restoreMacro,
-          message: {
-            sender_email: form.senderEmail() ?? link()?.email_address,
-            to: convertToContactInfoArray(recipients.to),
-            cc:
-              recipients.cc.length > 0
-                ? convertToContactInfoArray(recipients.cc)
-                : [],
-            bcc:
-              recipients.bcc.length > 0
-                ? convertToContactInfoArray(recipients.bcc)
-                : [],
-            subject: form.subject(),
-            body_text: prepared.bodyText,
-            body_html: prepared.bodyHtml,
-            body_macro: bodyMacro,
-            db_id: draftId,
-            // Backend includes the signature by default for new emails; only signal
-            // an explicit dismiss. Omitting it falls through to the backend default.
-            include_signature: includeSignature() ? undefined : false,
-            draft_generation: draftGeneration(),
-          },
-          inboxId: activeInboxId(),
-        });
+      setSendPhase('sending');
+      const result = await props.delivery.sendMessage({
+        expectedLocalVersion,
+        clientHandles: {
+          draftId: currentDraftId()!,
+          threadId: currentThreadId(),
+        },
+        attachmentIds: form.attachments
+          .list()
+          .filter((a) => a.type === 'local' || a.type === 'remote')
+          .flatMap((a) => (a.attachmentId ? [a.attachmentId] : [])),
+        forwardedAttachmentIds: form.attachments
+          .list()
+          .filter((a) => a.type === 'forwarded' || a.type === 'native')
+          .flatMap((a) => (a.attachmentId ? [a.attachmentId] : [])),
+        restoreBodyHtml: restoration?.bodyHtml,
+        restoreBodyText: restoration?.bodyText,
+        restoreBodyMacro: restoreMacro,
+        message: {
+          sender_email: form.senderEmail() ?? link()?.email_address,
+          to: convertToContactInfoArray(recipients.to),
+          cc:
+            recipients.cc.length > 0
+              ? convertToContactInfoArray(recipients.cc)
+              : [],
+          bcc:
+            recipients.bcc.length > 0
+              ? convertToContactInfoArray(recipients.bcc)
+              : [],
+          subject: form.subject(),
+          body_text: prepared.bodyText,
+          body_html: prepared.bodyHtml,
+          body_macro: bodyMacro,
+          db_id: draftId,
+          // Backend includes the signature by default for new emails; only signal
+          // an explicit dismiss. Omitting it falls through to the backend default.
+          include_signature: includeSignature() ? undefined : false,
+          draft_generation: draftGeneration(),
+        },
+        inboxId: activeInboxId(),
+      });
 
-        if (
-          sendGeneration !== identityVersion ||
-          session.isStale(epochBeforeSave)
-        )
-          return;
-        cleanupWatermark();
-        setSentDraftId(currentDraftId());
-        setCompleted(true);
-        session.dispatch({ type: 'reset' });
-        setDraftGeneration(0);
-        afterSend(result, currentLink.id);
-        sent = true;
-        sendUi.afterPaint();
-      } finally {
-        if (
-          sendGeneration === identityVersion &&
-          !session.isStale(epochBeforeSave)
-        )
-          cleanupWatermark();
-      }
+      if (
+        sendGeneration !== identityVersion ||
+        session.isStale(epochBeforeSave)
+      )
+        return;
+      setSentDraftId(currentDraftId());
+      setCompleted(true);
+      session.dispatch({ type: 'reset' });
+      setDraftGeneration(0);
+      afterSend(result, currentLink.id);
+      sent = true;
+      sendUi.afterPaint();
     } catch (error) {
       sendUi.finish('error');
       if (sendGeneration !== identityVersion) return;
@@ -1596,7 +1559,6 @@ export function createEmailComposer(props: EmailComposerOptions) {
     onSelectInbox: (inboxId, senderEmail) => {
       fireAndForget(selectInbox(inboxId, senderEmail), 'email-compose');
     },
-    hasPaidAccess,
   };
   async function retryDraft() {
     if (persistencePaused()) return;

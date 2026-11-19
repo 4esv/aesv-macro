@@ -475,9 +475,6 @@ vi.mock('@core/util/createScrollTopFade', () => ({
 vi.mock('../../live-calls-sidebar', () => ({
   ChannelsLiveCallsSidebar: () => null,
 }));
-vi.mock('@app/features/slack-import/slack-import-sidebar', () => ({
-  SlackImportSidebar: () => null,
-}));
 vi.mock('../ConversationsCreateMenu', () => ({
   ConversationsCreateMenu: () => null,
 }));

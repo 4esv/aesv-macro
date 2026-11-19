@@ -94,9 +94,6 @@ export function createFakeAuth(
   const [events, setEvents] = createSignal<FakeAuthEvent[]>([]);
   const [notifications, setNotifications] = createSignal<string[]>([]);
   const [calls, setCalls] = createSignal<string[]>([]);
-  const [identifiedUsers, setIdentifiedUsers] = createSignal<
-    Parameters<AuthContext['identify']>[0][]
-  >([]);
   const call = (name: string) => setCalls((list) => [...list, name]);
 
   const update = (change: (draft: FakeAuthWorld) => void) => {
@@ -187,11 +184,6 @@ export function createFakeAuth(
         ? { t: 'sent', alreadySent: false }
         : { t: outcome };
     },
-    identify: (user) => {
-      call(`identify:${user.id}`);
-      setIdentifiedUsers((list) => [...list, user]);
-    },
-    trackMobileSignupLead: (email) => call(`lead:${email}`),
     pageView: (name) => call(`pageView:${name}`),
     track: (event, data) => setEvents((list) => [...list, { event, data }]),
     notifyFailure: (message) => setNotifications((list) => [...list, message]),
@@ -204,6 +196,5 @@ export function createFakeAuth(
     events,
     notifications,
     calls,
-    identifiedUsers,
   };
 }

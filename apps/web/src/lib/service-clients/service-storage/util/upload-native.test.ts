@@ -44,10 +44,6 @@ vi.mock('@core/component/UploadProgress/uploadProgress', () => ({
 vi.mock('@core/constant/allBlocks', () => ({
   blockAcceptedMimetypeToFileExtension: { 'application/pdf': 'pdf' },
 }));
-vi.mock('@core/constant/PaywallState', () => ({
-  usePaywallState: () => ({ showPaywall: vi.fn() }),
-  PaywallKey: {},
-}));
 vi.mock('@core/util/hash', () => ({ contentHash: mocks.contentHash }));
 vi.mock('@core/util/hashFile', () => ({ hashFile: mocks.hashFile }));
 vi.mock('@queries/client', () => ({

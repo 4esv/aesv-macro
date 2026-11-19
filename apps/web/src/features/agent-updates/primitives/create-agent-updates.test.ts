@@ -32,10 +32,6 @@ vi.mock('@core/agent-session/AgentSession', () => ({
     },
   },
 }));
-vi.mock('@app/features/block-agent/queries/issue-session-action', () => ({
-  issueSessionAction: (_session: unknown, action: unknown) =>
-    fake.issued(action),
-}));
 vi.mock('@core/component/Toast/Toast', () => ({ toast: { failure: vi.fn() } }));
 
 import { createAgentUpdates } from './create-agent-updates';

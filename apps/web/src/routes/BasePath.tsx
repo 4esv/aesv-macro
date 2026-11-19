@@ -1,5 +1,4 @@
 import { DEFAULT_ROUTE } from '@app/constants/defaultRoute';
-import { useCheckoutCompletionListener } from '@app/features/paywall/use-checkout-completion-listener';
 import { prefetchChannelTarget } from '@channel/queries/prefetch-channel-target';
 import {
   getCurrentQueryString,
@@ -16,16 +15,9 @@ import {
   pendingNotificationNavigation,
 } from '@notifications/notification-navigation-intent';
 import { useUserInfoQuery } from '@queries/auth/user-info';
-import { Navigate, useLocation, useSearchParams } from '@solidjs/router';
+import { Navigate, useLocation } from '@solidjs/router';
 import { Button } from '@ui';
-import {
-  createEffect,
-  createSignal,
-  Match,
-  on,
-  onMount,
-  Switch,
-} from 'solid-js';
+import { createSignal, Match, onMount, Switch } from 'solid-js';
 
 function shouldShowNativeSessionVerificationFallback(
   userInfoQuery: ReturnType<typeof useUserInfoQuery>
@@ -92,19 +84,7 @@ function AuthenticatedDestination(props: {
 
 export function BasePathComponent() {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const userInfoQuery = useUserInfoQuery();
-  const checkoutRefreshPending = useCheckoutCompletionListener();
-
-  createEffect(
-    on(
-      () => searchParams.upgrade,
-      (upgrade) => {
-        if (upgrade === 'true')
-          sessionStorage.setItem('showUpgradeModal', 'true');
-      }
-    )
-  );
 
   // check session storage for redirect url
   // Native destinations survive process death and must remain pending until
@@ -124,9 +104,7 @@ export function BasePathComponent() {
 
   return (
     <Switch>
-      <Match when={userInfoQuery.isLoading || checkoutRefreshPending()}>
-        {null}
-      </Match>
+      <Match when={userInfoQuery.isLoading}>{null}</Match>
       <Match
         when={
           hasLoginCookie() &&

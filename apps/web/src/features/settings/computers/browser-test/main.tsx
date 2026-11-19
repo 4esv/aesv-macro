@@ -11,9 +11,8 @@ import '../../../../index.css';
 import { ToastRegion } from '@core/component/Toast/ToastRegion';
 import { Route, Router } from '@solidjs/router';
 import { Layer } from '@ui/components/Layer';
-import { createSignal, ErrorBoundary, lazy, Match, Switch } from 'solid-js';
+import { ErrorBoundary, lazy, Match, Switch } from 'solid-js';
 import { SettingsPage } from '../../primitives';
-import { GetComputerEntry } from '../views/get-computer-entry';
 import { MacroComputers } from '../views/MacroComputers';
 import {
   agentsPageOpened,
@@ -52,8 +51,6 @@ window.computerFixture.notify = async (content) => {
 };
 
 function Fixture() {
-  // Machines owns the buy flow's open state, as Harness does.
-  const [buying, setBuying] = createSignal(false);
   return (
     <QueryClientProvider client={queryClient}>
       <Layer>
@@ -63,12 +60,7 @@ function Fixture() {
               title="Machines"
               description="Providers and machines your agents can run on."
             >
-              <GetComputerEntry onGet={() => setBuying(true)} />
-              <MacroComputers
-                harnesses={harnesses()}
-                buying={buying()}
-                onBuyingChange={setBuying}
-              />
+              <MacroComputers harnesses={harnesses()} />
             </SettingsPage>
           }
         >

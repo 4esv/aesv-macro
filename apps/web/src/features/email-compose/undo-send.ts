@@ -149,8 +149,8 @@ export async function runUndoSend(options: {
 
 /**
  * Overwrites the server-side draft with the pre-send content — the
- * unscheduled message still carries the sent body (appended reply chain /
- * watermark and injected signature baked in). A failure is non-fatal: the
+ * unscheduled message still carries the sent body (appended reply chain and
+ * injected signature baked in). A failure is non-fatal: the
  * composer restores from its snapshot either way, and the next draft
  * autosave overwrites the stale body.
  */

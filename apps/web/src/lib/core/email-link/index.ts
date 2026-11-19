@@ -5,7 +5,6 @@ import {
   openDesktopAuthSession,
 } from '@core/auth/native-auth';
 import { toast } from '@core/component/Toast/Toast';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
 import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { isPlatform } from '@core/util/platform';
@@ -59,7 +58,6 @@ export function useEmailLinksStatus() {
 }
 
 type EmailInitError =
-  | { tag: 'PaymentRequired' }
   /** The email link has already been initialized*/
   | { tag: 'AlreadyInitialized' }
   /** No Gmail grant to provision from — scope declined at consent or grant removed. */
@@ -106,8 +104,6 @@ function initEmailLink(args?: {
     emailClient.init({ linkId: args?.linkId, forceShare: args?.forceShare })
   ).andThen((initResult) => {
     if (initResult.isErr()) {
-      if (isPaymentRequired(initResult.error))
-        return err<string, EmailInitError>({ tag: 'PaymentRequired' });
       const conflict = initResult.error.find(
         (e) => e.code === SHARED_INBOX_CONFLICT_CODE
       );
@@ -206,17 +202,6 @@ export function initAndStartEmailSync() {
 }
 
 /**
- * The backend gates additional inboxes behind a paid subscription and answers
- * `POST /link/gmail` with 402 when the user isn't entitled. The auth client maps
- * that to a `PAYMENT_REQUIRED` error code; the add-inbox flow surfaces the
- * paywall instead of a generic failure so the backend stays the source of truth
- * on entitlement.
- */
-function isPaymentRequired(errors: ReadonlyArray<{ code: string }>): boolean {
-  return errors.some((error) => error.code === 'PAYMENT_REQUIRED');
-}
-
-/**
  * The backend answers `POST /link/gmail` with 429 when the user has too many
  * incomplete link attempts in flight (each abandoned OAuth leaves a pending row
  * that expires after 24h). The auth client maps that to `TOO_MANY_PENDING_LINKS`
@@ -268,7 +253,6 @@ export function useAddInboxFlow() {
   const initGmailLink = useInitGmailLink();
   const initOutlookLink = useInitOutlookLink();
   const { query, initEmailLink } = useEmailLinks();
-  const { showPaywall } = usePaywallState();
 
   const completeNativeLink = async (
     linkId: string,
@@ -281,10 +265,6 @@ export function useAddInboxFlow() {
         announceLinkedInbox(connectedLinkId, addition);
       },
       async (error) => {
-        if (error.tag === 'PaymentRequired') {
-          showPaywall(PaywallKey.MULTI_INBOX);
-          return;
-        }
         if (error.tag === 'AlreadyInitialized') {
           await query.refetch();
           announceAlreadyConnected(addition?.provider);
@@ -336,10 +316,6 @@ export function useAddInboxFlow() {
       reconnectLinkId
     );
     if (result.isErr()) {
-      if (isPaymentRequired(result.error)) {
-        showPaywall(PaywallKey.MULTI_INBOX);
-        return;
-      }
       if (isTooManyPendingLinks(result.error)) {
         toast.failure(TOO_MANY_PENDING_LINKS_MESSAGE);
         return;
@@ -435,8 +411,6 @@ export function useAddInboxFlow() {
         return;
       }
       window.location.href = authorizationUrl;
-    } else if (isPaymentRequired(result.error)) {
-      showPaywall(PaywallKey.MULTI_INBOX);
     } else if (isTooManyPendingLinks(result.error)) {
       toast.failure(TOO_MANY_PENDING_LINKS_MESSAGE);
     } else {

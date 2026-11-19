@@ -7,7 +7,6 @@ import {
   type PdfSegment as TSegment,
 } from '@coparse/document-processing-types';
 import { ENABLE_DOCX_TO_PDF } from '@core/constant/featureFlags';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
 import {
   SERVER_HOSTS,
   SYNC_PERMISSION_TOKEN_DSS_HOST,
@@ -466,8 +465,6 @@ function withVersionId(version_id?: string | undefined | null): string {
 const enhancements = {
   getDocxExpandedParts,
 } as const;
-
-const { showPaywall } = usePaywallState();
 
 /** Machine-readable code the backend returns when a document name is too long. */
 export const DOCUMENT_NAME_TOO_LONG_CODE = 'DOCUMENT_NAME_TOO_LONG' as const;
@@ -1633,12 +1630,7 @@ export const storageServiceClient = {
       // The DOCUMENT_NAME_TOO_LONG code is carried at runtime for callers to
       // branch on, but it is not part of the generated client's error union, so
       // narrow back to it to satisfy StorageServiceClient.
-      const errors = result.error as ResultError<FetchWithTokenErrorCode>[];
-
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
-      return err(errors);
+      return err(result.error as ResultError<FetchWithTokenErrorCode>[]);
     }
 
     const { data } = result.value;
@@ -1699,10 +1691,6 @@ export const storageServiceClient = {
     );
 
     if (!result.isOk()) {
-      const errors = result.error;
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
       return err(result.error);
     }
 
@@ -1727,10 +1715,6 @@ export const storageServiceClient = {
     );
 
     if (!result.isOk()) {
-      const errors = result.error;
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
       return err(result.error);
     }
 
@@ -1753,10 +1737,6 @@ export const storageServiceClient = {
     );
 
     if (!result.isOk()) {
-      const errors = result.error;
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
       return err(result.error);
     }
 
@@ -1779,10 +1759,6 @@ export const storageServiceClient = {
     );
 
     if (!result.isOk()) {
-      const errors = result.error;
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
       return err(result.error);
     }
 
@@ -1952,11 +1928,6 @@ export const storageServiceClient = {
     > = copyResult.map((result) => result.data.documentMetadata);
 
     if (result.isErr()) {
-      const errors = result.error;
-
-      if (errors[0].message.includes('403')) {
-        showPaywall(PaywallKey.FILE_LIMIT);
-      }
       return err(result.error);
     }
     return result;

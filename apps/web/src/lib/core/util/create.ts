@@ -373,7 +373,6 @@ export async function createCodeFileFromText({
 
   fireAndForget(invalidateUserQuota(), 'create-entity');
 
-  // TODO: this is kind of odd, since there's an actual code we could use for the paywall, 402 Payment Required
   if (maybeCode.isErr() && maybeCode.error[0].message.includes('403')) {
     return err([{ code: 'UNAUTHORIZED', message: maybeCode.error[0].message }]);
   }

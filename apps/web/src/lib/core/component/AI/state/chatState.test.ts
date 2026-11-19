@@ -68,18 +68,10 @@ describe('transition: provider failure surfaces a toast', () => {
   });
 });
 
-describe('transition: paywall on payment failure', () => {
-  it('a send_failed with paymentError opens the paywall', () => {
-    const result = transition(sending, {
-      type: 'send_failed',
-      paymentError: true,
-    });
-    expect(result.phase).toEqual({ type: 'idle' });
-    expect(result.effects).toContainEqual({ type: 'show_paywall' });
-  });
-
-  it('a plain send_failure does not open the paywall', () => {
+describe('transition: send failure', () => {
+  it('a send_failure returns to idle with no effects', () => {
     const result = transition(sending, { type: 'send_failed' });
+    expect(result.phase).toEqual({ type: 'idle' });
     expect(result.effects).toHaveLength(0);
   });
 });

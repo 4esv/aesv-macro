@@ -2,9 +2,6 @@ import { ViewBreadcrumbs, ViewShell } from '@app/components/view-shell';
 import { getViewPreset } from '@app/features/next-soup/sidebar/soup-filter-presets';
 import { SoupRowMetadataProvider } from '@app/features/next-soup/soup-view/soup-row-metadata-provider';
 import { SoupView } from '@app/features/next-soup/soup-view/soup-view';
-import { callsTour } from '@app/features/next-soup/tour';
-import { ViewTour } from '@app/features/tours/ViewTour';
-import { TutorialRow } from '@app/features/video-tutorials';
 import {
   SplitRouter,
   useNavigate,
@@ -49,9 +46,7 @@ export function CallsView() {
       initialFilters={preset?.filters}
       initialClientFilters={preset?.clientFilters}
       initialGroupBy={preset?.groupBy}
-      tour={<ViewTour tour={callsTour} />}
       header={header}
-      listStart={<TutorialRow tutorial="calls" />}
       renderContent={(list) => <SplitRouter.Outlet fallback={list} />}
     />
   );

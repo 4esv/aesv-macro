@@ -4,21 +4,17 @@ import {
   SearchBar,
   ViewSidebar,
 } from '@app/components/view-shell';
-import { ConnectorImportSidebar } from '@app/features/connector-import/connector-import';
 import { FavoriteContextMenu } from '@app/features/favorites/FavoriteContextMenu';
 import { FavoriteIcon } from '@app/features/favorites/FavoriteIcon';
 import { FavoriteUnreadIndicator } from '@app/features/favorites/FavoriteUnreadIndicator';
 import { createFolderDropTargets } from '@app/features/next-soup/actions';
 import { SidebarRoutineSuggestions } from '@app/features/routine-suggestions/routine-suggestions';
-import { TutorialSidebarItem } from '@app/features/video-tutorials';
-import { t } from '@app/lib/i18n';
 import { useFavoriteDisplayName } from '@app/util/favorites';
 import { createScrollTopFade } from '@core/util/createScrollTopFade';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { EntityIcon } from '@entity/extractors/entity-icon';
 import FolderIcon from '@icon/system/regular/folder.svg';
 import SearchIcon from '@icon/system/regular/magnifying-glass.svg';
-import UploadIcon from '@icon/system/regular/upload-simple.svg';
 import type { Favorite } from '@service-storage/generated/schemas/favorite';
 import { useDragDropContext } from '@thisbeyond/solid-dnd';
 import { Button, cn, Scroll } from '@ui';
@@ -280,52 +276,6 @@ export function DriveSidebarContent(props: { onNavigate?: () => void }) {
   );
 }
 
-/** The import card, offering local uploads beside connected apps. */
-function DriveImportPromotion() {
-  const { actions } = useDriveView();
-  return (
-    <ConnectorImportSidebar
-      category="files"
-      class="mt-auto"
-      alternatives={[
-        {
-          icon: UploadIcon,
-          label: 'Upload files',
-          description: 'Choose files from this computer.',
-          onSelect: actions.uploadFiles,
-        },
-        {
-          icon: FolderIcon,
-          label: 'Upload a folder',
-          description: 'Bring over a folder and everything in it.',
-          onSelect: actions.uploadFolder,
-        },
-      ]}
-    />
-  );
-}
-
-/**
- * Drive's tutorials: Docs, and Spreadsheets and Databases where they're
- * rolled out. Drive's own video is its list's row. Among several, each item
- * names its block.
- */
-function DriveTutorials() {
-  const { tutorials } = useDriveView();
-  return (
-    <ViewSidebar.Nav
-      aria-label={t('tutorials.watchTutorial')}
-      class="empty:hidden"
-    >
-      <For each={tutorials()}>
-        {(id) => (
-          <TutorialSidebarItem tutorial={id} named={tutorials().length > 1} />
-        )}
-      </For>
-    </ViewSidebar.Nav>
-  );
-}
-
 export function DriveSidebar() {
   const [content, setContent] = createSignal<HTMLDivElement>();
   // A long folder tree scrolls under a drag held at its edge.
@@ -345,9 +295,7 @@ export function DriveSidebar() {
       </ViewSidebar.Primary>
       <ViewSidebar.Content ref={setContent}>
         <SidebarRoutineSuggestions surface="files" />
-        <DriveTutorials />
         <DriveSidebarContent />
-        <DriveImportPromotion />
       </ViewSidebar.Content>
     </ViewSidebar.Root>
   );

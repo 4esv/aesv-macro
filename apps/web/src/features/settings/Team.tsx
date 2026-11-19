@@ -37,10 +37,6 @@ import {
 } from 'solid-js';
 import { z } from 'zod';
 import { SettingsCard, SettingsPage, SettingsSection } from './primitives';
-import {
-  CopyTeamInviteLinkButton,
-  TeamInviteLinkSection,
-} from './TeamInviteLinkSection';
 import { isTeamAdminOrOwner } from './teamMemberPermissions';
 import { InviteAgentPanel } from './views/invite-agent-panel';
 
@@ -588,11 +584,7 @@ export function InviteToTeamDialog(props: {
           <Panel.Body>
             <div class="flex flex-col gap-5 px-5 py-5">
               {kindTabs()}
-              <TeamInviteLinkSection
-                teamId={props.teamId}
-                canManage={props.canManageLink}
-              />
-              <div class="h-px shrink-0 bg-edge-muted" />
+              {/* FIX: W-2094 decides whether the team invite link (TeamInviteLinkSection) returns via file.aesv.io; os.aesv.io is owner-only. */}
               <div class="flex flex-col gap-3">
                 <div class="text-sm font-medium text-ink">Invite by email</div>
                 <InviteEmailsInput
@@ -659,10 +651,6 @@ function InviteHeadsUpStep(props: {
                 <span class="font-medium">{props.emails[0]}</span>
               </Show>
             </div>
-            <div class="text-sm text-ink-muted">
-              Invite emails from Macro are easy to miss. Send the invite link in
-              Slack, a text, or your own email so they know to look for it.
-            </div>
           </div>
           <Show when={props.emails.length > 1}>
             <ul class="flex max-h-40 flex-col gap-0.5 overflow-y-auto text-xs text-ink-muted">
@@ -674,7 +662,6 @@ function InviteHeadsUpStep(props: {
         </div>
       </Panel.Body>
       <Panel.Footer class="justify-end gap-2 px-4 py-3">
-        <CopyTeamInviteLinkButton teamId={props.teamId} />
         <Button variant="primary" onClick={() => props.onDone()}>
           Done
         </Button>

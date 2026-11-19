@@ -1236,8 +1236,8 @@ export const authServiceClient = {
         method: 'POST',
         // The backend returns 402 when the user isn't entitled to additional
         // inboxes, and 429 when they have too many incomplete link attempts in
-        // flight. Surface each as a distinct code so the add-inbox flow can open
-        // the paywall or explain the wait instead of a generic failure.
+        // flight. Surface each as a distinct code so the add-inbox flow can
+        // explain the wait instead of a generic failure.
         errorResponseHandler: async (response) => {
           if (response.status === 402) {
             return { code: 'PAYMENT_REQUIRED', message: 'Payment required' };

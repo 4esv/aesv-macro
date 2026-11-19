@@ -281,3 +281,20 @@ fn it_should_read_the_agent_signup_flag() {
 
     assert!(query.is_agent);
 }
+
+#[test]
+fn any_configured_local_origin_is_accepted() {
+    let origins = [
+        Url::parse("https://localhost:8090").unwrap(),
+        Url::parse("https://os.aesv.io").unwrap(),
+    ];
+    for url in ["https://os.aesv.io/app/home", "https://localhost:8090/app/login", "macro://login"] {
+        let url = Url::parse(url).unwrap();
+        assert!(is_allowed_original_url_with_local_origins(&url, &origins), "{url}");
+    }
+    for url in ["https://evil.example/app", "http://os.aesv.io/app/home", "https://os.aesv.io:8443/app"] {
+        let url = Url::parse(url).unwrap();
+        assert!(!is_allowed_original_url_with_local_origins(&url, &origins), "{url}");
+        assert!(!is_allowed_original_url_with_local_origins(&url, &[]), "{url}");
+    }
+}

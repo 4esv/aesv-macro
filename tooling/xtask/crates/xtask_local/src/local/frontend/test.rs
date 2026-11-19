@@ -151,3 +151,24 @@ fn a_second_frontend_build_in_a_checkout_waits_for_the_first() {
     locked_rx.recv().unwrap();
     second.join().unwrap();
 }
+
+#[test]
+fn staging_refills_the_bundle_dir_in_place() {
+    use std::os::unix::fs::MetadataExt;
+    let tmp = tempfile::tempdir().unwrap();
+    let (dir, from) = (tmp.path().join("frontend"), tmp.path().join("bundle"));
+    std::fs::create_dir_all(dir.join("assets")).unwrap();
+    std::fs::write(dir.join("old.js"), "old").unwrap();
+    std::fs::create_dir_all(from.join("assets")).unwrap();
+    std::fs::write(from.join("index.html"), "new").unwrap();
+    std::fs::write(from.join("assets/app.js"), "app").unwrap();
+    let inode = std::fs::metadata(&dir).unwrap().ino();
+
+    refill(&dir, &from).unwrap();
+
+    assert_eq!(std::fs::metadata(&dir).unwrap().ino(), inode, "a running proxy mounts this inode");
+    assert!(!dir.join("old.js").exists());
+    assert_eq!(std::fs::read_to_string(dir.join("index.html")).unwrap(), "new");
+    assert_eq!(std::fs::read_to_string(dir.join("assets/app.js")).unwrap(), "app");
+    assert!(!dir.with_extension("new").exists());
+}

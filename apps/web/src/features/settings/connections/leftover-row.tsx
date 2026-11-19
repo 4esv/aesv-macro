@@ -169,7 +169,7 @@ export function LeftoverRow(props: {
 
   const askRemove = (connected: boolean) =>
     setDisconnect({
-      title: connected ? 'Disconnect from Macro' : 'Remove',
+      title: connected ? 'Disconnect from aesv' : 'Remove',
       body: connected
         ? `Disconnect ${props.leftover.title}?`
         : `Remove ${props.leftover.title}?`,

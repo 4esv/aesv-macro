@@ -187,9 +187,9 @@ fn standalone_html_popup_remains_internal_and_is_allowed() {
 
     let plugin = test_plugin();
     for input in [
-        "http://localhost:3000/billing-lab.html",
-        "http://localhost:3000/billing-lab.html?scenario=paid#details",
-        "tauri://localhost/billing-lab.html",
+        "http://localhost:3000/standalone.html",
+        "http://localhost:3000/standalone.html?scenario=paid#details",
+        "tauri://localhost/standalone.html",
         "http://tauri.localhost/another-document.html",
     ] {
         let url = Url::parse(input).unwrap();
@@ -215,8 +215,8 @@ fn standalone_html_popup_remains_internal_and_is_allowed() {
 fn standalone_html_does_not_bypass_origin_policy() {
     let plugin = test_plugin();
     for input in [
-        "https://example.com/billing-lab.html",
-        "http://localhost:9999/billing-lab.html",
+        "https://example.com/standalone.html",
+        "http://localhost:9999/standalone.html",
     ] {
         assert!(
             matches!(
@@ -227,7 +227,7 @@ fn standalone_html_does_not_bypass_origin_policy() {
         );
     }
     assert!(matches!(
-        plugin.new_window_destination(&Url::parse("file:///etc/billing-lab.html").unwrap()),
+        plugin.new_window_destination(&Url::parse("file:///etc/standalone.html").unwrap()),
         NavigationOutput::Blocked
     ));
 }

@@ -24,8 +24,6 @@ export interface ComposeContextValue extends ComposeState {
   isMobile: Accessor<boolean>;
   scheduleEnabled: boolean;
   calendarEvents?: EmailCalendarEvents;
-  onUpgrade?: () => void;
-  viewerLoading?: Accessor<boolean>;
 }
 
 export interface ComposeState {
@@ -96,7 +94,6 @@ export interface ComposeState {
   inboxesLoading?: Accessor<boolean>;
   selectedInboxId?: Accessor<string | undefined>;
   onSelectInbox?: (inboxId: string, senderEmail?: string) => void;
-  hasPaidAccess: Accessor<boolean>;
 
   // Signature preview slot — rendered below the body. Provided by the new-email
   // composer and the AI chat composer (ChatCompose); the reply/forward input

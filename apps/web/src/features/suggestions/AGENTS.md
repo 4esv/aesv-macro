@@ -27,10 +27,8 @@ only, behind `enable-suggestions`.
   or draft; a routine suggestion saves its drafted routine.
 - `suggestion-actions.ts` is the only place that knows the app's splits, composer
   and routine suggestions.
-- The first generation starts in onboarding, not here: connecting an inbox
-  calls `/suggestions/generate` once when either the person's suggestions or
-  routine suggestions are on (`features/onboarding`,
-  `useSuggestionGenerationEnabled`).
+- There is no onboarding flow to start the first generation; it starts from
+  the feed's Regenerate action (`queries/generation.ts`).
 
 ## Start here
 

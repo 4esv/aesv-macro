@@ -1,7 +1,6 @@
 import type { IUser } from '@core/user/types';
 import { Avatar } from '@ui';
 import type { JSX } from 'solid-js';
-import { onboardingCacheHost } from './onboarding-contact-cache';
 
 export { recipientEntityMapper } from '@core/user/combinedRecipient';
 export {
@@ -9,10 +8,7 @@ export {
   useContactIdFilterSource,
   usePinnedContactUsers,
 } from '../../../queries/contacts/use-directory';
-export const getGraphqlSoupCacheHost = () =>
-  new URLSearchParams(location.search).has('onboarding-contacts')
-    ? onboardingCacheHost
-    : undefined;
+export const getGraphqlSoupCacheHost = () => undefined;
 export { useQueryAccount } from './test-account';
 export const emailToId = (email: string) => `macro|${email}`;
 export const idToEmail = (id: string) => id.replace(/^macro\|/, '');

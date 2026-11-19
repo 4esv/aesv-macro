@@ -39,14 +39,6 @@ export default defineConfig({
             return `${directory}/linear-import-adapters.ts`;
         }
         if (
-          importer?.endsWith('/onboarding/queries/team-contacts.ts') &&
-          [
-            '@queries/auth/account-scope',
-            '@queries/auth/use-query-account',
-          ].includes(source)
-        )
-          return `${directory}/task-filter-adapters.tsx`;
-        if (
           importer?.endsWith('/task-list/TaskListControls.tsx') &&
           [
             '@queries/soup/items',

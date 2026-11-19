@@ -7,7 +7,6 @@ import {
 } from '@app/features/calendar/components/CalendarPagerContext';
 import { useCalendarView } from '@app/features/calendar/components/CalendarViewContext';
 import { RangeUnavailableBanner } from '@app/features/calendar/components/RangeUnavailableBanner';
-import { ViewTour } from '@app/features/tours/ViewTour';
 import { createRenderQueue } from '@app/lib/utils/create-render-queue';
 import { createSizeBreakpoints } from '@app/util/create-size-breakpoints';
 import {
@@ -32,7 +31,7 @@ import {
   Suspense,
   Switch,
 } from 'solid-js';
-import { CALENDAR_TOUR, calendarTour } from '../tour';
+import { CALENDAR_TOUR } from '../tour';
 import { CalendarSidebar } from './CalendarSidebar';
 import { Header } from './Header';
 import { Page } from './Page';
@@ -234,7 +233,6 @@ function WorkspaceContent(props: { headerLeading?: JSX.Element }) {
               </Show>
               <ViewShell.Main>
                 <Header presentation="workspace" />
-                <ViewTour tour={calendarTour} />
                 <ViewShell.Content class="flex min-h-0 flex-1">
                   <CalendarPageContent />
                 </ViewShell.Content>

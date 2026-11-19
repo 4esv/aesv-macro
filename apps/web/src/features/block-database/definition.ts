@@ -1,7 +1,7 @@
 import { defineBlock, LoadErrors, loadResult } from '@core/block';
 import NotFound from '@core/component/AccessErrorViews/NotFound';
+import { enableDatabases, isFeatureEnabled } from '@core/constant/featureFlags';
 import { lazy } from 'solid-js';
-import { waitForDatabaseRollout } from './queries/database-rollout';
 
 export const definition = defineBlock({
   name: 'database',
@@ -9,7 +9,7 @@ export const definition = defineBlock({
   // Off, a database link is a 404 and the block's bundle is never fetched:
   // the loader preloads this component alongside `load`.
   component: lazy(async () =>
-    (await waitForDatabaseRollout())
+    isFeatureEnabled(enableDatabases)
       ? import('./component/Block')
       : { default: NotFound }
   ),
@@ -25,7 +25,7 @@ export const definition = defineBlock({
   openAnalyticsEnabled: true,
   editPermissionEnabled: true,
   async load(source, _intent) {
-    if (!(await waitForDatabaseRollout())) return LoadErrors.MISSING;
+    if (!isFeatureEnabled(enableDatabases)) return LoadErrors.MISSING;
     if (source.type !== 'dss') return LoadErrors.MISSING;
     const { loadDatabase } = await import('./queries/load-database');
     return await loadResult(loadDatabase(source.id));

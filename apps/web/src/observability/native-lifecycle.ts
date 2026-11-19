@@ -50,9 +50,6 @@ export function recordNativeWebviewStart(
         ? navigation.type
         : 'unknown',
   };
-  // Include the native launch and termination count on subsequent exceptions.
-  // These are runtime identifiers, not account data.
-  analytics.posthog.register(attributes);
   const startupAttributes = {
     ...attributes,
     ...documentLifecycle,

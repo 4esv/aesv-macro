@@ -1,0 +1,113 @@
+# Builds the service binaries the local stack runs (`.#local-stack-binaries`),
+# so the host never compiles them. The output is a Nix binary cache holding the
+# binaries and everything they link, because the stack mounts them with
+# /nix/store. The host imports it and starts the stack with --binaries-dir:
+#   nix copy --no-check-sigs --from file://<dir> $(cat <dir>/STORE_PATH)
+# The frontend job builds the static app bundle the same way, which the host
+# stages with AESV_FRONTEND_BUNDLE=<dir>.
+# A pull request into `aesv` keeps both as workflow artifacts. A push to `aesv`
+# also attaches them to a prerelease named local-stack-<sha7>.
+name: aesv binaries
+
+on:
+  push:
+    branches: [aesv]
+  pull_request:
+    branches: [aesv]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aesv-binaries-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      # NOTE: the workspace's release build outgrows the runner's free disk.
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      # NOTE: with Nix's defaults every service built at once on every core,
+      # and the 16 GB runner was killed (exit 143) after 1h45m. Two builds of
+      # two cores each, with swap, keep the peak inside it.
+      - name: Add swap
+        run: sudo fallocate -l 16G /swap2 && sudo chmod 600 /swap2 && sudo mkswap /swap2 && sudo swapon /swap2 && free -h
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            max-jobs = 2
+            cores = 2
+      # NOTE: the store is cached between runs, so a rebuild skips the
+      # dependency and service derivations that did not change. The build step
+      # stops before the job limit, so even a failed run saves what it built.
+      - uses: nix-community/cache-nix-action/restore@v7
+        with:
+          primary-key: aesv-nix-${{ github.sha }}
+          restore-prefixes-first-match: aesv-nix-
+      - name: Build
+        timeout-minutes: 300
+        run: nix build --print-build-logs .#local-stack-binaries
+      - uses: nix-community/cache-nix-action/save@v7
+        if: always()
+        with:
+          primary-key: aesv-nix-${{ github.sha }}-${{ github.run_attempt }}
+          gc-max-store-size-linux: 9G
+      - name: Pack as a binary cache
+        run: |
+          out=$(readlink -f result)
+          nix copy --to "file://$PWD/cache?compression=zstd" "$out"
+          echo "$out" > cache/STORE_PATH
+          ls "$out/bin"
+          tar -cf local-stack-binaries.tar -C cache .
+          du -h local-stack-binaries.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: local-stack-binaries
+          path: local-stack-binaries.tar
+          retention-days: 14
+          compression-level: 0
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Build
+        run: |
+          nix develop --command bash -c "bun install --frozen-lockfile &&
+            cargo run --quiet --manifest-path Cargo.toml --target-dir target/xtask -p xtask_local \
+              --features local-stack -- frontend-bundle --out $PWD/frontend-bundle"
+          tar -cf frontend-bundle.tar -C frontend-bundle .
+          du -h frontend-bundle.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-bundle
+          path: frontend-bundle.tar
+          retention-days: 14
+
+  release:
+    if: github.event_name != 'pull_request'
+    needs: [build, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="local-stack-${GITHUB_SHA::7}"
+          gh release create "$tag" -R "$GITHUB_REPOSITORY" \
+            local-stack-binaries/local-stack-binaries.tar frontend-bundle/frontend-bundle.tar \
+            --target "$GITHUB_SHA" --prerelease --title "$tag" --notes "Local stack binaries and frontend for $GITHUB_SHA."

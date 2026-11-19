@@ -117,7 +117,7 @@ export default {
     agentHint: 'Oma agenttiistunto',
     routineLabel: 'Rutiini',
     routineDescription:
-      'Suorita malli tai agentti aikataulun tai Macro-toiminnan mukaan',
+      'Suorita malli tai agentti aikataulun tai aesv-toiminnan mukaan',
     routineHint: 'Aikataulut ja toimintokäynnistimet',
     databaseLabel: 'Tietokanta',
     databaseDescription: 'Luo tietokanta',
@@ -324,7 +324,7 @@ export default {
     projectShortTagline: 'Järjestä liittyvät tehtävät',
     reminderTagline: 'Muistutus valitsemanasi aikana',
     reminderDetails:
-      'Aseta muistutus asiasta, johon haluat palata.\nValitse aika, niin Macro muistuttaa sinua.',
+      'Aseta muistutus asiasta, johon haluat palata.\nValitse aika, niin aesv muistuttaa sinua.',
     reminderExample1: 'Soita takaisin',
     reminderExample2: 'Tarkista perjantaina',
     reminderExample3: 'Uusi lisenssi',
@@ -403,7 +403,7 @@ export default {
     guideTag:
       'Merkitse työtä tunnisteilla, jotta voit järjestää ja suodattaa sitä projektien välillä.',
     guideConversation: 'Aloita keskustelu olemassa olevan agentin kanssa.',
-    guideWorkAgent: 'Luo avustaja, jolla on ohjeet ja pääsy Macro-työtilaasi.',
+    guideWorkAgent: 'Luo avustaja, jolla on ohjeet ja pääsy aesv-työtilaasi.',
     guideCodingAgent:
       'Luo agentti, joka toimii yhdistetyssä koodausympäristössä.',
     guideRoutine:
@@ -691,7 +691,6 @@ export default {
     more: 'Lisää',
     moreOptions: 'Lisää vaihtoehtoja',
     create: 'Luo',
-    getMobileApp: 'Hanki mobiilisovellus',
     signedInAs: 'Kirjautuneena: {{name}}',
     commandMenu: 'Komentovalikko',
     searchEverything: 'Hae kaikkialta',
@@ -715,10 +714,10 @@ export default {
     updateAction: 'Päivitä',
     updateDesktopReadyTitle: 'Työpöytäsovelluksen päivitys valmis',
     updateNativeDescription:
-      'Käynnistä Macro uudelleen asentaaksesi päivityksen, tai jatka työskentelyä, niin se asennetaan, kun suljet sovelluksen.',
+      'Käynnistä aesv uudelleen asentaaksesi päivityksen, tai jatka työskentelyä, niin se asennetaan, kun suljet sovelluksen.',
     updateRestartAndUpdate: 'Käynnistä uudelleen ja päivitä',
     updateNativePreparingDescription:
-      'Tallennetaan työtäsi ennen kuin Macro käynnistyy uudelleen päivityksen asentamiseksi.',
+      'Tallennetaan työtäsi ennen kuin aesv käynnistyy uudelleen päivityksen asentamiseksi.',
     updatePreparingRestart: 'Valmistellaan uudelleenkäynnistystä…',
   },
   settingsLanguage: {
@@ -731,7 +730,7 @@ export default {
     yourLanguage: 'Oma kieli',
     yourLanguageDescription: 'Ohittaa tiimin kielen vain sinun osaltasi.',
     yourLanguageNoTeamDescription:
-      'Kieli, jolla Macro näytetään sinulle. Automaattinen käyttää selaimesi kieltä.',
+      'Kieli, jolla aesv näytetään sinulle. Automaattinen käyttää selaimesi kieltä.',
     useTeamLanguage: 'Käytä tiimin kieltä ({{language}})',
     automatic: 'Automaattinen ({{language}})',
     teamAutomatic: 'Automaattinen (kunkin oman selaimen kieli)',

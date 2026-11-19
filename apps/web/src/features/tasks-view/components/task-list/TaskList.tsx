@@ -91,8 +91,6 @@ export type TaskListProps = {
   loadingContent?: JSX.Element;
   errorContent?: JSX.Element;
   referencePropertyIds?: readonly string[];
-  /** Pinned above the rows, such as the main Tasks list's tutorial row. */
-  listStart?: JSX.Element;
 };
 
 export function TaskList(props: TaskListProps) {
@@ -555,7 +553,6 @@ export function TaskList(props: TaskListProps) {
                     items={visibleRows()}
                     isSticky={(row) => row.kind === 'group-header'}
                     focusedIndex={list.focus.index()}
-                    start={props.listStart}
                     onScroll={() => {
                       recordScrollAnchor();
                       checkNearEnd();

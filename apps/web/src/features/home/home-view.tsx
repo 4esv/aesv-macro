@@ -1,7 +1,6 @@
 import { useViewShell, ViewShell } from '@app/components/view-shell';
 import { SidebarCreateHeader } from '@app/components/view-shell/SidebarCreateButton';
 import { calendarSearch } from '@app/features/calendar-view/calendar-url';
-import { ViewTour } from '@app/features/tours/ViewTour';
 import { createSearchParams, SplitRouter } from '@app/lib/split-router';
 import { TraceFlow } from '@app/observability/flow';
 import { homeCalendarRoute } from '@app/routes/routes';
@@ -21,10 +20,8 @@ import { HomeList } from './components/HomeList';
 import { HomeListLayout } from './components/HomeListLayout';
 import { HomeListSkeleton } from './components/HomeListSkeleton';
 import { HomeReturnBreadcrumb } from './components/HomeReturnBreadcrumb';
-import { HomeSetupPromotion } from './components/HomeSetupPromotion';
 import { HomeTabs } from './components/HomeTabs';
 import { HomeViewProvider, useHomeView } from './home-view-context';
-import { homeTour } from './tour';
 import type { HomeViewStateOptions } from './types';
 
 const HomeProjectPreview = lazyNamed(
@@ -78,9 +75,7 @@ function HomeListPane(props: {
         props.onNewChat();
         showContent();
       }}
-      footer={<HomeSetupPromotion class="px-(--sidebar-gutter) py-2" />}
     >
-      <ViewTour tour={homeTour} />
       <DebugSuspense name="HomeView.list" fallback={<HomeFallback />}>
         <TraceFlow name="home.list">
           <HomeList

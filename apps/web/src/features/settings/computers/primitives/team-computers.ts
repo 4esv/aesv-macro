@@ -8,7 +8,7 @@ import type { ComputerStatus } from '@service-auth/computers';
 /**
  * The current team's live (not released) Macro computers. Computers are
  * team-only and behind `enable-macro-computers`: with the flag off nothing is
- * fetched or shown, so Settings and Billing look as they do without them.
+ * fetched or shown, so Settings looks as it does without them.
  */
 export function useTeamComputers() {
   const flag = useFeatureFlag(enableMacroComputers);
@@ -24,7 +24,6 @@ export function useTeamComputers() {
 
   return {
     enabled,
-    canPurchase: enabled,
     computers,
     failed: () => query.isError,
   };

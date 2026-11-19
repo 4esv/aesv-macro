@@ -1,26 +1,9 @@
 import { expect, type Page, type Route, test } from '@playwright/test';
-import type { ComputerStatus, SizeOffer } from '@service-auth/computers';
+import type { ComputerStatus } from '@service-auth/computers';
 import type { Harness as RegisteredHarness } from '@service-storage/client';
 
 /** Where to also copy every screenshot, for a PR; unset keeps them in test-results. */
 const screenshotDirectory = process.env.COMPUTERS_SCREENSHOT_DIR;
-
-const offers: SizeOffer[] = [
-  {
-    size: 'standard',
-    vcpus: 2,
-    memoryGb: 8,
-    diskGb: 64,
-    quote: {
-      size: 'standard',
-      priceId: 'price_standard',
-      amount: 4000,
-      currency: 'usd',
-      interval: 'month',
-    },
-    soldOut: false,
-  },
-];
 
 const computer: ComputerStatus = {
   id: 'computer-1',
@@ -100,14 +83,9 @@ test('closes during setup, is told the computer is ready, and finishes from the 
   page,
 }) => {
   test.setTimeout(120_000);
-  let computers: ComputerStatus[] = [];
-  await page.route('**/auth/team/computers', (route) => {
-    if (route.request().method() === 'GET') return json(route, 200, computers);
-    computers = [computer];
-    return json(route, 200, { computerId: 'computer-1', state: 'ready' });
-  });
-  await page.route('**/auth/team/computers/offers', (route) =>
-    json(route, 200, offers)
+  let computers: ComputerStatus[] = [computer];
+  await page.route('**/auth/team/computers', (route) =>
+    json(route, 200, computers)
   );
   await page.route('**/auth/team/computers/*/setup-complete', (route) => {
     computers = computers.map((current) => ({
@@ -120,21 +98,16 @@ test('closes during setup, is told the computer is ready, and finishes from the 
   await page.goto('/');
   // A cold dev server can take a while to serve the first page.
   await expect(
-    page.getByRole('button', { name: 'Get a computer' })
+    row(page).getByRole('button', { name: 'Finish setup' })
   ).toBeVisible({ timeout: 60_000 });
   await pace(page);
-  await page.getByRole('button', { name: 'Get a computer' }).click();
-  await pace(page);
-  await dialog(page)
-    .getByRole('button', { name: 'Buy · $40.00/month' })
-    .click();
+  await row(page).getByRole('button', { name: 'Finish setup' }).click();
   await expect(
     dialog(page).getByRole('heading', { name: "Let's set up an agent on it" })
   ).toBeVisible();
   await pace(page);
 
-  // Closing right after Buy never cancels anything: the row carries the live
-  // setup line.
+  // Closing mid-setup cancels nothing: the row carries the live setup line.
   await dialog(page).getByRole('button', { name: 'Close' }).click();
   await expect(dialog(page)).toHaveCount(0);
   await expect(row(page)).toContainText(/Setting up/);
@@ -233,9 +206,6 @@ test('a failed setup notice says why and reopens setup to Retry', async ({
   };
   await page.route('**/auth/team/computers', (route) =>
     json(route, 200, [failed])
-  );
-  await page.route('**/auth/team/computers/offers', (route) =>
-    json(route, 200, offers)
   );
   await page.goto('/');
   await expect(row(page)).toContainText(

@@ -116,7 +116,7 @@ export default {
     agentDescription: '에이전트 세션 만들기',
     agentHint: '전용 에이전트 세션',
     routineLabel: '루틴',
-    routineDescription: '일정 또는 Macro 활동에 따라 모델이나 에이전트 실행',
+    routineDescription: '일정 또는 aesv 활동에 따라 모델이나 에이전트 실행',
     routineHint: '일정 및 활동 트리거',
     databaseLabel: '데이터베이스',
     databaseDescription: '데이터베이스 만들기',
@@ -401,7 +401,7 @@ export default {
     guideTag: '작업에 태그를 붙여 프로젝트 전반에서 정리하고 필터링합니다.',
     guideConversation: '기존 에이전트와 대화를 시작합니다.',
     guideWorkAgent:
-      '지침과 Macro 워크스페이스 접근 권한을 갖춘 어시스턴트를 만듭니다.',
+      '지침과 aesv 워크스페이스 접근 권한을 갖춘 어시스턴트를 만듭니다.',
     guideCodingAgent: '연결된 코딩 환경에서 작동하는 에이전트를 만듭니다.',
     guideRoutine: '정기 일정에 따라 실행되는 에이전트를 설정합니다.',
     guideCompany: '조직과 소속 인물, 조직과의 관계를 추적합니다.',
@@ -660,7 +660,6 @@ export default {
     more: '더보기',
     moreOptions: '옵션 더보기',
     create: '만들기',
-    getMobileApp: '모바일 앱 받기',
     signedInAs: '{{name}}(으)로 로그인됨',
     commandMenu: '명령 메뉴',
     searchEverything: '모든 항목 검색',
@@ -680,7 +679,7 @@ export default {
     updateReload: '새로고침',
     updateReadyTitle: '업데이트 준비 완료',
     updateBundleDescription:
-      'Macro 데스크톱 앱의 새 버전을 다운로드했습니다. 업데이트하면 사용할 수 있습니다.',
+      'aesv 데스크톱 앱의 새 버전을 다운로드했습니다. 업데이트하면 사용할 수 있습니다.',
     updateAction: '업데이트',
     updateDesktopReadyTitle: '데스크톱 앱 업데이트 준비 완료',
     updateNativeDescription:

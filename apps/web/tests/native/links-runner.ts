@@ -37,7 +37,7 @@ const server = Bun.serve({
   port: 3009,
   fetch(request) {
     const path = new URL(request.url).pathname;
-    if (path === '/billing-lab.html') {
+    if (path === '/standalone.html') {
       return new Response(
         '<!doctype html><title>Standalone HTML document</title><h1>Standalone document</h1>',
         {
@@ -211,10 +211,7 @@ try {
   await browser.waitUntil(
     async () => (await browser!.getTitle()) === 'Standalone HTML document'
   );
-  assert.equal(
-    await browser.getUrl(),
-    'http://localhost:3009/billing-lab.html'
-  );
+  assert.equal(await browser.getUrl(), 'http://localhost:3009/standalone.html');
   await browser.closeWindow();
   await browser.switchToWindow(originalWindow);
   assert.equal(await browser.getUrl(), originalUrl);

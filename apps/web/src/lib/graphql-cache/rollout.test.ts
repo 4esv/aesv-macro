@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   isTauri: vi.fn(() => false),
   graphqlEnabled: vi.fn(() => true),
-  isFeatureEnabled: vi.fn<(flag: string) => boolean | undefined>(),
+  killOverride: undefined as boolean | undefined,
   unsupportedBrowserReason: vi.fn<() => string | undefined>(),
 }));
 
@@ -15,16 +15,11 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableGraphqlSoup: { key: 'enable-graphql-soup' },
   disableBrowserTursoCache: {
     key: 'disable-browser-turso-cache',
-    override: undefined,
-  },
-  isFeatureEnabled: mocks.graphqlEnabled,
-}));
-vi.mock('@app/lib/analytics', () => ({
-  analytics: {
-    posthog: {
-      isFeatureEnabled: mocks.isFeatureEnabled,
+    get override() {
+      return mocks.killOverride;
     },
   },
+  isFeatureEnabled: mocks.graphqlEnabled,
 }));
 
 import { getBrowserTursoCacheRolloutDecision } from './rollout';
@@ -34,7 +29,7 @@ describe('browser Turso cache production gate', () => {
     vi.clearAllMocks();
     mocks.isTauri.mockReturnValue(false);
     mocks.graphqlEnabled.mockReturnValue(true);
-    mocks.isFeatureEnabled.mockReturnValue(undefined);
+    mocks.killOverride = undefined;
     mocks.unsupportedBrowserReason.mockReturnValue(undefined);
   });
 
@@ -57,7 +52,7 @@ describe('browser Turso cache production gate', () => {
   });
 
   it('lets the independent emergency kill win', () => {
-    mocks.isFeatureEnabled.mockReturnValue(true);
+    mocks.killOverride = true;
     expect(getBrowserTursoCacheRolloutDecision()).toMatchObject({
       enabled: false,
       reason: 'emergency-disabled',
@@ -72,18 +67,14 @@ describe('browser Turso cache production gate', () => {
     });
   });
 
-  it('does not read browser PostHog flags or subscribe on Tauri', () => {
+  it('leaves the native cache unchanged on Tauri', () => {
     mocks.isTauri.mockReturnValue(true);
-    mocks.graphqlEnabled.mockReturnValue(true);
-    mocks.isFeatureEnabled.mockImplementation(() => {
-      throw new Error('browser flag touched on Tauri');
-    });
+    mocks.killOverride = true;
 
     expect(getBrowserTursoCacheRolloutDecision()).toMatchObject({
       enabled: true,
       nativeCacheUnchanged: true,
     });
-    expect(mocks.isFeatureEnabled).not.toHaveBeenCalled();
   });
 
   it('imports without constructing browser workers', async () => {

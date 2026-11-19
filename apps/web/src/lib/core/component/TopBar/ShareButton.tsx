@@ -12,7 +12,6 @@ import {
   ShareRequestIcon,
   useShareRequestTrigger,
 } from '@app/features/access-requests/share-request-trigger';
-import { DirectAccessInvite } from '@app/features/access-requests/views/DirectAccessInvite';
 import {
   updatePipelineSharePermissions,
   updatePipelineTeamShare,
@@ -152,9 +151,9 @@ import {
   getTeamShareScope,
   getTeamShareScopeCopy,
   isTeamShareSupportedForItem,
-  LINK_SHARE_SCOPE_OPTIONS,
   type LinkSharePayload,
   type LinkShareScope,
+  linkShareScopeOptionsFor,
   type ShareItemType,
   type TeamSharePayload,
   type TeamShareScope,
@@ -515,7 +514,7 @@ function LinkSharingControls(props: LinkSharingControlsProps) {
             aria-label="Link sharing scope"
             size="sm"
             value={scope()}
-            options={LINK_SHARE_SCOPE_OPTIONS}
+            options={linkShareScopeOptionsFor(scope())}
             onChange={props.setLinkShareScope}
           />
         </div>
@@ -751,24 +750,12 @@ function MobileShareDrawer(props: MobileShareDrawerProps) {
               display: effectiveActiveTab() === 'share' ? undefined : 'none',
             }}
           >
-            <Show
-              when={
-                props.itemType === 'external_chat' &&
-                props.userPermissions === Permissions.OWNER
-              }
-              fallback={
-                <Show when={!props.canForward}>
-                  <p class="px-4 py-3 text-sm text-ink-muted">
-                    {RESTRICTED_SHARE_DESCRIPTIONS[props.itemType]}
-                  </p>
-                </Show>
-              }
-            >
-              <DirectAccessInvite
-                source={props.requests}
-                description="Invite someone to read this conversation. Sending requires their own connected account."
-              />
+            <Show when={!props.canForward}>
+              <p class="px-4 py-3 text-sm text-ink-muted">
+                {RESTRICTED_SHARE_DESCRIPTIONS[props.itemType]}
+              </p>
             </Show>
+            {/* FIX: W-2094 brings back the guest invite (DirectAccessInvite) once it sends a file.aesv.io link; os.aesv.io is owner-only. */}
             <Show when={props.canForward}>
               <AfterFirstPaint fallback={<ShareFormSkeleton />}>
                 <ForwardToChannel
@@ -1046,9 +1033,6 @@ export function ShareModal(props: ShareModalProps) {
     props.itemType === 'crm_pipeline' && canSharePipeline()
       ? Permissions.OWNER
       : userPermissions();
-  const directSharingOwner = () =>
-    props.itemType === 'external_chat' &&
-    props.userPermissions === Permissions.OWNER;
   const editPermissionEnabled = () => {
     if (props.itemType === 'agent_session' || props.itemType === 'email')
       return true;
@@ -1718,17 +1702,12 @@ export function ShareModal(props: ShareModalProps) {
             />
           </Panel.Header>
           <Panel.Body>
-            <Show when={!canForward() && !directSharingOwner()}>
+            <Show when={!canForward()}>
               <p class="px-4 py-3 text-sm text-ink-muted">
                 {RESTRICTED_SHARE_DESCRIPTIONS[props.itemType]}
               </p>
             </Show>
-            <Show when={directSharingOwner()}>
-              <DirectAccessInvite
-                source={requests}
-                description="Invite someone to read this conversation. Sending requires their own connected account."
-              />
-            </Show>
+            {/* FIX: W-2094 brings back the guest invite (DirectAccessInvite) once it sends a file.aesv.io link; os.aesv.io is owner-only. */}
             <Show when={canForward()}>
               <AfterFirstPaint fallback={<ShareFormSkeleton />}>
                 <ForwardToChannel

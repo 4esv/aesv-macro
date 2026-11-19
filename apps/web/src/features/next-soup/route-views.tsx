@@ -1,6 +1,5 @@
 import { CallsView } from '@app/features/calls-view/views/calls-view';
 import { MobileSearchResults } from '@app/features/command/mobile/MobileSearchResults';
-import { ViewTour } from '@app/features/tours/ViewTour';
 import { usePosthog } from '@app/lib/analytics/posthog';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import {
@@ -16,7 +15,6 @@ import type { SetPredicatesInput } from './filters/filter-store/predicates-store
 import type { Query } from './filters/filter-store/types';
 import { getViewPreset } from './sidebar/soup-filter-presets';
 import { SoupView } from './soup-view/soup-view';
-import { foldersTour } from './tour';
 import { useRecentViewFlag } from './use-recent-view-flag';
 
 function TrackedRecentView() {
@@ -71,7 +69,6 @@ export const FoldersRouteView = withAuth(() => {
       initialFilters={preset?.filters}
       initialClientFilters={preset?.clientFilters}
       initialGroupBy={preset?.groupBy}
-      tour={<ViewTour tour={foldersTour} />}
     />
   );
 });

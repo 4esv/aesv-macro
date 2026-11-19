@@ -8,14 +8,10 @@ const mocks = vi.hoisted(() => ({
   discover: vi.fn(),
   importChannels: vi.fn(),
   failure: vi.fn(),
-  hidePromotion: vi.fn(),
 }));
 const [state, setState] = createSignal<ImportState>({ runs: [], entities: [] });
 
 vi.mock('@core/context/user', () => ({ useUserId: () => () => 'me' }));
-vi.mock('@app/features/connector-import/primitives/promotion', () => ({
-  hideImportPromotion: mocks.hidePromotion,
-}));
 vi.mock('@core/component/Toast/Toast', () => ({
   toast: { failure: mocks.failure },
 }));
@@ -151,13 +147,11 @@ describe('Slack channel import card', () => {
     fireEvent.click(checkbox('Select general'));
     fireEvent.click(screen.getByRole('button', { name: 'Import 1 channel' }));
     mocks.importChannels.mock.calls[0][1].onSuccess();
-    expect(mocks.hidePromotion).not.toHaveBeenCalled();
     setState({
       runs: [],
       entities: [channel('general', { status: 'importing' })],
     });
     expect(screen.getByText('Importing…')).toBeTruthy();
-    expect(mocks.hidePromotion).not.toHaveBeenCalled();
     expect(
       screen.queryByRole('checkbox', { name: 'Select general' })
     ).toBeNull();
@@ -185,7 +179,6 @@ describe('Slack channel import card', () => {
         .getAttribute('href')
     ).toContain('/app/channel/macro-channel');
     expect(screen.getByText('by a teammate', { exact: false })).toBeTruthy();
-    expect(mocks.hidePromotion).toHaveBeenCalledWith('me', 'channels');
   });
 
   it('shows empty and failed discoveries with retry', () => {

@@ -12,10 +12,6 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock('@app/lib/analytics', () => ({ analytics: { track: mocks.track } }));
 vi.mock('@block-chat/definition', () => ({ DEFAULT_CHAT_NAME: 'Chat' }));
-vi.mock('@core/constant/PaywallState', () => ({
-  PaywallKey: {},
-  usePaywallState: vi.fn(),
-}));
 vi.mock('@queries/auth', () => ({ invalidateUserQuota: mocks.quota }));
 vi.mock('@queries/auth/account-scope', () => ({
   assertQueryAccount: (owner: unknown) => {
@@ -40,7 +36,6 @@ vi.mock('@service-storage/client', () => ({
 vi.mock('@service-storage/util/uploadToPresignedUrl', () => ({
   uploadToPresignedUrl: vi.fn(),
 }));
-vi.mock('./handlePaymentError', () => ({ isPaymentError: vi.fn() }));
 vi.mock('./hash', () => ({ contentHash: vi.fn() }));
 
 beforeEach(() => {

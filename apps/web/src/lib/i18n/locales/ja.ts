@@ -662,7 +662,6 @@ export default {
     more: 'その他',
     moreOptions: 'その他のオプション',
     create: '作成',
-    getMobileApp: 'モバイルアプリを入手',
     signedInAs: '{{name}}としてログイン中',
     commandMenu: 'コマンドメニュー',
     searchEverything: 'すべてを検索',
