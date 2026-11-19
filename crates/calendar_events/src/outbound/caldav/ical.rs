@@ -81,11 +81,17 @@ impl Prop {
     }
 
     fn render(&self) -> String {
+        // NOTE: values reach here from invitations and from the agent toolset.
+        // A CR or LF would start a new content line and a `"` would end a
+        // parameter's quoting, so neither survives into the output.
+        let one_line = |text: &str| text.replace(['\r', '\n'], "");
         let mut line = self.name.clone();
         for (key, value) in &self.params {
             line.push(';');
             line.push_str(key);
             line.push('=');
+            let value = one_line(value).replace('"', "");
+            let value = value.as_str();
             if value.contains([':', ';', ',']) {
                 line.push('"');
                 line.push_str(value);
@@ -95,7 +101,7 @@ impl Prop {
             }
         }
         line.push(':');
-        line.push_str(&self.value);
+        line.push_str(&one_line(&self.value));
         line
     }
 
@@ -140,7 +146,7 @@ pub(crate) fn escape_text(text: &str) -> String {
         .replace(';', "\\;")
         .replace(',', "\\,")
         .replace("\r\n", "\\n")
-        .replace('\n', "\\n")
+        .replace(['\r', '\n'], "\\n")
 }
 
 /// A `BEGIN:`/`END:` block with its properties and nested components.
@@ -397,14 +403,17 @@ fn parse_duration(value: &str) -> Option<Duration> {
         }
         let digits = rest.find(|c: char| !c.is_ascii_digit())?;
         let amount: i64 = rest[..digits].parse().ok()?;
-        total += match (rest.as_bytes()[digits], in_time) {
-            (b'W', false) => Duration::weeks(amount),
-            (b'D', false) => Duration::days(amount),
-            (b'H', true) => Duration::hours(amount),
-            (b'M', true) => Duration::minutes(amount),
-            (b'S', true) => Duration::seconds(amount),
+        // NOTE: the amount is any i64 an invitation carries, and chrono's
+        // plain constructors and `+` panic out of range, so every step is checked.
+        let step = match (rest.as_bytes()[digits], in_time) {
+            (b'W', false) => Duration::try_weeks(amount),
+            (b'D', false) => Duration::try_days(amount),
+            (b'H', true) => Duration::try_hours(amount),
+            (b'M', true) => Duration::try_minutes(amount),
+            (b'S', true) => Duration::try_seconds(amount),
             _ => return None,
-        };
+        }?;
+        total = total.checked_add(&step)?;
         rest = &rest[digits + 1..];
     }
     Some(if negative { -total } else { total })
@@ -421,7 +430,7 @@ pub(crate) fn event_time(event: &Component) -> Option<(EventTime, Option<Tz>)> {
         EventStart::AllDay(start_date) => {
             let end_date = match (end, duration) {
                 (Some(EventStart::AllDay(end)), _) => end,
-                (_, Some(duration)) => start_date + duration,
+                (_, Some(duration)) => start_date.checked_add_signed(duration)?,
                 _ => start_date + Duration::days(1),
             };
             // An all-day event ending on its start day lasts that one day.
@@ -434,7 +443,7 @@ pub(crate) fn event_time(event: &Component) -> Option<(EventTime, Option<Tz>)> {
             let ends_at = match (end, duration) {
                 (Some(EventStart::Timed(end)), _) => end,
                 (Some(EventStart::AllDay(date)), _) => date.and_hms_opt(0, 0, 0)?.and_utc(),
-                (None, Some(duration)) => starts_at + duration,
+                (None, Some(duration)) => starts_at.checked_add_signed(duration)?,
                 (None, None) => starts_at,
             };
             EventTime::Timed {

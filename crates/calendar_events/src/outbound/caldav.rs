@@ -93,6 +93,21 @@ enum Precondition<'a> {
 }
 
 impl CalDavCalendarClient {
+    /// NOTE: every href the server returns is joined and then sent the Basic
+    /// header, so an absolute href could carry the Apple ID and app password to
+    /// another host or over plain http. Only the base URL's own origin, or an
+    /// https iCloud partition host when the base is iCloud, gets the credential.
+    fn may_receive_credential(&self, url: &Url) -> bool {
+        let icloud = |url: &Url| {
+            url.scheme() == "https"
+                && url.port_or_known_default() == Some(443)
+                && url
+                    .host_str()
+                    .is_some_and(|host| host == "icloud.com" || host.ends_with(".icloud.com"))
+        };
+        url.origin() == self.base_url.origin() || (icloud(&self.base_url) && icloud(url))
+    }
+
     async fn send(
         &self,
         credential: &str,
@@ -107,6 +122,12 @@ impl CalDavCalendarClient {
                 "the CalDAV credential is not apple-id:app-password",
             )
         })?;
+        if !self.may_receive_credential(url) {
+            return Err(permanent(format!(
+                "refusing to send the CalDAV credential to {}",
+                url.origin().ascii_serialization()
+            )));
+        }
         let method = Method::from_bytes(method.as_bytes()).expect("DAV methods are valid tokens");
         let mut request = self
             .client

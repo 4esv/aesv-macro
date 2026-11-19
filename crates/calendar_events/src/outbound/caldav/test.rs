@@ -544,3 +544,67 @@ async fn syncs_and_round_trips_an_event_against_a_caldav_server() {
         .await
         .unwrap();
 }
+
+#[test]
+fn an_out_of_range_duration_or_trigger_skips_the_event_instead_of_panicking() {
+    // The first two parse but overflow a date, so the event is skipped. The
+    // last is out of range even as a duration, so it is ignored like any
+    // unreadable DURATION and the event keeps its start as its end.
+    for (duration, skipped) in [
+        ("P1000000000D", true),
+        ("P9999999999W", true),
+        ("PT99999999999999H", false),
+    ] {
+        let text = format!("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:a\r\nDTSTART:20260101T000000Z\r\nDURATION:{duration}\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:-{duration}\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        let calendar = Component::parse(&text).unwrap();
+        let event = calendar.master().unwrap();
+        assert_eq!(ical::event_time(event).is_none(), skipped, "{duration}");
+        assert_eq!(ical::reminders(event), crate::domain::models::EventReminders::default(), "{duration}");
+    }
+    let text = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:a\r\nDTSTART;VALUE=DATE:20260101\r\nDURATION:P1000000000D\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    let calendar = Component::parse(text).unwrap();
+    assert!(ical::event_time(calendar.master().unwrap()).is_none());
+}
+
+#[test]
+fn a_line_break_in_a_value_or_parameter_cannot_add_a_content_line() {
+    let mut event = Component::new("VEVENT");
+    event.props.push(ical::attendee_prop(&CalendarAttendeeInput {
+        email: "a@b.com\r\nATTENDEE:mailto:x@evil.example".into(),
+        is_optional: false,
+        response_status: None,
+    }));
+    let mut organizer = ical::Prop::new("ORGANIZER", "mailto:boss@example.com");
+    organizer.set_param("CN", "Boss\"\r\nATTENDEE:mailto:y@evil.example");
+    event.props.push(organizer);
+    event.props.push(ical::Prop::new("SUMMARY", ical::escape_text("one\rtwo")));
+    let text = event.render();
+    let lines: Vec<_> = text.split("\r\n").filter(|line| !line.is_empty()).collect();
+    // Folding can split a long line, so count the unfolded content lines.
+    let unfolded: Vec<_> = lines.iter().filter(|line| !line.starts_with(' ')).collect();
+    assert_eq!(unfolded.iter().filter(|line| line.starts_with("ATTENDEE")).count(), 1, "{text}");
+    assert_eq!(unfolded.iter().filter(|line| line.starts_with("ORGANIZER")).count(), 1, "{text}");
+    assert!(!text.contains("\r\nATTENDEE:mailto:x@") && !text.contains("\r\nATTENDEE:mailto:y@"), "{text}");
+    assert!(text.contains("SUMMARY:one\\ntwo"), "{text}");
+    assert_eq!(text.matches('\r').count(), text.matches("\r\n").count(), "{text}");
+}
+
+#[test]
+fn the_credential_goes_only_to_the_base_origin_or_an_https_icloud_host() {
+    let icloud = CalDavCalendarClient::icloud(Client::new());
+    for (url, allowed) in [
+        ("https://caldav.icloud.com/123/principal/", true),
+        ("https://p01-caldav.icloud.com/123/calendars/home/", true),
+        ("http://p01-caldav.icloud.com/123/calendars/home/", false),
+        ("https://p01-caldav.icloud.com:8443/123/", false),
+        ("https://evil.example/123/", false),
+        ("https://icloud.com.evil.example/123/", false),
+    ] {
+        let url = Url::parse(url).unwrap();
+        assert_eq!(icloud.may_receive_credential(&url), allowed, "{url}");
+    }
+    let local = CalDavCalendarClient::new(Client::new(), Url::parse("http://127.0.0.1:5232/").unwrap());
+    assert!(local.may_receive_credential(&Url::parse("http://127.0.0.1:5232/user/cal/").unwrap()));
+    assert!(!local.may_receive_credential(&Url::parse("http://127.0.0.1:5233/user/cal/").unwrap()));
+    assert!(!local.may_receive_credential(&Url::parse("https://p01-caldav.icloud.com/").unwrap()));
+}
