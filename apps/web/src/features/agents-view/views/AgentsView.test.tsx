@@ -51,8 +51,6 @@ vi.mock('@app/features/settings/IntegrationsPage', () => ({
 vi.mock('@app/features/soup/entity-notifications', () => ({
   withEntityNotifications: (entity: unknown) => entity,
 }));
-vi.mock('@app/features/tours/ViewTour', () => ({ ViewTour: () => null }));
-vi.mock('@app/features/video-tutorials', () => ({ TutorialPill: () => null }));
 vi.mock('@app/lib/analytics/posthog', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));

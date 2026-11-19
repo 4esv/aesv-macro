@@ -84,7 +84,7 @@ async function boot(world: WorldCore) {
     isFeatureEnabled: () => true,
   }));
   vi.doMock('@app/lib/analytics', () => ({
-    analytics: { track: () => {}, posthog: { captureException: () => {} } },
+    analytics: { track: () => {} },
   }));
   vi.doMock('@core/util/platform', () => ({ isTauri: () => false }));
   vi.doMock('@core/mobile/nativeStagedUpload', () => ({

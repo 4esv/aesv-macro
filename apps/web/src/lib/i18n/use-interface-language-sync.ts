@@ -1,4 +1,3 @@
-import { useAnalytics } from '@app/lib/analytics/analytics-context';
 import { useUserLanguageQuery } from '@queries/auth/user-language';
 import { queryReadyGate } from '@queries/gate';
 import { useCurrentTeamQuery } from '@queries/team/teams';
@@ -12,7 +11,6 @@ import { resolveInterfaceLanguage } from './languages';
  * settings have loaded the language remembered on this device stays in place.
  */
 export function useInterfaceLanguageSync() {
-  const analytics = useAnalytics();
   const userLanguage = useUserLanguageQuery();
   const team = useCurrentTeamQuery();
 
@@ -31,6 +29,5 @@ export function useInterfaceLanguageSync() {
       browserInterfaceLanguage
     );
     setInterfaceLanguage(language);
-    analytics.setInterfaceLanguage(language);
   });
 }

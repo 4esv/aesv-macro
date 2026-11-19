@@ -23,10 +23,6 @@ const mocks = vi.hoisted(() => ({
   setRouterSearch: (_value: string) => {},
 }));
 
-vi.mock('@app/features/paywall/use-checkout-completion-listener', () => ({
-  useCheckoutCompletionListener: () => () => false,
-}));
-
 vi.mock('@core/auth/logout', () => ({
   clearLocalAuthSession: mocks.clearLocalAuthSession,
 }));
@@ -245,9 +241,6 @@ describe('BasePathComponent', () => {
       expect(mocks.navigate).not.toHaveBeenCalled();
 
       mocks.setRouterSearch('?upgrade=true&referral_code=late');
-      await vi.waitFor(() =>
-        expect(sessionStorage.getItem('showUpgradeModal')).toBe('true')
-      );
       resolveUserInfo({ authenticated });
 
       await vi.waitFor(() =>
@@ -273,7 +266,6 @@ describe('BasePathComponent', () => {
         { replace: true }
       );
     });
-    expect(sessionStorage.getItem('showUpgradeModal')).toBe('true');
   });
 
   it('preserves native hash-router queries when sending a new user to welcome', async () => {

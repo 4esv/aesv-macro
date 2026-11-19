@@ -3,8 +3,6 @@ import { startPendingSession } from '@app/features/block-agent/context/pending-s
 import { AgentSettings } from '@app/features/settings/AgentSettings';
 import { IntegrationsPage } from '@app/features/settings/IntegrationsPage';
 import { withEntityNotifications } from '@app/features/soup/entity-notifications';
-import { ViewTour } from '@app/features/tours/ViewTour';
-import { TutorialPill } from '@app/features/video-tutorials';
 import {
   useGlobalBlockOrchestrator,
   useGlobalNotificationSource,
@@ -68,7 +66,6 @@ import { createConversationListView } from '../primitives/conversation-list-view
 import { createWorkspaceMode } from '../primitives/workspace-mode';
 import { agentConversationsQuery } from '../queries/agent-conversations-query';
 import { createAgentRosterSource } from '../queries/agent-roster-source';
-import { agentsTour } from '../tour';
 import {
   type AgentRequest,
   NewChatPage,
@@ -451,7 +448,6 @@ function AgentsWorkspace(props: { route?: AgentsRoute }) {
               </Show>
 
               <ViewShell.Main class="overflow-hidden">
-                <ViewTour tour={agentsTour} />
                 <main
                   class="main touch:pt-[calc(var(--mobile-content-inset-top,var(--safe-top,0px))+0.5rem)] touch:[&>*]:[--mobile-content-inset-top:0px]"
                   classList={{ hidden: isTouchDevice() && mobileList() }}
@@ -527,12 +523,6 @@ function AgentsWorkspace(props: { route?: AgentsRoute }) {
                                 availabilityLoading={rosterSource.availabilityLoading()}
                                 onStart={startConversation}
                                 onOpenRoster={openRoster}
-                                belowComposer={
-                                  <TutorialPill
-                                    tutorial="agents"
-                                    class="self-center"
-                                  />
-                                }
                               />
                             </div>
                           </Suspense>

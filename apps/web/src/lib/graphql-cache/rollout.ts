@@ -1,4 +1,3 @@
-import { analytics } from '@app/lib/analytics';
 import {
   disableBrowserTursoCache,
   enableGraphqlSoup,
@@ -32,8 +31,6 @@ export function getBrowserTursoCacheRolloutDecision(): BrowserTursoCacheRolloutD
     graphqlTransportEnabled,
     browserSupported: unsupportedBrowserReason() === undefined,
     disableEnvOverride: disableBrowserTursoCache.override,
-    posthogDisable: analytics.posthog.isFeatureEnabled(
-      disableBrowserTursoCache.key
-    ),
+    posthogDisable: undefined,
   });
 }

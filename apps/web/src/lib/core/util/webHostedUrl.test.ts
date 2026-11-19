@@ -30,6 +30,6 @@ it('points a development native build at the dev web deploy', () => {
 it('keeps the dev server URL in a native app running against it', () => {
   vi.stubEnv('DEV', true);
   vi.stubGlobal('__TAURI_INTERNALS__', {});
-  const served = '/src/features/video-tutorials/assets/mail.mp4';
+  const served = '/src/assets/mail.mp4';
   expect(webHostedUrl(served)).toBe(served);
 });

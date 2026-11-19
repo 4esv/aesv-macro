@@ -1,12 +1,9 @@
 import { listOwnedSlotName } from '@app/components/list';
-import { useSpreadsheetAccess } from '@app/features/block-spreadsheet/primitives/use-spreadsheet-access';
 import { openEntityInSplitFromUnifiedList } from '@app/features/next-soup/utils';
 import {
   type FacetSelection,
   useSoupListNavigationHotkeys,
 } from '@app/features/soup';
-import { ViewTour } from '@app/features/tours/ViewTour';
-import type { TutorialId } from '@app/features/video-tutorials';
 import { useFeatureFlag } from '@app/lib/analytics/posthog';
 import { usePending } from '@app/observability/flow';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';
@@ -55,7 +52,6 @@ import {
 } from './primitives/drive-state';
 import { createDriveDataSource } from './queries/drive-data-source';
 import { createDriveSidebarSource } from './queries/drive-sidebar-source';
-import { documentsTour } from './tour';
 import { DriveLoading, DriveWorkspace } from './views/drive-workspace';
 import { SignedOutDriveWorkspace } from './views/signed-out-drive-workspace';
 
@@ -68,16 +64,6 @@ function DriveComposition(props: { route: DriveRouteState }) {
   const userId = useUserId();
   const databasesFlag = useFeatureFlag(enableDatabases);
   const formsFlag = useFeatureFlag(enableForms);
-  const spreadsheetsEnabled = useSpreadsheetAccess();
-  // Docs, and the Blocks listed in Drive that are rolled out to this person.
-  const tutorials = () => {
-    const ids: TutorialId[] = ['docs'];
-
-    if (spreadsheetsEnabled()) ids.push('spreadsheets');
-    if (databasesFlag().enabled) ids.push('databases');
-
-    return ids;
-  };
   const notificationSource = useGlobalNotificationSource();
   const tagSets = useTagSets();
   const tagSetsReady = useTagSetsReady();
@@ -223,11 +209,10 @@ function DriveComposition(props: { route: DriveRouteState }) {
         list,
         sidebar,
         actions,
-        tutorials,
       }}
     >
       <KnownFoldersProvider value={knownFolders}>
-        <DriveWorkspace tour={<ViewTour tour={documentsTour} />} />
+        <DriveWorkspace />
       </KnownFoldersProvider>
     </DriveProvider>
   );

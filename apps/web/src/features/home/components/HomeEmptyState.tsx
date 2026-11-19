@@ -1,4 +1,3 @@
-import { DOCS_BASE } from '@app/constants/docs-links';
 import { useAddInboxFlow, useEmailLinksStatus } from '@core/email-link';
 import { fireAndForget } from '@core/util/fireAndForget';
 import EmptyStateInboxTrayGraphic from '@design/empty-state-inbox-tray.svg';
@@ -25,7 +24,6 @@ export function HomeEmptyState() {
             graphic={EmptyStateNoSearchMatchGraphic}
             title={`No results for "${search()}"`}
             description="Search across messages, documents, tasks, and more. Try a different query or broaden your filters."
-            documentationUrl={`${DOCS_BASE}/product/search`}
           />
         )}
       </Match>
@@ -53,7 +51,6 @@ export function HomeEmptyState() {
             label: 'Connect email',
             onClick: () => fireAndForget(startAddInbox(), 'add-inbox'),
           }}
-          documentationUrl={`${DOCS_BASE}/product/home`}
         />
       </Match>
 
@@ -69,7 +66,6 @@ export function HomeEmptyState() {
               Nothing to clear right now.
             </>
           }
-          documentationUrl={`${DOCS_BASE}/product/home`}
         />
       </Match>
 
@@ -78,7 +74,6 @@ export function HomeEmptyState() {
           graphic={EmptyStateInboxTrayGraphic}
           title="No activity yet"
           description="Your recent documents, sent emails, AI chats, and notifications will appear here."
-          documentationUrl={`${DOCS_BASE}/product/home`}
         />
       </Match>
     </Switch>

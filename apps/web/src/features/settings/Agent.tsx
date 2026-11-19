@@ -10,8 +10,8 @@ import { SettingsPage, SettingsSection } from './primitives';
 export function Agent() {
   return (
     <SettingsPage
-      title="Macro MCP server"
-      description="Connect other agents and tools to your Macro workspace."
+      title="aesv MCP server"
+      description="Connect other agents and tools to your aesv workspace."
     >
       <SettingsSection title="Connect a client">
         <McpSetupCards class="max-w-none" />

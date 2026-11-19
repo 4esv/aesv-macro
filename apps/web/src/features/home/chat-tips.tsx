@@ -1,10 +1,7 @@
-import { LIST_VIEW_DOCS_URL } from '@app/constants/docs-links';
 import { openAgentsPage } from '@app/features/agents-view/primitives/open-page';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { useSettingsState } from '@core/constant/SettingsState';
-import ArrowUpRightIcon from '@icon/system/regular/arrow-up-right.svg';
 import AtIcon from '@icon/system/regular/at.svg';
-import BookOpenIcon from '@icon/system/regular/book-open.svg';
 import ChevronRightIcon from '@icon/system/regular/caret-right.svg';
 import PaperPlaneTiltIcon from '@icon/system/regular/paper-plane-tilt.svg';
 import PlugsConnectedIcon from '@icon/system/regular/plugs-connected.svg';
@@ -29,7 +26,7 @@ const SETUP_ROW_ARROW_CLASSES = 'size-4 shrink-0 text-ink-extra-muted' as const;
 
 /**
  * First-run chat tips in the shared home row style: @mentions, background
- * sends, tool/agent connections, and the agent docs.
+ * sends, and tool/agent connections.
  */
 export function ChatTipsSection() {
   const layout = useSplitLayout();
@@ -75,16 +72,6 @@ export function ChatTipsSection() {
             <ChevronRightIcon class={SETUP_ROW_ARROW_CLASSES} />
           }
           onActivate={() => openSettings('Agent')}
-        />
-        <SetupRow
-          icon={<BookOpenIcon class="size-4" />}
-          title="Learn about the agent"
-          desc="What it can do and how to get the most out of it"
-          trailing={
-            /* The arrow MUST stay BLACK. See comment at top of file. */
-            <ArrowUpRightIcon class={SETUP_ROW_ARROW_CLASSES} />
-          }
-          href={LIST_VIEW_DOCS_URL.agents}
         />
       </div>
     </section>

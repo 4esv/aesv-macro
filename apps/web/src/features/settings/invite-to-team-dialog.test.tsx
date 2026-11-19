@@ -197,7 +197,7 @@ describe('InviteToTeamDialog', () => {
     });
   });
 
-  it('asks the inviter to give a heads-up with the invite link after sending', () => {
+  it('confirms the send without offering a public invite link', () => {
     const onClose = vi.fn();
     sendInvite(onClose);
     mocks.mutate.mock.calls[0]?.[1]?.onSuccess?.();
@@ -205,8 +205,8 @@ describe('InviteToTeamDialog', () => {
     expect(screen.getByText("Let them know it's coming")).toBeTruthy();
     expect(screen.getByText('invitee@signup.test')).toBeTruthy();
     expect(
-      screen.getByRole('button', { name: 'Copy invite link' })
-    ).toBeTruthy();
+      screen.queryByRole('button', { name: 'Copy invite link' })
+    ).toBeNull();
     expect(onClose).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: 'Done' }));
@@ -258,7 +258,7 @@ describe('InviteToTeamDialog agent teammates', () => {
     expect(screen.queryByRole('radio', { name: 'Agent' })).toBeNull();
   });
 
-  it('invites an agent on the chosen computer and suggested voice, priced like a computer', async () => {
+  it('invites an agent on the chosen computer and suggested voice, with no price', async () => {
     setFlag({ enabled: true, loading: false });
     const onClose = vi.fn();
     mocks.createAgent.mockResolvedValue({ name: 'Ada' });
@@ -287,7 +287,7 @@ describe('InviteToTeamDialog agent teammates', () => {
         .value
     ).toBe('Thalia');
 
-    expect(invite().textContent).toContain('$80');
+    expect(invite().textContent).toBe('Invite agent');
     // A failed invite keeps its purchase key, so retrying buys one computer.
     mocks.createAgent.mockRejectedValueOnce(new Error('network'));
     fireEvent.click(invite());

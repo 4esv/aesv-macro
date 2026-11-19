@@ -1,5 +1,4 @@
 import { ViewSwitcherContext } from '@app/components/view-shell';
-import { ROUTER_BASE_CONCAT } from '@app/constants/routerBase';
 import Banner from '@app/features/auth/banner/Banner';
 import { CalendarPermissionPrompt } from '@app/features/auth/CalendarPermissionPrompt';
 import { GithubReauthenticationPrompt } from '@app/features/auth/GithubReauthenticationPrompt';
@@ -23,9 +22,6 @@ import {
   isAddInboxDialogOpen,
 } from '@app/features/inbox/AddInboxDialog';
 import { MacroMcpSetupModal } from '@app/features/integrations/mcp-setup/MacroMcpSetupModal';
-import { onboardingRedirectPath } from '@app/features/onboarding/core/next-target';
-import { AiUsageLimitDialog } from '@app/features/paywall/AiUsageLimitDialog';
-import { observeAiUsageLimitMutations } from '@app/features/paywall/ai-usage-limit-handling';
 import { MobileSettingsProvider } from '@app/features/settings/context/mobile-settings';
 import { NativeShareSheet } from '@app/features/sharing/native-share-sheet/NativeShareSheet';
 import { StatusBanner } from '@app/features/system-status/components/StatusBanner';
@@ -44,23 +40,22 @@ import {
 } from '@components/app/sidebarVisibility';
 import { useIsAuthenticated } from '@core/auth';
 import { UserCardDrawer } from '@core/component/UserCardDrawer';
-import { useAiUsageLimitState } from '@core/constant/AiUsageLimitState';
 import {
   enableDatabases,
   enableWhatsappLinked,
 } from '@core/constant/featureFlags';
-import { usePaywallState } from '@core/constant/PaywallState';
 import { attachGlobalDOMScope } from '@core/hotkey/hotkeys';
 import { isMobile } from '@core/mobile/isMobile';
-import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
 import { virtualKeyboardVisible } from '@core/mobile/virtualKeyboard';
 import { hasLoginCookie, updateCookie } from '@core/util/cookies';
+import { fireAndForget } from '@core/util/fireAndForget';
 import { lazyNamed } from '@core/util/lazyNamed';
 import { isDesktopPlatform, isPlatform } from '@core/util/platform';
 import { useDesktopZoom } from '@macro/tauri/zoom';
+import { useCompleteTutorialMutation } from '@queries/auth/tutorial';
 import { useUserInfoQuery } from '@queries/auth/user-info';
-import { queryClient } from '@queries/client';
+import { useCompleteOnboardingMutation } from '@queries/onboarding';
 import { useLocation, useNavigate } from '@solidjs/router';
 import { type as osType } from '@tauri-apps/plugin-os';
 import { cn } from '@ui';
@@ -77,7 +72,6 @@ import {
 import { BundleUpdateProgressBar } from './BundleUpdateProgressBar';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import GlobalShortcuts from './GlobalHotkeys';
-import { InitialInteractiveOnboardingModal } from './InitialInteractiveOnboardingModal';
 import { ItemDndProvider } from './ItemDragAndDrop';
 import { FloatRegion } from './mobile/float-regions/FloatRegion';
 import { FloatRegionHost } from './mobile/float-regions/FloatRegionHost';
@@ -97,10 +91,6 @@ const StarterDatabase = lazy(async () => {
 
 // Modals and mobile-only surfaces stay out of the entry chunk; each one
 // renders inside a Suspense boundary and loads when it first mounts.
-const Paywall = lazyNamed(
-  () => import('@app/features/paywall/Paywall'),
-  'Paywall'
-);
 const WhatsAppHistoryImportPrompt = lazyNamed(
   () =>
     import('@app/features/whatsapp-linked/components/history-import-prompt'),
@@ -135,16 +125,12 @@ function hasOpened(opened: () => boolean) {
 
 /**
  * The frame every page renders in: the macOS title bar, dialogs that can open
- * anywhere (the paywall reads mobile settings), and the page itself. App chrome lives in `AppChrome`, inside the
+ * anywhere (they may read mobile settings), and the page itself. App chrome lives in `AppChrome`, inside the
  * routes that show it.
  */
 export function RootFrame(props: ParentProps) {
   const hasOverlayTitleBar = isPlatform('desktop') && osType() === 'macos';
-  const { paywallOpen, showPaywall } = usePaywallState();
-  const { usageLimitOpen } = useAiUsageLimitState();
   const location = useLocation();
-
-  onCleanup(observeAiUsageLimitMutations(queryClient));
 
   useAppSquishHandlers();
   // Here rather than in GlobalShortcuts so zoom also works on the pages that
@@ -170,10 +156,6 @@ export function RootFrame(props: ParentProps) {
 
   onMount(() => {
     onCleanup(installGlassPress());
-    if (sessionStorage.getItem('showUpgradeModal') === 'true') {
-      showPaywall();
-      sessionStorage.removeItem('showUpgradeModal');
-    }
   });
 
   mountGlobalFocusListener();
@@ -192,14 +174,6 @@ export function RootFrame(props: ParentProps) {
           <DesktopTitleBar />
         </Show>
         <BundleUpdateProgressBar />
-        <Show when={paywallOpen()}>
-          <Suspense>
-            <Paywall />
-          </Suspense>
-        </Show>
-        <Show when={usageLimitOpen()}>
-          <AiUsageLimitDialog />
-        </Show>
         <div class="min-h-0 flex-1 flex flex-col">
           {/* Route loading must not detach the frame. Routes draw their own
                 loading state, so the frame adds none. */}
@@ -222,15 +196,18 @@ export function PageContent(props: ParentProps) {
 }
 
 /**
- * Sends first-time desktop users into the onboarding flow at /onboarding, and
- * new agents on any platform to their setup page.
+ * Sends new agents on any platform to their setup page, and marks a new
+ * person's setup done on arrival: there is no onboarding flow, and the
+ * notification and call prompts wait for `tutorialComplete`.
  * App chrome runs it, so it fires on any app destination (marketing SSO lands
- * on /app, not /login) and never on the onboarding pages themselves.
+ * on /app, not /login).
  */
 function useNewOnboardingRedirect() {
   const userInfoQuery = useUserInfoQuery();
   const navigate = useNavigate();
-  const location = useLocation();
+  const completeOnboarding = useCompleteOnboardingMutation();
+  const completeTutorial = useCompleteTutorialMutation();
+  let completing = false;
   createEffect(() => {
     // A pending read would suspend the chrome; wait for the user instead.
     const data = userInfoQuery.isSuccess ? userInfoQuery.data : undefined;
@@ -242,13 +219,14 @@ function useNewOnboardingRedirect() {
       navigate('/agent-setup', { replace: true });
       return;
     }
-    if (isMobile() || isNativeMobilePlatform()) return;
-    // Preserve the deep link the user arrived on (a shared doc, an invite)
-    // as ?next, and a lifecycle-email ?step, so finish() and the flow can
-    // resume. Base-relative so navigate() can resolve it against the router.
-    const target =
-      location.pathname.slice(ROUTER_BASE_CONCAT.length - 1) + location.search;
-    navigate(onboardingRedirectPath(target), { replace: true });
+    if (completing) return;
+    completing = true;
+    // The server's onboarding row is closed as skipped, as the old bypass did.
+    fireAndForget(
+      completeOnboarding.mutateAsync({ skipped: true }),
+      'onboarding'
+    );
+    fireAndForget(completeTutorial.mutateAsync(), 'onboarding');
   });
 }
 
@@ -391,7 +369,6 @@ export function AppChrome(props: ParentProps) {
           <MobileDockRow />
         </FloatRegion>
       </Show>
-      <InitialInteractiveOnboardingModal />
       <Suspense>
         <Show when={isAuthenticated()}>
           <Launcher open={createMenuOpen()} onOpenChange={setCreateMenuOpen} />

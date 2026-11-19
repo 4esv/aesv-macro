@@ -1,4 +1,3 @@
-import { TutorialSidebarItem } from '@app/features/video-tutorials';
 import { usePending } from '@app/observability/flow';
 import { markRowNotificationsSeenOnOpen } from '@notifications/mark-row-seen';
 import '@entity/composed/ListEntity.css';
@@ -100,18 +99,6 @@ type HomeListProps = {
   ) => void;
   onPreviewActivate?: () => void;
 };
-
-/**
- * Home's tutorial entry, a sidebar item like the rail's rows under it. Touch
- * devices show no tutorials.
- */
-function HomeTutorial() {
-  return (
-    <div class="mx-(--sidebar-gutter) my-(--sidebar-row-gap) empty:hidden">
-      <TutorialSidebarItem tutorial="home" />
-    </div>
-  );
-}
 
 /** Compact notification list used by the Notifications workspace. */
 export function HomeList(props: HomeListProps) {
@@ -277,9 +264,6 @@ export function HomeList(props: HomeListProps) {
   const forceEmptyState = useDebugSetting(
     DEBUG_SETTING_KEYS.FORCE_EMPTY_STATES
   );
-
-  // The tutorial introduces Home; search results are not Home's list.
-  const showsTutorial = () => state.tab === 'signal' && !state.search.trim();
 
   let scrollOffset = DEFAULT_HOME_LIST_STATE.scrollOffset;
   const readListState = (): HomeListStateSnapshot => ({
@@ -663,12 +647,6 @@ export function HomeList(props: HomeListProps) {
                   ref={setEmptyViewport}
                   class="min-h-0 flex-1 overflow-y-auto pb-[max(1rem,var(--mobile-content-inset-bottom,0px))]"
                 >
-                  {/* A new account's Home starts empty, when the tutorial
-                      matters most. Touch devices show no tutorial, so there
-                      the empty state keeps its own top inset. */}
-                  <Show when={showsTutorial()}>
-                    <HomeTutorial />
-                  </Show>
                   <HomeEmptyState />
                 </div>
               </Match>
@@ -683,15 +661,12 @@ export function HomeList(props: HomeListProps) {
                   onScroll={checkNearEnd}
                 >
                   {/* The spacer scrolls away; the viewport stays behind the filters.
-                      It holds the touch inset and the pinned tutorial row. */}
+                      It holds the touch inset. */}
                   <div ref={setTopSpacer}>
                     <div
                       aria-hidden="true"
                       class="h-0 touch:h-(--mobile-content-inset-top)"
                     />
-                    <Show when={showsTutorial()}>
-                      <HomeTutorial />
-                    </Show>
                   </div>
                   <Virtualizer
                     ref={registerVirtualizer}

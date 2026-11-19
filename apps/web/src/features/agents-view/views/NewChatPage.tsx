@@ -27,18 +27,10 @@ import CodeIcon from '@icon/system/regular/code.svg';
 import AutoIcon from '@icon/system/regular/sparkle.svg';
 import { useAgentCapabilitiesQuery } from '@queries/agents/capabilities';
 import { chooseAgentMode } from '@queries/agents/mode-choice';
-import { useAiBillingSummaryQuery } from '@queries/auth/ai-billing';
 import type { PromptAttachment } from '@service-agent-harness/generated/schemas';
 import { Tabs } from '@ui';
 import { tourTarget } from '@ui/components/Tour';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  type JSX,
-  on,
-  Show,
-} from 'solid-js';
+import { createEffect, createMemo, createSignal, on, Show } from 'solid-js';
 import { AgentUpdatesStack } from '../../agent-updates/views/AgentUpdatesStack';
 import { EffortSelector } from '../../block-agent/component/EffortSelector';
 import {
@@ -125,11 +117,8 @@ export function NewChatPage(props: {
   updateSessions?: readonly AgentSessionEntity[];
   onOpenUpdateSession?: (sessionId: string) => void;
   showUpdates?: boolean;
-  /** Centered under the composer, such as the Agents tutorial pill. */
-  belowComposer?: JSX.Element;
 }) {
   const userId = useUserId();
-  const billing = useAiBillingSummaryQuery();
   const { openSettings } = useSettingsState();
   const recentAgents = createRecentAgentSelections(userId());
   const repositories = createRecentRepositories(userId());
@@ -242,17 +231,7 @@ export function NewChatPage(props: {
     if (target) preferredEffort.remember(JSON.stringify(target), choice);
   };
   const effortOverride = () => {
-    const config = effort();
-    const minimum =
-      billing.isSuccess &&
-      (billing.data.tier === 'free' || billing.data.tier === 'premium')
-        ? config?.options[0]
-        : undefined;
-    const selection =
-      selectedEffort() ??
-      (minimum && config
-        ? { configId: config.id, value: minimum.value, name: minimum.name }
-        : undefined);
+    const selection = selectedEffort();
     return selection
       ? { configId: selection.configId, value: selection.value }
       : undefined;
@@ -633,7 +612,6 @@ export function NewChatPage(props: {
               {composer()}
             </div>
           </FloatRegionOrInline>
-          {props.belowComposer}
           <Show
             when={
               props.showUpdates &&

@@ -117,7 +117,7 @@ export default {
     agentHint: 'Dedikert agentøkt',
     routineLabel: 'Rutine',
     routineDescription:
-      'Kjør en modell eller agent etter tidsplan eller Macro-aktivitet',
+      'Kjør en modell eller agent etter tidsplan eller aesv-aktivitet',
     routineHint: 'Tidsplaner og aktivitetsutløsere',
     databaseLabel: 'Database',
     databaseDescription: 'Opprett database',
@@ -323,7 +323,7 @@ export default {
     projectShortTagline: 'Organiser relaterte oppgaver',
     reminderTagline: 'Få en påminnelse når det passer deg',
     reminderDetails:
-      'Lag en påminnelse om noe du vil komme tilbake til.\nVelg et tidspunkt, så minner Macro deg på det.',
+      'Lag en påminnelse om noe du vil komme tilbake til.\nVelg et tidspunkt, så minner aesv deg på det.',
     reminderExample1: 'Ring tilbake',
     reminderExample2: 'Følg opp fredag',
     reminderExample3: 'Forny lisens',
@@ -403,7 +403,7 @@ export default {
       'Merk arbeid med etiketter så du kan organisere og filtrere det på tvers av prosjekter.',
     guideConversation: 'Start en chat med en eksisterende agent.',
     guideWorkAgent:
-      'Opprett en assistent med instruksjoner og tilgang til Macro-arbeidsområdet ditt.',
+      'Opprett en assistent med instruksjoner og tilgang til aesv-arbeidsområdet ditt.',
     guideCodingAgent: 'Opprett en agent som jobber i et tilkoblet kodemiljø.',
     guideRoutine: 'La en agent kjøre etter en gjentakende tidsplan.',
     guideCompany:
@@ -689,7 +689,6 @@ export default {
     more: 'Mer',
     moreOptions: 'Flere alternativer',
     create: 'Opprett',
-    getMobileApp: 'Last ned mobilappen',
     signedInAs: 'Logget på som {{name}}',
     commandMenu: 'Kommandomeny',
     searchEverything: 'Søk i alt',
@@ -703,20 +702,20 @@ export default {
     updateAvailable: 'Oppdatering tilgjengelig',
     updateNewVersionTitle: 'Ny versjon tilgjengelig',
     updateWebDescription:
-      'En ny versjon av Macro er klar. Last inn siden på nytt for å bruke den.',
+      'En ny versjon av aesv er klar. Last inn siden på nytt for å bruke den.',
     updateWebFailedLoadDescription:
-      'En del av Macro kunne ikke lastes fordi en ny versjon er ute. Last inn siden på nytt for å bruke den.',
+      'En del av aesv kunne ikke lastes fordi en ny versjon er ute. Last inn siden på nytt for å bruke den.',
     updateReload: 'Last inn på nytt',
     updateReadyTitle: 'Oppdatering klar',
     updateBundleDescription:
-      'En ny versjon av Macro-skrivebordsappen er lastet ned. Oppdater for å ta den i bruk.',
+      'En ny versjon av aesv-skrivebordsappen er lastet ned. Oppdater for å ta den i bruk.',
     updateAction: 'Oppdater',
     updateDesktopReadyTitle: 'Oppdatering av skrivebordsappen er klar',
     updateNativeDescription:
-      'Start Macro på nytt for å installere den, eller fortsett å jobbe, så installeres den når du avslutter.',
+      'Start aesv på nytt for å installere den, eller fortsett å jobbe, så installeres den når du avslutter.',
     updateRestartAndUpdate: 'Start på nytt og oppdater',
     updateNativePreparingDescription:
-      'Lagrer arbeidet ditt før Macro starter på nytt for å installere oppdateringen.',
+      'Lagrer arbeidet ditt før aesv starter på nytt for å installere oppdateringen.',
     updatePreparingRestart: 'Forbereder omstart…',
   },
   settingsLanguage: {
@@ -728,7 +727,7 @@ export default {
     yourLanguage: 'Ditt språk',
     yourLanguageDescription: 'Overstyrer teamspråket bare for deg.',
     yourLanguageNoTeamDescription:
-      'Språket Macro vises på for deg. «Automatisk» følger nettleseren din.',
+      'Språket aesv vises på for deg. «Automatisk» følger nettleseren din.',
     useTeamLanguage: 'Bruk teamspråket ({{language}})',
     automatic: 'Automatisk ({{language}})',
     teamAutomatic: 'Automatisk (hver persons nettleserspråk)',

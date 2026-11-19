@@ -45,7 +45,6 @@ function Sent(props: { email: string; onBackHome: () => void }) {
   const context = useAuthContext();
   onMount(() => {
     context.track('mobile_web_signup_sent_viewed');
-    context.trackMobileSignupLead(props.email);
   });
   return <MobileWebSignupSent onBackHome={props.onBackHome} />;
 }

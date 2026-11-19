@@ -22,7 +22,6 @@ import {
 } from './list-filter-fixture';
 import { NameCacheFixture } from './name-cache-fixture';
 import { changeViewer } from './network';
-import { OnboardingContactsFixture } from './onboarding-contacts-fixture';
 import { RecipientDirectoryFixture } from './recipient-directory-fixture';
 import { RecipientRankingFixture } from './recipient-ranking-fixture';
 import { SoupFilterFixture } from './soup-filter-fixture';
@@ -171,11 +170,6 @@ render(
         </Match>
         <Match when={new URLSearchParams(location.search).has('linear-import')}>
           <LinearImportFixture />
-        </Match>
-        <Match
-          when={new URLSearchParams(location.search).has('onboarding-contacts')}
-        >
-          <OnboardingContactsFixture />
         </Match>
         <Match
           when={new URLSearchParams(location.search).has('task-list-labels')}

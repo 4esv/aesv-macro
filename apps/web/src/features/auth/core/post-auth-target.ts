@@ -1,44 +1,33 @@
-import { sanitizeNext } from '@app/features/onboarding/core/next-target';
-
-export const AGENT_SETUP_PATH = '/agent-setup';
-
-/** Where a freshly signed-in user goes: into onboarding, or straight to a path. */
-export type PostAuthTarget =
-  | { t: 'onboarding'; next: string | undefined }
-  | { t: 'navigate'; to: string };
+import { DEFAULT_ROUTE } from '@app/constants/defaultRoute';
 
 /**
- * Invite pages answer before onboarding. Joining first means onboarding opens
- * already on the team, instead of burying the invite six steps in, where
- * most invitees quit before reaching it.
+ * Same-app relative paths only. A `next` at the default route is not a real
+ * deep link, so it falls through to the default landing.
  */
-function isInvitePath(path: string): boolean {
-  return /^\/(team|channel)-invite(\?|$)/.test(path);
+export function sanitizeNext(value: unknown): string | undefined {
+  return typeof value === 'string' &&
+    value.startsWith('/') &&
+    !value.startsWith('//') &&
+    !value.includes('\\') &&
+    !value.startsWith(DEFAULT_ROUTE)
+    ? value
+    : undefined;
 }
+
+export const AGENT_SETUP_PATH = '/agent-setup';
 
 /**
  * Resolves the `/login?redirect=` deep link after sign-in. Pages that need an
  * account (team and channel invites, meetings) send people here with the page
- * to come back to; without this the link was dropped and everyone landed on
- * Home or in onboarding.
+ * to come back to; without one, everyone lands on Home.
  */
 export function postAuthTarget(input: {
   tutorialComplete: boolean;
   isAgent: boolean;
-  /** Mobile and native apps skip desktop onboarding. */
-  onboardsOnThisDevice: boolean;
   redirect: unknown;
-}): PostAuthTarget {
-  if (input.isAgent && !input.tutorialComplete) {
-    return { t: 'navigate', to: AGENT_SETUP_PATH };
-  }
-  const redirect = sanitizeNext(input.redirect);
-  const needsOnboarding =
-    input.onboardsOnThisDevice && !input.tutorialComplete && !input.isAgent;
-  if (needsOnboarding && !(redirect && isInvitePath(redirect))) {
-    return { t: 'onboarding', next: redirect };
-  }
-  return { t: 'navigate', to: redirect ?? '/' };
+}): string {
+  if (input.isAgent && !input.tutorialComplete) return AGENT_SETUP_PATH;
+  return sanitizeNext(input.redirect) ?? '/';
 }
 
 /**

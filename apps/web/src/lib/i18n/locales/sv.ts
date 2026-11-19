@@ -118,7 +118,7 @@ export default {
     agentHint: 'Dedikerad agentsession',
     routineLabel: 'Rutin',
     routineDescription:
-      'Kör en modell eller agent enligt schema eller vid aktivitet i Macro',
+      'Kör en modell eller agent enligt schema eller vid aktivitet i aesv',
     routineHint: 'Scheman och aktivitetsutlösare',
     databaseLabel: 'Databas',
     databaseDescription: 'Skapa databas',
@@ -324,7 +324,7 @@ export default {
     projectShortTagline: 'Ordna relaterade uppgifter',
     reminderTagline: 'Påminn dig själv vid en tid du väljer',
     reminderDetails:
-      'Ställ in en påminnelse om något du vill återkomma till.\nVälj en tid så påminner Macro dig.',
+      'Ställ in en påminnelse om något du vill återkomma till.\nVälj en tid så påminner aesv dig.',
     reminderExample1: 'Ring tillbaka',
     reminderExample2: 'Stäm av på fredag',
     reminderExample3: 'Förnya licens',
@@ -403,7 +403,7 @@ export default {
     guideTag: 'Tagga arbete så att du kan ordna och filtrera det över projekt.',
     guideConversation: 'Starta en konversation med en befintlig agent.',
     guideWorkAgent:
-      'Skapa en assistent med instruktioner och åtkomst till din Macro-arbetsyta.',
+      'Skapa en assistent med instruktioner och åtkomst till din aesv-arbetsyta.',
     guideCodingAgent: 'Skapa en agent som arbetar i en ansluten kodmiljö.',
     guideRoutine: 'Låt en agent köras enligt ett återkommande schema.',
     guideCompany:
@@ -690,7 +690,6 @@ export default {
     more: 'Mer',
     moreOptions: 'Fler alternativ',
     create: 'Skapa',
-    getMobileApp: 'Hämta mobilappen',
     signedInAs: 'Inloggad som {{name}}',
     commandMenu: 'Kommandomeny',
     searchEverything: 'Sök i allt',
@@ -704,9 +703,9 @@ export default {
     updateAvailable: 'Uppdatering tillgänglig',
     updateNewVersionTitle: 'Ny version tillgänglig',
     updateWebDescription:
-      'En ny version av Macro är klar. Läs in sidan igen för att använda den.',
+      'En ny version av aesv är klar. Läs in sidan igen för att använda den.',
     updateWebFailedLoadDescription:
-      'En del av Macro kunde inte läsas in eftersom en ny version har släppts. Läs in sidan igen för att använda den.',
+      'En del av aesv kunde inte läsas in eftersom en ny version har släppts. Läs in sidan igen för att använda den.',
     updateReload: 'Läs in igen',
     updateReadyTitle: 'Uppdateringen är klar',
     updateBundleDescription:
@@ -714,10 +713,10 @@ export default {
     updateAction: 'Uppdatera',
     updateDesktopReadyTitle: 'Uppdatering av skrivbordsappen klar',
     updateNativeDescription:
-      'Starta om Macro för att installera den, eller fortsätt arbeta så installeras den när du avslutar.',
+      'Starta om aesv för att installera den, eller fortsätt arbeta så installeras den när du avslutar.',
     updateRestartAndUpdate: 'Starta om och uppdatera',
     updateNativePreparingDescription:
-      'Sparar ditt arbete innan Macro startar om för att installera uppdateringen.',
+      'Sparar ditt arbete innan aesv startar om för att installera uppdateringen.',
     updatePreparingRestart: 'Förbereder omstart…',
   },
   settingsLanguage: {
@@ -730,7 +729,7 @@ export default {
     yourLanguage: 'Ditt språk',
     yourLanguageDescription: 'Ersätter teamets språk endast för dig.',
     yourLanguageNoTeamDescription:
-      'Språket som Macro visas på för dig. ”Automatiskt” följer din webbläsare.',
+      'Språket som aesv visas på för dig. ”Automatiskt” följer din webbläsare.',
     useTeamLanguage: 'Använd teamets språk ({{language}})',
     automatic: 'Automatiskt ({{language}})',
     teamAutomatic: 'Automatiskt (var och ens webbläsarspråk)',

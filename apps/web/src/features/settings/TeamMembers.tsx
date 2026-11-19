@@ -5,10 +5,7 @@ import { t } from '@app/lib/i18n';
 import { AgentTag } from '@core/component/AgentTag';
 import { toast } from '@core/component/Toast/Toast';
 import { UserIcon } from '@core/component/UserIcon';
-import {
-  enableAgentTeammates,
-  enableAiUsageBilling,
-} from '@core/constant/featureFlags';
+import { enableAgentTeammates } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';
 import {
   getDisplayName,
@@ -25,17 +22,13 @@ import PlusIcon from '@icon/system/regular/plus.svg';
 import TrashIcon from '@icon/system/regular/trash.svg';
 import type { CollectionNode } from '@kobalte/core';
 import { Select } from '@kobalte/core/select';
-import { useAiBillingSummaryQuery } from '@queries/auth';
 import { useComputersQuery } from '@queries/computers/computers';
 import {
   useDeleteTeamInviteMutation,
   useResendTeamInviteMutation,
   useTeamInvitesQuery,
 } from '@queries/team/invites';
-import {
-  useRemoveUserFromTeamMutation,
-  useSetTeamMemberPlanMutation,
-} from '@queries/team/members';
+import { useRemoveUserFromTeamMutation } from '@queries/team/members';
 import {
   usePatchTeamMutation,
   useToggleAutoJoinDomainMutation,
@@ -45,7 +38,6 @@ import {
   useRemoveTeamAgentMutation,
   useTeamAgentsQuery,
 } from '@queries/team-agents/team-agents';
-import type { PaidPlan } from '@service-auth/ai-billing-types';
 import type { Team as TeamSummary } from '@service-auth/generated/schemas/team';
 import type { TeamInviteDetails } from '@service-auth/generated/schemas/teamInviteDetails';
 import type { TeamMember } from '@service-auth/generated/schemas/teamMember';
@@ -63,7 +55,6 @@ import {
 import { AgentVoiceDialog } from './components/agent-voice-dialog';
 import { TeamAgentRow } from './components/team-agent-row';
 import { TeamInviteRow } from './components/team-invite-row';
-import { TeamSeatPlanSelect } from './components/team-seat-plan-select';
 import { teamAgentComputer, teamAgentSetupStep } from './core/team-agent-setup';
 import {
   SettingsCard,
@@ -73,7 +64,6 @@ import {
 } from './primitives';
 import { useRetryTeamAgentSetup } from './primitives/team-agent-status';
 import { InviteToTeamDialog, useTeamViewer } from './Team';
-import { CopyTeamInviteLinkButton } from './TeamInviteLinkSection';
 import {
   canInviteToTeam,
   canRemoveTeamMember,
@@ -144,31 +134,15 @@ function RoleSelect(props: {
   );
 }
 
-/**
- * The plan a member's seat is billed at. Until the generated `TeamMember`
- * schema carries `plan`, read it defensively; every seat starts on Pro.
- */
-function memberPlan(member: TeamMember): PaidPlan {
-  const plan = (member as TeamMember & { plan?: PaidPlan }).plan;
-  return plan === 'max' ? 'max' : 'premium';
-}
-
 function MemberRow(props: {
   member: TeamMember;
   isOwner: boolean;
   isCurrentUser: boolean;
   canManageRemovals: boolean;
   canRemove: boolean;
-  /** Whether seat plans apply (paid team) and the viewer may change them. */
-  showPlan: boolean;
-  canEditPlan: boolean;
-  planPending: boolean;
-  pendingDowngrade: boolean;
   onRemove: () => void;
   onRoleChange: (role: TeamRole) => void;
-  onPlanChange: (plan: PaidPlan) => void;
 }) {
-  const aiUsageBilling = useFeatureFlag(enableAiUsageBilling);
   const displayName = () => getDisplayName(tryMacroId(props.member.user_id));
   const isMemberOwner = () => props.member.role === TeamRole.owner;
   const email = () => {
@@ -204,24 +178,6 @@ function MemberRow(props: {
         </div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
-        <Show when={props.showPlan}>
-          <Show
-            when={props.canEditPlan}
-            fallback={
-              <span class="text-xs text-ink-muted capitalize">
-                {memberPlan(props.member)}
-              </span>
-            }
-          >
-            <TeamSeatPlanSelect
-              value={memberPlan(props.member)}
-              onChange={props.onPlanChange}
-              disabled={props.planPending}
-              aiUsageBilling={aiUsageBilling().enabled}
-              pendingDowngrade={props.pendingDowngrade}
-            />
-          </Show>
-        </Show>
         <Show
           when={props.isOwner && !isMemberOwner()}
           fallback={
@@ -410,31 +366,6 @@ export function TeamMembers(props: { team: TeamSummary }) {
     toggleNonAdminInvitesMutation.mutate({ teamId: props.team.id });
   };
 
-  // Seat plans only exist on teams billed per seat: enterprise teams, and
-  // paying teams, whose shared credits and overage are billed to the owner.
-  // The team API does not expose its subscription, so a paying team is
-  // recognised from the viewer's billing position: a paid tier whose payer is
-  // the team owner and whose seat count spans more than one member (a free-team
-  // owner with a personal subscription is billed for exactly one seat). A
-  // paying team of one therefore shows no seat menu; its owner moves their own
-  // seat from Billing.
-  const billingSummary = useAiBillingSummaryQuery();
-  const showSeatPlans = () => {
-    const team = teamQuery.data?.team;
-    if (!team) return false;
-    if (team.enterprise) return true;
-    return (
-      billingSummary.isSuccess &&
-      billingSummary.data.tier !== 'free' &&
-      billingSummary.data.payer === team.owner_id &&
-      billingSummary.data.seats > 1
-    );
-  };
-  const setMemberPlanMutation = useSetTeamMemberPlanMutation();
-  // Seat moves read and rewrite the subscription's item quantities, so only
-  // one may be in flight per team: every plan menu waits while one runs.
-  const planMovePending = () => setMemberPlanMutation.isPending;
-
   const handleRemoveMember = () => {
     const member = showRemoveModal();
     if (!props.team.id || !member) return;
@@ -481,12 +412,7 @@ export function TeamMembers(props: { team: TeamSummary }) {
             when={canInviteToTeam(currentUserRole(), allowNonAdminInvites())}
           >
             <div class="flex items-center gap-2">
-              {/* A link someone sends themselves gets opened; keep it one
-                  click from the page alongside the email invite. */}
-              <CopyTeamInviteLinkButton
-                teamId={props.team.id}
-                class="text-[15px]"
-              />
+              {/* FIX: W-2094 decides whether the team invite link (CopyTeamInviteLinkButton) returns via file.aesv.io; os.aesv.io is owner-only. */}
               {/* Inverted (black on light, white on dark) so inviting is the
                   page's primary action. */}
               <Button
@@ -511,31 +437,6 @@ export function TeamMembers(props: { team: TeamSummary }) {
               onValueChange={setMemberQuery}
               onEscape={() => setMemberQuery('')}
             />
-          </Show>
-
-          <Show
-            when={
-              teamQuery.isSuccess &&
-              showSeatPlans() &&
-              isAdminOrOwner() &&
-              !teamQuery.data?.team.enterprise &&
-              // A successful team response omits this field only on lookup failure.
-              teamQuery.data?.scheduled_seat_plans == null
-            }
-          >
-            <div
-              class="flex items-center gap-2 text-xs text-ink-muted"
-              role="status"
-            >
-              <span>Couldn't load scheduled plan changes.</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => teamQuery.refetch()}
-              >
-                Try again
-              </Button>
-            </div>
           </Show>
 
           <Show
@@ -572,21 +473,6 @@ export function TeamMembers(props: { team: TeamSummary }) {
                         currentUserRole(),
                         member
                       )}
-                      showPlan={showSeatPlans()}
-                      canEditPlan={isAdminOrOwner()}
-                      planPending={planMovePending()}
-                      pendingDowngrade={
-                        teamQuery.data?.scheduled_seat_plans?.[member.user_id]
-                          ?.plan === 'premium'
-                      }
-                      onPlanChange={(plan) => {
-                        if (!props.team.id) return;
-                        setMemberPlanMutation.mutate({
-                          teamId: props.team.id,
-                          userId: member.user_id,
-                          plan,
-                        });
-                      }}
                       onRemove={() => setShowRemoveModal(member)}
                       onRoleChange={(newRole) => {
                         if (!props.team.id) return;

@@ -67,7 +67,7 @@ export function createAttachmentLinkOffer(options: {
   canEdit: Accessor<boolean>;
   version: Accessor<string>;
   notices: Pick<EmailComposeFeedback, 'confirm'>;
-  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments' | 'makePublic'>;
+  editorFiles: Pick<EmailEditorFiles, 'uploadDocuments'>;
 }) {
   const inFlight = new Set<Promise<UploadedDocument[]>>();
   const [uploading, setUploading] = createSignal(false);
@@ -100,9 +100,11 @@ export function createAttachmentLinkOffer(options: {
       );
       const confirmed = await options.notices.confirm({
         title: `Attachments exceed ${limitLabel}`,
+        // FIX: W-2094 links the upload through file.aesv.io so a recipient can
+        // open it; os.aesv.io is owner-only, so for now only people with access can.
         body: single
-          ? `"${files[0].name}" won't fit as an attachment. Upload it to Macro and share a view-only link instead?`
-          : `${files.length} files won't fit as attachments. Upload them to Macro and share view-only links instead?`,
+          ? `"${files[0].name}" won't fit as an attachment. Upload it to aesv and add a link? Only people with access can open it.`
+          : `${files.length} files won't fit as attachments. Upload them to aesv and add links? Only people with access can open them.`,
         confirmLabel: single ? 'Share link' : 'Share links',
       });
       span.setAttr('email.attachment_links.confirmed', confirmed);
@@ -123,9 +125,6 @@ export function createAttachmentLinkOffer(options: {
         const valid = current();
         span.setAttr('email.attachment_links.linked', valid);
         if (!valid) return;
-        for (const document of documents) {
-          span.run(() => options.editorFiles.makePublic(document.documentId));
-        }
         if (editor) appendAttachmentLinks(editor, documents, current);
       } finally {
         inFlight.delete(upload);

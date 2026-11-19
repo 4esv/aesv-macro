@@ -110,7 +110,7 @@ function createCalendarSettingsControls() {
     calendarView.setTimeFormat(timeFormat);
   };
 
-  // The add-inbox flow is entitlement-gated by the backend (402 -> paywall), so
+  // The add-inbox flow is entitlement-gated by the backend, so
   // "Connect another account" follows the multi-inbox flag like the email
   // inbox selector rather than mirroring that rule on the client.
   const showConnectAccount = () => multiInboxFlag().enabled;

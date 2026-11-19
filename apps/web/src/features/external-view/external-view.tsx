@@ -1,5 +1,4 @@
 import { ViewShell, ViewSidebar } from '@app/components/view-shell';
-import { TutorialSidebarItem } from '@app/features/video-tutorials';
 import { SplitRouter, useNavigate, useParams } from '@app/lib/split-router';
 import { externalChatRoute, externalRoute } from '@app/routes/routes';
 import { useSplitDisplayName } from '@components/app/split-layout/layoutUtils';
@@ -113,12 +112,6 @@ export function ExternalView() {
         class="overflow-y-auto pb-4 touch:pb-(--mobile-content-inset-bottom)"
         style={{ '--mobile-content-inset-top': '0px' }}
       >
-        {/* Above the chats, so people who haven't linked WhatsApp see it too.
-            Its rows are sidebar-style items, so the entry is one, inset to
-            line up with the chats below it. Touch devices show no tutorial. */}
-        <div class="px-4 pt-2 empty:hidden">
-          <TutorialSidebarItem tutorial="whatsapp" />
-        </div>
         {/* Touch has no sidebar: the chats in Macro lead the page. */}
         <Show when={isTouchDevice()}>
           <section aria-labelledby="external-chats" class="px-2">

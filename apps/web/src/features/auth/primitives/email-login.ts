@@ -17,12 +17,7 @@ const VERIFY_ERRORS = {
 
 type EmailLoginCapabilities = Pick<
   AuthContext,
-  | 'session'
-  | 'sendEmailCode'
-  | 'verifyEmailCode'
-  | 'completeLogin'
-  | 'identify'
-  | 'track'
+  'session' | 'sendEmailCode' | 'verifyEmailCode' | 'completeLogin' | 'track'
 >;
 
 /**
@@ -80,7 +75,6 @@ export function createEmailLogin(
     const session = context.session();
     if (session.t === 'signed-in') {
       context.track('login', { method: 'email' });
-      context.identify(session.user);
     }
     options.onVerified?.();
   };

@@ -19,7 +19,6 @@ import {
   getUnmaintainedGraphqlSoupRevalidations,
   refreshActiveGraphqlSoupQueries,
 } from '../soup/graphql/active-queries';
-import { updateEntitySharePolicy } from '../storage/entity-mutations';
 
 /** Provider operations used by email's production adapters alongside shared mutations. */
 export const scheduleEmailMessage = (
@@ -142,25 +141,3 @@ export const getEmailAttachmentDocument = (id: string) =>
   emailClient.getOrCreateAttachmentDocumentId({ id });
 export const getEmailAttachmentMetadata = (documentId: string) =>
   storageServiceClient.getDocumentMetadata({ documentId });
-
-export async function ensureEmailAttachmentPublic(attachmentId: string) {
-  const permissions = await storageServiceClient.getDocumentPermissions({
-    document_id: attachmentId,
-  });
-  if (
-    permissions.isOk() &&
-    permissions.value.linkShare === 'PUBLIC' &&
-    permissions.value.linkShareAccessLevel === 'view'
-  )
-    return undefined;
-  if (isFeatureEnabled(enableGraphqlSoup)) {
-    return updateEntitySharePolicy('document', attachmentId, {
-      linkShare: 'PUBLIC',
-      linkShareAccessLevel: 'view',
-    });
-  }
-  return storageServiceClient.editDocument({
-    documentId: attachmentId,
-    sharePermission: { linkShare: 'PUBLIC', linkShareAccessLevel: 'view' },
-  });
-}

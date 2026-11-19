@@ -38,7 +38,6 @@ import {
   EmailScheduleBar,
   EmailScheduleSummary,
 } from '../components/email-schedule-summary';
-import { MacroSignatureButton } from '../components/macro-signature-button';
 import { MobileReplyToolbar } from '../components/mobile-reply-toolbar';
 import { SignaturePreview } from '../components/signature-preview';
 import type { EmailComposeContext } from '../context/compose-capabilities';
@@ -74,7 +73,6 @@ type ReplyInputViewProps = Omit<
   | 'connectivity'
   | 'editorFiles'
   | 'viewerEmail'
-  | 'hasPaidAccess'
   | 'recordMention'
   | 'focusAfterReplyRequest'
 > & {
@@ -150,7 +148,6 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
       connectivity: composeContext.connectivity,
       editorFiles: composeContext.editorFiles,
       viewerEmail: composeContext.viewerEmail,
-      hasPaidAccess: composeContext.hasPaidAccess,
       recordMention: composeContext.recordMention,
       focusAfterReplyRequest: () => !composeContext.presentation.isTouch(),
       session: props.session,
@@ -196,7 +193,6 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
     collectDraft,
     scheduleDraftSave,
     persistDraftOnSenderSwitch,
-    hasPaidAccess,
     sendEmail,
     deleteDraftAndReset,
     handleAddAttachments,
@@ -279,10 +275,7 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
     .namespace('email-base-input-markdown')
     .withMentions({
       onUserMention: state.handleUserMention,
-      onDocumentMention: (item) => {
-        composeContext.editorFiles.makePublic(item.id);
-        scheduleDraftSave();
-      },
+      onDocumentMention: () => scheduleDraftSave(),
     })
     .withEmojis()
     .withLinks({ floatingMenu: true, autoLinkMatchMode: 'common-tlds' })
@@ -304,10 +297,7 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
           sourceId: props.sourceEntityId,
           files,
           directories,
-          onUploaded: (ids) => {
-            ids.forEach(composeContext.editorFiles.makePublic);
-            scheduleDraftSave();
-          },
+          onUploaded: () => scheduleDraftSave(),
           onVideos: handleAddAttachments,
         });
       },
@@ -693,9 +683,8 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
                   files,
                   directories,
                   dropEvent: event,
-                  onUploaded: (ids) => {
+                  onUploaded: () => {
                     setIsDragging(false);
-                    ids.forEach(composeContext.editorFiles.makePublic);
                     scheduleDraftSave();
                   },
                   onVideos: handleAddAttachments,
@@ -715,8 +704,7 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
               config={editorConfig}
               class={cn(
                 // shrink-0: the editor's min-h-8 otherwise lets this capped
-                // flex column squeeze its box below its text, and the
-                // watermark after the box is then drawn over the reply.
+                // flex column squeeze its box below its text.
                 'ph-no-capture cursor-text wrap-break-word text-base text-ink h-auto overflow-visible shrink-0',
                 // Quoted thread collapses behind the "⋯" pill below
                 // (rule lives in LexicalMarkdown/styles.css — Tailwind arbitrary
@@ -734,17 +722,6 @@ function LoadedReplyInputView(props: ReplyInputViewProps) {
               refFn={(el) => props.markdownDomRef?.(el)}
               onConnect={handleEditorConnect}
             />
-            <Show when={!hasPaidAccess()}>
-              <div class="text-ink/50 mt-[1lh]" data-watermark>
-                <MacroSignatureButton
-                  visible={
-                    !composeContext.presentation.viewerLoading() &&
-                    !composeContext.hasPaidAccess()
-                  }
-                  onUpgrade={composeContext.presentation.onUpgrade}
-                />
-              </div>
-            </Show>
             <Show when={isMobileCompose()}>
               <AttachmentsRow />
               <SignatureRow />

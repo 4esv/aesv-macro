@@ -9,13 +9,10 @@ test.beforeEach(async ({ page }) => {
   await page.goto(fixture, { waitUntil: 'domcontentloaded' });
 });
 
-test('hands a Notion import from the Drive card to the agent', async ({
+test('hands a Notion import from the Files dialog to the agent', async ({
   page,
 }) => {
   const sidebar = page.getByRole('complementary', { name: 'files sidebar' });
-  await expect(
-    sidebar.getByRole('list', { name: /Notion, Google Drive, Dropbox/ })
-  ).toBeVisible();
   await sidebar
     .getByRole('button', { name: 'Import files', exact: true })
     .click();

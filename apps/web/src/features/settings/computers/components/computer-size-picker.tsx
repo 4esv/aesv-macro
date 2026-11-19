@@ -3,7 +3,7 @@ import { t } from '@app/lib/i18n';
 import type { ComputerSize, SizeOffer } from '@service-auth/computers';
 import { For, Show } from 'solid-js';
 import { ChoiceRow } from '../../primitives';
-import { formatQuote, offerSpecs, sizeLabel } from '../core/computer-display';
+import { offerSpecs, sizeLabel } from '../core/computer-display';
 
 /**
  * One choice per size; sold-out sizes show disabled with Sold out. Sizes no
@@ -33,16 +33,7 @@ export function ComputerSizePicker(props: {
             disabled={offer.soldOut}
             onChange={() => props.onSelect(offer.size)}
             aside={
-              <Show
-                when={offer.soldOut}
-                fallback={
-                  <span class="whitespace-nowrap text-sm font-medium tabular-nums text-ink">
-                    {offer.quote.amount === 0
-                      ? t('computers.included')
-                      : formatQuote(offer.quote)}
-                  </span>
-                }
-              >
+              <Show when={offer.soldOut}>
                 <span class="whitespace-nowrap text-xs font-medium text-ink-muted">
                   Sold out
                 </span>

@@ -41,6 +41,12 @@ use model_entity::EntityType;
 use teams::domain::team_repo::TeamService;
 use tracing::Instrument;
 
+/// NOTE: aesv is self-hosted, so a sign-up reports to no analytics or ad
+/// platform, joins no marketing audience, gets no Macro starter content and
+/// opens no support channel with Macro's team. The code stays, so upstream
+/// changes to it still merge.
+const AESV_NO_SIGNUP_FUNNEL: bool = true;
+
 /// Macro team members added to every new user's support channel.
 const MACRO_SUPPORT_EMAILS: [&str; 15] = [
     "jacob@macro.com",
@@ -411,6 +417,10 @@ async fn create_user_webhook(ctx: &ApiContext, req: FusionAuthUserWebhook) -> an
                 );
             }
 
+            if AESV_NO_SIGNUP_FUNNEL {
+                return;
+            }
+
             let _ = analytics_client
                 .track_posthog(
                     &user_id,
@@ -529,6 +539,9 @@ async fn create_user_webhook(ctx: &ApiContext, req: FusionAuthUserWebhook) -> an
 /// Marketing and sample content for a person's new account. Fire-and-forget:
 /// none of it may block signing in.
 fn spawn_human_signup_content(ctx: &ApiContext, user_id: &str, email: &str) {
+    if AESV_NO_SIGNUP_FUNNEL {
+        return;
+    }
     let support_channel_name = match Email::parse_from_str(email) {
         Ok(email) => support_channel_name(&email),
         Err(e) => {

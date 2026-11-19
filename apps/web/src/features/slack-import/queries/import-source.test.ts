@@ -28,10 +28,6 @@ import {
 // and unrelated application singletons imported by the legacy client module.
 vi.mock('@core/util/fetchWithToken', () => ({ fetchWithToken: vi.fn() }));
 vi.mock('@core/constant/featureFlags', () => ({ ENABLE_DOCX_TO_PDF: false }));
-vi.mock('@core/constant/PaywallState', () => ({
-  PaywallKey: {},
-  usePaywallState: () => ({ showPaywall: vi.fn() }),
-}));
 vi.mock('@core/util/mockClient', () => ({ registerClient: vi.fn() }));
 
 const teamId = '01900000-0000-7000-8000-000000000001';

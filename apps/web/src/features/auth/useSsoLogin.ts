@@ -1,4 +1,3 @@
-import type { AnalyticsProvider } from '@app/lib/analytics';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
 import {
   createNativeAuthSession,
@@ -140,11 +139,8 @@ export function useSsoLogin(opts?: {
   const { initEmailLink } = useEmailLinks();
 
   return async (idp_name: string) => {
-    // Both events are pre-redirect *intent*. The authoritative sign_up (and
-    // the ad conversions) fire post-auth when the backend marks the session
-    // as a freshly created account — see lib/analytics/signupCompletion.ts.
+    // Both events are pre-redirect *intent*.
     const analyticsEvent = opts?.signupMode ? 'sign_up_click' : 'login';
-    const analyticsProviders: AnalyticsProvider[] = ['posthog'];
 
     const authUrl = new URL(`${SERVER_HOSTS['auth-service']}/login/sso`);
     authUrl.searchParams.set('idp_name', idp_name);
@@ -181,11 +177,7 @@ export function useSsoLogin(opts?: {
         );
 
         if (outcome === 'success' || outcome === 'redeem_failed') {
-          analytics.track(
-            analyticsEvent,
-            { method: idp_name },
-            analyticsProviders
-          );
+          analytics.track(analyticsEvent, { method: idp_name });
         }
       } finally {
         releaseReloadHold();
@@ -195,7 +187,7 @@ export function useSsoLogin(opts?: {
     }
 
     if (desktop) {
-      analytics.track(analyticsEvent, { method: idp_name }, analyticsProviders);
+      analytics.track(analyticsEvent, { method: idp_name });
       await startDesktopSso(authUrl, location.state?.originalLocation);
       return;
     }
@@ -211,7 +203,7 @@ export function useSsoLogin(opts?: {
       authUrl.searchParams.set('original_url', window.location.href);
     }
 
-    analytics.track(analyticsEvent, { method: idp_name }, analyticsProviders);
+    analytics.track(analyticsEvent, { method: idp_name });
 
     // The hosted callback sets only HttpOnly cookies, which the app cannot
     // see, and the return load probes identity only behind the login hint.

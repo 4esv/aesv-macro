@@ -16,7 +16,6 @@ import { DATABASE_MODEL, modelsForPlan } from '@core/component/AI/constant';
 import { DocumentBlockContainer } from '@core/component/DocumentBlockContainer';
 import { toast } from '@core/component/Toast/Toast';
 import { enableDatabases } from '@core/constant/featureFlags';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
 import { useUserId } from '@core/context/user';
 import { registerHotkey } from '@core/hotkey/hotkeys';
 import { TOKENS } from '@core/hotkey/tokens';
@@ -167,13 +166,12 @@ const Block: Component = () => {
   });
   const [openingChat, setOpeningChat] = createSignal(false);
   const hasPaidAccess = useHasPaidAccess();
-  const { showPaywall } = usePaywallState();
   async function openDatabaseChat() {
     const current = detail();
     if (!current || openingChat()) return;
     setOpeningChat(true);
     // A locked model gets the picker's treatment: the chat opens on the plan's
-    // model and the paywall says why.
+    // model.
     const canUseDatabaseModel = modelsForPlan(hasPaidAccess()).includes(
       DATABASE_MODEL
     );
@@ -183,7 +181,6 @@ const Block: Component = () => {
         instructions: chat.instructions,
         ...(canUseDatabaseModel ? { model: DATABASE_MODEL } : {}),
       });
-      if (!canUseDatabaseModel) showPaywall(PaywallKey.O1_LIMIT);
     } finally {
       setOpeningChat(false);
     }

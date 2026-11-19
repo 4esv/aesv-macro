@@ -62,8 +62,7 @@ export const DEFAULT_MODEL: TModel = Model.sonnet55;
 /**
  * Models a free user may select, generated from the backend's free tier
  * (`chat::domain::models::FREE_MODEL`). Every other model is paid-only: the
- * backend rejects it with a 403, and the selector shows it locked, where
- * selecting one opens the paywall.
+ * backend rejects it with a 403, and the selector shows it locked.
  */
 export const FREE_MODELS: readonly TModel[] = Object.values(FreeTierModel);
 

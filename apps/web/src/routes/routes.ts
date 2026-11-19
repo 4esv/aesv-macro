@@ -200,20 +200,6 @@ export const onboardingRoute = defineRoute({
   externalSearch: '*',
 });
 
-/** A personal GTM invite link (`?token=`): welcome page, then signup. */
-export const inviteRoute = defineRoute({
-  id: 'invite',
-  path: 'invite',
-  externalSearch: '*',
-});
-
-/** Macro staff only: create and track GTM invite links. */
-export const internalInviteLinksRoute = defineRoute({
-  id: 'internal-invite-links',
-  path: 'internal/invite-links',
-  externalSearch: '*',
-});
-
 /** Macro staff only: set the status banner every user sees. */
 export const internalSystemStatusRoute = defineRoute({
   id: 'internal-system-status',

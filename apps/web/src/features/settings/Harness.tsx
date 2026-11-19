@@ -1,4 +1,3 @@
-import { TutorialPill } from '@app/features/video-tutorials';
 import { useCodexAgentsAccess } from '@core/codex/flag';
 import { toast } from '@core/component/Toast/Toast';
 import { MACRO_HARNESS_NAME } from '@core/constant/macroAgent';
@@ -40,7 +39,6 @@ import {
   requestComputerSetup,
 } from './computers/primitives/setup-request';
 import { useTeamComputers } from './computers/primitives/team-computers';
-import { GetComputerEntry } from './computers/views/get-computer-entry';
 import { MacroComputers } from './computers/views/MacroComputers';
 import {
   CURSOR_KEY_FORMAT_ERROR,
@@ -99,7 +97,6 @@ export function Harness(
   // The runtime the page points out, and the one whose Share menu is open.
   const [highlight, setHighlight] = createSignal<{ target: string }>();
   const [sharing, setSharing] = createSignal<string>();
-  const [buyingComputer, setBuyingComputer] = createSignal(false);
   // Opened from an access-request notification: point out that runtime and,
   // for a request, open its Share menu, where the request waits.
   createEffect(
@@ -194,9 +191,6 @@ export function Harness(
           <SettingsPage
             title="Machines"
             description="Providers and machines your agents can run on."
-            signpost={
-              <TutorialPill tutorial="macrod" class="mt-1 self-start" />
-            }
             onBack={props.onBack}
             backLabel={props.backLabel ?? 'Agents'}
             actions={
@@ -210,7 +204,6 @@ export function Harness(
               </Button>
             }
           >
-            <GetComputerEntry onGet={() => setBuyingComputer(true)} />
             <PendingRequestsSection />
             <ConnectedRuntimesSection
               harnesses={
@@ -241,11 +234,7 @@ export function Harness(
               canRemoveShared={isTeamOwner()}
               onRemove={setRemovingHarness}
             />
-            <MacroComputers
-              harnesses={harnesses()}
-              buying={buyingComputer()}
-              onBuyingChange={setBuyingComputer}
-            />
+            <MacroComputers harnesses={harnesses()} />
             <LocalRuntimeCard />
             <div>
               <h2 class="mb-3 px-6 text-sm font-semibold text-ink">

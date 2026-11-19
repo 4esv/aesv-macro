@@ -32,20 +32,3 @@ export function redeemSessionToken(
     })
   );
 }
-
-/** Tell analytics who signed in, once per user. */
-export function createSessionIdentity(
-  context: Pick<AuthContext, 'session' | 'identify'>
-) {
-  createEffect(
-    on(
-      () => {
-        const session = context.session();
-        return session.t === 'signed-in' ? session.user : undefined;
-      },
-      (user) => {
-        if (user) context.identify(user);
-      }
-    )
-  );
-}

@@ -86,9 +86,6 @@
       "@service-auth/*": [
         "./src/lib/service-clients/service-auth/*"
       ],
-      "@service-stripe/*": [
-        "./src/lib/service-clients/service-stripe/*"
-      ],
       "@service-storage/*": [
         "./src/lib/service-clients/service-storage/*"
       ],

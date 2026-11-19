@@ -1,6 +1,5 @@
 import { fireAndForget } from '@core/util/fireAndForget';
 import { thrownResultErrorHasCode, throwOnErr } from '@core/util/result';
-import { Telemetry } from '@macro-inc/observability';
 import { queryClient } from '@queries/client';
 import {
   invalidateHarnesses,
@@ -13,7 +12,6 @@ import {
   type ComputerStatus,
   type ComputerStatusKind,
   computersClient,
-  type PurchaseComputerRequest,
 } from '@service-auth/computers';
 import { queryOptions, useMutation, useQuery } from '@tanstack/solid-query';
 import { createEffect, on } from 'solid-js';
@@ -194,38 +192,6 @@ function storeComputer(updated: ComputerStatus) {
   );
 }
 
-async function purchaseComputer(request: PurchaseComputerRequest) {
-  return await Telemetry.span('computers.purchase', async (span) => {
-    span.setAttr('computer.size', request.size);
-    try {
-      const purchased = await throwOnErr(() =>
-        computersClient.purchase(request)
-      );
-      span.setAttr('computer.id', purchased.computerId);
-      span.setAttr('computer.purchase_state', purchased.state);
-      return purchased;
-    } catch (error) {
-      span.error('Computer purchase failed');
-      throw error;
-    }
-  });
-}
-
-export function usePurchaseComputerMutation() {
-  return useMutation(() => ({
-    gcTime: 0,
-    mutationFn: purchaseComputer,
-    onSettled: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: computerKeys.list.queryKey }),
-        queryClient.invalidateQueries({
-          queryKey: computerKeys.offers.queryKey,
-        }),
-      ]);
-    },
-  }));
-}
-
 export function useSetComputerPowerMutation() {
   return useMutation(() => ({
     gcTime: 0,
@@ -235,40 +201,12 @@ export function useSetComputerPowerMutation() {
   }));
 }
 
-export function useCancelComputerMutation() {
-  return useMutation(() => ({
-    gcTime: 0,
-    mutationFn: (computerId: string) =>
-      throwOnErr(() => computersClient.cancel(computerId)),
-    onSuccess: storeComputer,
-  }));
-}
-
-export function useUndoCancelComputerMutation() {
-  return useMutation(() => ({
-    gcTime: 0,
-    mutationFn: (computerId: string) =>
-      throwOnErr(() => computersClient.undoCancel(computerId)),
-    onSuccess: storeComputer,
-  }));
-}
-
-/** Sets a failed computer up again; billing is untouched. */
+/** Sets a failed computer up again. */
 export function useRetryComputerMutation() {
   return useMutation(() => ({
     gcTime: 0,
     mutationFn: (computerId: string) =>
       throwOnErr(() => computersClient.retry(computerId)),
-    onSuccess: storeComputer,
-  }));
-}
-
-/** Bills a released computer again while its disk is still retained. */
-export function useRestoreComputerMutation() {
-  return useMutation(() => ({
-    gcTime: 0,
-    mutationFn: (computerId: string) =>
-      throwOnErr(() => computersClient.restore(computerId)),
     onSuccess: storeComputer,
   }));
 }

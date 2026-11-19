@@ -10,6 +10,7 @@ import {
   getTeamShareScope,
   isTeamShareSupportedForItem,
   LINK_SHARE_SCOPE_OPTIONS,
+  linkShareScopeOptionsFor,
   TEAM_SHARE_SCOPE_OPTIONS,
   teamShareScopeOptionsForItem,
 } from './linkShare';
@@ -101,11 +102,19 @@ describe('buildLinkShareScopePayload', () => {
 });
 
 describe('link share copy', () => {
-  it('provides None, Public, and Team selector options', () => {
+  it('offers no public link: os.aesv.io is owner-only until W-2094', () => {
     expect(LINK_SHARE_SCOPE_OPTIONS).toEqual([
       { value: 'NONE', label: 'Only people with access' },
-      { value: 'PUBLIC', label: 'Anyone with the link' },
       { value: 'TEAM', label: 'Team members with the link' },
+    ]);
+  });
+
+  it('shows PUBLIC only on an item that is already public', () => {
+    expect(linkShareScopeOptionsFor('NONE')).toBe(LINK_SHARE_SCOPE_OPTIONS);
+    expect(linkShareScopeOptionsFor('PUBLIC').map((o) => o.value)).toEqual([
+      'NONE',
+      'TEAM',
+      'PUBLIC',
     ]);
   });
 

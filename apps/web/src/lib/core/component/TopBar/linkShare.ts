@@ -119,12 +119,24 @@ const TEAM_SHARE_COPY: Record<TeamShareScope, string> = {
   edit: 'Can edit',
 };
 
-export const LINK_SHARE_SCOPE_OPTIONS = (
-  ['NONE', 'PUBLIC', 'TEAM'] as const
-).map((scope) => ({
-  value: scope,
-  label: LINK_SHARE_SCOPE_COPY[scope].label,
-}));
+// FIX: W-2094 restores 'PUBLIC' once a public link points at file.aesv.io;
+// os.aesv.io is owner-only, so a stranger's link would hit a login wall.
+export const LINK_SHARE_SCOPE_OPTIONS = (['NONE', 'TEAM'] as const).map(
+  (scope) => ({
+    value: scope,
+    label: LINK_SHARE_SCOPE_COPY[scope].label,
+  })
+);
+
+/** Adds PUBLIC only when it is already set, so the owner sees it and can turn it off. */
+export function linkShareScopeOptionsFor(current: LinkShareScope) {
+  return current === 'PUBLIC'
+    ? [
+        ...LINK_SHARE_SCOPE_OPTIONS,
+        { value: 'PUBLIC' as const, label: LINK_SHARE_SCOPE_COPY.PUBLIC.label },
+      ]
+    : LINK_SHARE_SCOPE_OPTIONS;
+}
 
 export const TEAM_SHARE_SCOPE_OPTIONS = (
   ['NONE', 'view', 'comment', 'edit'] as const

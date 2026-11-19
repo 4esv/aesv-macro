@@ -1,8 +1,3 @@
-import {
-  mobileCaptureDevice,
-  mobileCaptureSetOnce,
-  normalizeAnalyticsEmail,
-} from '@app/lib/analytics/mobileCaptureIdentity';
 import { createSignal } from 'solid-js';
 import type { AuthContext } from '../context/auth-context';
 import { mobileWelcomeFailure } from '../core/mobile-welcome';
@@ -12,27 +7,15 @@ import { mobileWelcomeFailure } from '../core/mobile-welcome';
  * instead of signing up on a phone.
  */
 export function createMobileSignup(
-  context: Pick<
-    AuthContext,
-    'sendMobileWelcomeEmail' | 'identify' | 'notifyFailure'
-  >
+  context: Pick<AuthContext, 'sendMobileWelcomeEmail' | 'notifyFailure'>
 ) {
   const [pending, setPending] = createSignal(false);
   const [submitted, setSubmitted] = createSignal<string>();
 
   const submit = async (email: string) => {
-    const address = normalizeAnalyticsEmail(email);
+    const address = email.trim().toLowerCase();
     // An empty submit keeps the visitor on the capture step.
     if (!address || pending()) return;
-    context.identify({
-      id: address,
-      email: address,
-      setOnce: mobileCaptureSetOnce({
-        capturedAt: new Date().toISOString(),
-        device: mobileCaptureDevice(navigator.userAgent),
-        search: window.location.search,
-      }),
-    });
     setPending(true);
     try {
       const result = await context.sendMobileWelcomeEmail(address);

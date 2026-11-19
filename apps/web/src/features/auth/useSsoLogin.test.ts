@@ -128,9 +128,7 @@ describe('useSsoLogin', () => {
       expect(redirect.searchParams.get('idp_name')).toBe('google');
       expect(mocks.createNativeAuthSession).not.toHaveBeenCalled();
       expect(mocks.sessionLogin).not.toHaveBeenCalled();
-      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' }, [
-        'posthog',
-      ]);
+      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' });
       // The hosted return sets only HttpOnly cookies; without this hint the
       // returning load never checks identity and shows sign-in again.
       expect(mocks.syncLoginStorage).toHaveBeenCalledWith(true);
@@ -158,11 +156,9 @@ describe('useSsoLogin', () => {
     );
     expect(redirect.searchParams.get('referral_code')).toBe('original-invite');
     expect(mocks.createNativeAuthSession).not.toHaveBeenCalled();
-    expect(mocks.track).toHaveBeenCalledWith(
-      'sign_up_click',
-      { method: 'google' },
-      ['posthog']
-    );
+    expect(mocks.track).toHaveBeenCalledWith('sign_up_click', {
+      method: 'google',
+    });
   });
 
   // The desktop shell must not depend on the native navigation plugin
@@ -197,9 +193,7 @@ describe('useSsoLogin', () => {
       expect(window.location.href).toBe(loginUrl);
       expect(mocks.createNativeAuthSession).not.toHaveBeenCalled();
       expect(mocks.sessionLogin).not.toHaveBeenCalled();
-      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' }, [
-        'posthog',
-      ]);
+      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' });
       // The session-code redemption enables the identity check itself.
       expect(mocks.syncLoginStorage).not.toHaveBeenCalled();
     }
@@ -267,9 +261,7 @@ describe('useSsoLogin', () => {
       expect(mocks.initEmailLink).toHaveBeenCalledOnce();
       expect(window.location.href).toBe(loginUrl);
       expect(mocks.syncLoginStorage).toHaveBeenCalledWith(true);
-      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' }, [
-        'posthog',
-      ]);
+      expect(mocks.track).toHaveBeenCalledWith('login', { method: 'google' });
     }
   );
 

@@ -1,15 +1,9 @@
 import { ROUTER_BASE } from '@app/constants/routerBase';
-import { usePendingInviteRedemption } from '@app/features/gtm-invite/usePendingInviteRedemption';
 import { GlobalShareInboxConflictDialog } from '@app/features/inbox/ShareInboxConflictDialog';
 import { MeetingSessionProvider } from '@app/features/meetings/meeting-session-provider';
 import { useRecordSuggestionsActivity } from '@app/features/suggestions/queries/use-record-suggestions-activity';
-import {
-  AnalyticsContextProvider,
-  useAnalytics,
-} from '@app/lib/analytics/analytics-context';
-import { PosthogProvider, usePosthog } from '@app/lib/analytics/posthog';
-import { rememberMobileEmailAttribution } from '@app/lib/analytics/signupAttribution';
-import { trackSignupCompletion } from '@app/lib/analytics/signupCompletion';
+import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
+import { PosthogProvider } from '@app/lib/analytics/posthog';
 import { setHotkeyRoot } from '@app/signal/hotkeyRoot';
 import { IncomingCallEvents } from '@block-call/sidebar/incoming-calls';
 import { CallProvider } from '@channel/Call/CallContext';
@@ -28,7 +22,6 @@ import { useHotKeyRoot } from '@core/hotkey/hotkeys';
 import { IosPushNotificationModal } from '@core/mobile/IosPushNotificationModal';
 import { IpadUnsupportedDialog } from '@core/mobile/IpadUnsupportedDialog';
 import { formatTabTitle, tabTitleSignal } from '@core/signal/tabTitle';
-import { setCookie } from '@core/util/cookies';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { licenseChannel } from '@core/util/licenseUpdateBroadcastChannel';
 import { isTauri } from '@core/util/platform';
@@ -55,7 +48,6 @@ import {
   resolveActiveThemeId,
   systemThemeEffect,
 } from '@theme/utils/themeUtils';
-import { detect } from 'detect-browser';
 import { createEffect, type JSX, on, onCleanup, onMount } from 'solid-js';
 import { perfMark } from '../observability/perf-marks';
 import { AppRouterView } from './app-router-view';
@@ -63,37 +55,10 @@ import { AppRouterView } from './app-router-view';
 import { useSyncLoginCookie } from './use-sync-login-cookie';
 
 const rootPreload: RoutePreloadFunc = async (args) => {
-  // Before any await: the desktop link's ad parameters have to be stored
-  // before signup navigates away to the identity provider.
-  rememberMobileEmailAttribution();
-
   await prefetchUserInfo();
 
   // even though we are using the transformUrl prop, we may still need to replace the url in the history
   const url = new URL(window.location.href);
-
-  // List of query parameters to capture.
-  const params = [
-    'utm_campaign',
-    'utm_source',
-    'utm_medium',
-    'utm_term',
-    'utm_content',
-    'rdt_cid',
-    'fbclid',
-    'gclid',
-    'twclid',
-    '_fbc',
-    '_fbp',
-  ];
-
-  const searchParams = new URLSearchParams(url.search);
-  params.forEach((param) => {
-    const value = searchParams.get(param);
-    if (value) {
-      setCookie(param, value, 1); // Set the cookie to expire in 1 day.
-    }
-  });
 
   const existingPathname = url.pathname;
   const transformedPathname = transformShortIdInUrlPathname(existingPathname);
@@ -111,25 +76,15 @@ const ROUTES: RouteDefinition[] = [
   { path: '/*path', component: AppRouterView },
 ];
 
-/** Syncs the signed-in user to observability, analytics, and the login cookie. */
+/** Syncs the signed-in user to observability and the login cookie. */
 function useUserInfoSideEffects() {
-  const analytics = useAnalytics();
-  const posthog = usePosthog();
-
   useSyncLoginCookie();
 
-  // A signup that started from a GTM invite link finishes its attribution on
-  // the first authenticated load (the welcome page parked the token).
-  usePendingInviteRedemption();
-
-  // Set user info for observability and analytics
   const userInfo = useUserInfo();
 
   // Keep the active theme following the OS color scheme when auto-detect is on.
   systemThemeEffect();
 
-  let identified = false;
-  let syncedPlanKey: string | undefined;
   createEffect(
     on(userInfo, (user) => {
       // Keep telemetry user context in sync with auth state: set on every
@@ -138,37 +93,6 @@ function useUserInfoSideEffects() {
       // and on native mobile it's an SPA navigation with no page reload, so
       // this effect is what clears it there.
       Telemetry.config.setUser(user?.authenticated ? user.id : undefined);
-
-      if (!user || !user.authenticated) {
-        syncedPlanKey = undefined;
-        return;
-      }
-
-      if (!posthog.instance._isIdentified() && !identified) {
-        identified = true;
-
-        const platform = detect(navigator.userAgent);
-        const os = platform?.os?.replaceAll(' ', '');
-
-        analytics.identify(user.id, {
-          email: user.email,
-          os,
-        });
-      } else {
-        // Already identified, including as the mobile-capture email on this
-        // browser. identify() will not switch that browser to the account id.
-        analytics.linkMobileCapturePerson(user.id, user.email);
-      }
-
-      const planKey = `${user.id}:${user.licenseStatus}`;
-      if (syncedPlanKey !== planKey) {
-        syncedPlanKey = planKey;
-        analytics.setPlanProperties(user.licenseStatus);
-      }
-
-      // Fires sign_up + ad conversions once when the auth service flagged this
-      // session as a freshly created account (signed_up=true redirect param).
-      trackSignupCompletion(analytics, { id: user.id });
     })
   );
 }

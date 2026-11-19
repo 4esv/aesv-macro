@@ -573,6 +573,18 @@
           packageName = "seed_cli";
           binaries = [ "seed_cli" ];
         }
+        # NOTE: aesv has no Google or Microsoft client, so the local stack runs
+        # these emulators in their place and needs their binaries too.
+        {
+          serviceName = "local-gmail-emulator";
+          packageName = "gmail_emulator";
+          binaries = [ "gmail_emulator" ];
+        }
+        {
+          serviceName = "local-outlook-emulator";
+          packageName = "outlook_emulator";
+          binaries = [ "outlook_emulator" ];
+        }
       ];
 
       deployBinaryCargoExtraArgs =

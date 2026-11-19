@@ -8,7 +8,6 @@ import {
 } from '@service-auth/team-agents';
 import { queryOptions, useMutation, useQuery } from '@tanstack/solid-query';
 import type { Accessor } from 'solid-js';
-import { invalidateAiBillingSummary } from '../auth';
 import { queryClient } from '../client';
 import { computerKeys } from '../computers/keys';
 import { invalidateTeam } from '../team/teams';
@@ -58,7 +57,6 @@ async function invalidateAfterAgentChange(teamId: string) {
     invalidateTeam(teamId),
     queryClient.invalidateQueries({ queryKey: computerKeys.list.queryKey }),
     queryClient.invalidateQueries({ queryKey: computerKeys.offers.queryKey }),
-    invalidateAiBillingSummary(),
   ]);
 }
 

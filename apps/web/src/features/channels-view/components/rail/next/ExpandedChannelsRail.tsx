@@ -3,7 +3,6 @@ import { createLayoutAnimation } from '@app/components/drag-drop/create-layout-a
 import type { ListScrollHandle } from '@app/components/list';
 import { ViewSidebar } from '@app/components/view-shell';
 import { SidebarRoutineSuggestions } from '@app/features/routine-suggestions/routine-suggestions';
-import { SlackImportSidebar } from '@app/features/slack-import/slack-import-sidebar';
 import { useFeatureFlag } from '@app/lib/analytics/posthog';
 import { t } from '@app/lib/i18n';
 import { enableChatSidebarSectionResize } from '@core/constant/featureFlags';
@@ -920,7 +919,6 @@ export function ExpandedChannelsRail(props: { search: ChannelRailSearch }) {
           <ExpandedSearchResults search={props.search} />
         </Show>
       </div>
-      <SlackImportSidebar />
     </>
   );
 }

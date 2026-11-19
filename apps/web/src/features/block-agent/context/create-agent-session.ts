@@ -50,7 +50,6 @@ import {
   untrack,
 } from 'solid-js';
 import { createStore, reconcile, unwrap } from 'solid-js/store';
-import { issueSessionAction } from '../queries/issue-session-action';
 import type { EffortSelection } from '../state/session-config';
 import { configureSessionModel } from './configure-session-model';
 
@@ -421,7 +420,7 @@ export function createAgentSession(
     issue: (action) => {
       const current = live();
       return current
-        ? issueSessionAction(current, action, { userId: options.userId() })
+        ? current.issue(action, { userId: options.userId() })
         : undefined;
     },
     selectModel: async (model, effort) => {
@@ -431,7 +430,7 @@ export function createAgentSession(
         {
           id: current.id,
           issue: (action) =>
-            issueSessionAction(current, action, { userId: options.userId() }),
+            current.issue(action, { userId: options.userId() }),
           snapshot: () => current.snapshot(),
           subscribe: (listener) => current.subscribe(listener),
           refresh: () => current.refresh(),

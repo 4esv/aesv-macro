@@ -37,6 +37,9 @@ const EGRESS_SERVICE: &str = "agent_harness_service";
 const EGRESS_CONTAINER_PORT: u16 = 8102;
 
 pub const LOCALSTACK_IMAGE: &str = "localstack/localstack:4";
+const AWSROUTER_IMAGE: &str = "python:3.13-alpine";
+const S3STORE_IMAGE: &str = "rclone/rclone:1.76.0";
+const DYNAMODB_IMAGE: &str = "amazon/dynamodb-local:3.1.0";
 pub const MAILPIT_IMAGE: &str = "axllent/mailpit:v1.20";
 pub const CADDY_IMAGE: &str = "caddy:2-alpine";
 const SDK_WEBHOOK_RELAY_IMAGE: &str = "macro-sdk-webhook-relay";
@@ -359,35 +362,64 @@ fn sdk_webhook_relay_image(dockerfile: &[u8]) -> String {
     format!("{SDK_WEBHOOK_RELAY_IMAGE}:{}", &digest[..12])
 }
 
-/// LocalStack (S3/SQS/DynamoDB), reachable as `localstack` on both networks.
-/// Used by local AND dev — dev's `dev_personal` notification queue lives here.
+/// Where aesv keeps the AWS layer's data on the host. A bind mount, not a
+/// Compose volume, so `stack down` (which removes volumes) leaves it in place.
+fn aesv_data_dir(instance: &Instance) -> PathBuf {
+    let home = std::env::var_os("HOME").unwrap_or_else(|| "/tmp".into());
+    PathBuf::from(home)
+        .join(".local/share/aesv-macro")
+        .join(instance.name())
+}
+
+/// The AWS endpoint, reachable as `localstack` on both networks. Used by local
+/// AND dev — dev's `dev_personal` notification queue lives here.
+///
+/// NOTE: aesv splits it in four, because LocalStack's free edition loses S3
+/// objects and DynamoDB items on every restart. `localstack` is a router
+/// (`deploy/aesv/awsrouter.py`) that sends S3 to rclone, DynamoDB to DynamoDB
+/// Local, and SQS and KMS to LocalStack itself (`localstack-core`). The router
+/// also keeps bucket notifications and sends S3 events to SQS.
 fn add_localstack_service(
     services: &mut IndexMap<String, Option<dct::Service>>,
     instance: &Instance,
 ) {
+    let data = aesv_data_dir(instance);
+    for dir in ["router", "s3", "dynamodb"] {
+        // NOTE: a failure here surfaces as the container's own mount error.
+        let _ = std::fs::create_dir_all(data.join(dir));
+    }
+    let mount = |dir: &str, target: &str| {
+        vec![dct::Volumes::Simple(format!(
+            "{}:{target}",
+            data.join(dir).display()
+        ))]
+    };
+    let args = |a: &[&str]| Some(dct::Command::Args(a.iter().map(|s| s.to_string()).collect()));
+    let backend = || net_aliases(&[("databases", &[])]);
+
+    let mut router_volumes = vec![dct::Volumes::Simple(format!(
+        "{}:/app/awsrouter.py:ro",
+        repo_root().join("deploy/aesv/awsrouter.py").display()
+    ))];
+    router_volumes.extend(mount("router", "/state"));
     services.insert(
         "localstack".to_string(),
         Some(dct::Service {
-            image: Some(LOCALSTACK_IMAGE.to_string()),
-            // `kms` for the Cursor API key CMK (see `localstack::create_kms_keys`).
-            // LocalStack only starts the services named here, so an omission
-            // shows up as `"kms": "disabled"` on its health endpoint rather
-            // than as a connection error.
-            environment: kv(&[("SERVICES", "sqs,dynamodb,s3,kms")]),
-            // Probe the readiness endpoint over loopback instead of the
-            // image's own healthcheck, which shells out to `localstack status
-            // services`. That CLI resolves `localhost.localstack.cloud`, a
-            // public name; where DNS cannot reach it the probe takes ~40s
-            // against its 10s timeout, so the container never reports healthy
-            // and `compose up --wait` fails the whole stack even though
-            // LocalStack is serving fine. Overriding only the probe keeps
-            // `LOCALSTACK_HOST` unset, so the hostname LocalStack advertises
-            // in returned SQS/S3 URLs stays `localstack`, which is how every
-            // other container addresses it.
+            image: Some(AWSROUTER_IMAGE.to_string()),
+            command: args(&["python", "/app/awsrouter.py"]),
+            volumes: router_volumes,
+            // Bring-ups name `localstack` alone; this starts what it routes to.
+            depends_on: dct::DependsOnOptions::Simple(
+                ["s3store", "dynamodb", "localstack-core"].map(String::from).to_vec(),
+            ),
+            // The health path goes through to `localstack-core`, so a healthy
+            // router means queues and KMS answer too.
             healthcheck: Some(dct::Healthcheck {
                 test: Some(dct::HealthcheckTest::Multiple(vec![
-                    "CMD-SHELL".to_string(),
-                    "curl -fsS http://localhost:4566/_localstack/health".to_string(),
+                    "CMD".to_string(),
+                    "python".to_string(),
+                    "-c".to_string(),
+                    "import urllib.request as u; u.urlopen('http://localhost:4566/_localstack/health', timeout=5)".to_string(),
                 ])),
                 interval: Some("10s".to_string()),
                 timeout: Some("10s".to_string()),
@@ -401,6 +433,71 @@ fn add_localstack_service(
                 ("databases", &["localstack"]),
                 ("services", &["localstack"]),
             ]),
+            ..Default::default()
+        }),
+    );
+    services.insert(
+        "s3store".to_string(),
+        Some(dct::Service {
+            image: Some(S3STORE_IMAGE.to_string()),
+            command: args(&["serve", "s3", "/data", "--addr", ":8080"]),
+            volumes: mount("s3", "/data"),
+            networks: backend(),
+            ..Default::default()
+        }),
+    );
+    services.insert(
+        "dynamodb".to_string(),
+        Some(dct::Service {
+            image: Some(DYNAMODB_IMAGE.to_string()),
+            // The image runs as a user that cannot write a bind-mounted dir.
+            user: Some("0".to_string()),
+            command: args(&[
+                "-Xmx256m",
+                "-Djava.library.path=./DynamoDBLocal_lib",
+                "-jar",
+                "DynamoDBLocal.jar",
+                "-sharedDb",
+                "-dbPath",
+                "/data",
+            ]),
+            volumes: mount("dynamodb", "/data"),
+            networks: backend(),
+            ..Default::default()
+        }),
+    );
+    services.insert(
+        "localstack-core".to_string(),
+        Some(dct::Service {
+            image: Some(LOCALSTACK_IMAGE.to_string()),
+            // `kms` for the Cursor API key CMK (see `localstack::create_kms_keys`).
+            // LocalStack only starts the services named here, so an omission
+            // shows up as `"kms": "disabled"` on its health endpoint rather
+            // than as a connection error.
+            environment: kv(&[("SERVICES", "sqs,kms")]),
+            // Probe the readiness endpoint over loopback instead of the
+            // image's own healthcheck, which shells out to `localstack status
+            // services`. That CLI resolves `localhost.localstack.cloud`, a
+            // public name; where DNS cannot reach it the probe takes ~40s
+            // against its 10s timeout, so the container never reports healthy
+            // and `compose up --wait` fails the whole stack even though
+            // LocalStack is serving fine. Overriding only the probe keeps
+            // `LOCALSTACK_HOST` unset, so the hostname LocalStack advertises
+            // in returned SQS URLs is the request's host, `localstack`, which
+            // the router passes through.
+            healthcheck: Some(dct::Healthcheck {
+                test: Some(dct::HealthcheckTest::Multiple(vec![
+                    "CMD-SHELL".to_string(),
+                    "curl -fsS http://localhost:4566/_localstack/health".to_string(),
+                ])),
+                interval: Some("10s".to_string()),
+                timeout: Some("10s".to_string()),
+                retries: 5,
+                start_period: Some("180s".to_string()),
+                start_interval: Some("1s".to_string()),
+                ..Default::default()
+            }),
+            networks: backend(),
             ..Default::default()
         }),
     );

@@ -15,7 +15,6 @@ import {
 } from 'solid-js';
 import { match } from 'ts-pattern';
 import { ComputerSizePicker } from '../computers/components/computer-size-picker';
-import { formatQuote } from '../computers/core/computer-display';
 import { DisabledReason } from '../computers/views/computer-setup-dialog';
 import {
   inviteBlocker,
@@ -38,13 +37,12 @@ function TooLong(props: { limit: number }) {
 
 /**
  * Invite an agent teammate: who it is, what it does, and the computer it
- * runs on, priced the way Buy a computer prices it. Renders the body and
- * footer of the Invite to Team panel.
+ * runs on. Renders the body and footer of the Invite to Team panel.
  */
 export function InviteAgentForm(props: {
   /** Above the form, e.g. the People | Agent switch. */
   header?: JSX.Element;
-  /** Sizes with their price; `undefined` while loading. */
+  /** Computer sizes; `undefined` while loading. */
   offers: readonly SizeOffer[] | undefined;
   offersFailed: boolean;
   onRetryOffers: () => void;
@@ -120,12 +118,6 @@ export function InviteAgentForm(props: {
     errorLine.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     errorLine.focus({ preventScroll: true });
   });
-
-  const inviteLabel = () => {
-    const chosen = offer();
-    if (!chosen || chosen.quote.amount === 0) return t('teamAgents.invite');
-    return t('teamAgents.invitePriced', { price: formatQuote(chosen.quote) });
-  };
 
   const submit = () => {
     const request = teamAgentRequest(draft());
@@ -327,9 +319,6 @@ export function InviteAgentForm(props: {
                 />
               )}
             </Show>
-            <p class="text-xs text-ink-muted">
-              {t('settingsBilling.proration')}
-            </p>
           </div>
 
           <Show when={props.error}>
@@ -362,7 +351,7 @@ export function InviteAgentForm(props: {
           disabled={busy() || !teamAgentRequest(draft())}
           onClick={submit}
         >
-          <Show when={props.pending} fallback={inviteLabel()}>
+          <Show when={props.pending} fallback={t('teamAgents.invite')}>
             <SpinnerIcon class="size-4 animate-spin" />
             <span class="sr-only">{t('teamAgents.inviting')}</span>
           </Show>

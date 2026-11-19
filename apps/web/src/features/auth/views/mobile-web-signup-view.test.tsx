@@ -23,42 +23,11 @@ const submit = (email: string) => {
 };
 
 describe('mobile-web sign-up', () => {
-  it('emails a desktop link and records the lead on the normalized email', async () => {
-    window.history.replaceState(
-      {},
-      '',
-      '/?utm_source=ig&utm_medium=paid&utm_campaign=spring&utm_content=story&fbclid=click&gclid=ads'
-    );
+  it('emails a desktop link to the normalized email', async () => {
     const { fake } = setup();
     submit(' Visitor@Example.com ');
-    await screen.findByText('Macro is better on desktop.');
-    const calls = fake.calls();
-    expect(calls).toEqual(
-      expect.arrayContaining([
-        'identify:visitor@example.com',
-        'mobileWelcome:visitor@example.com',
-        'lead:visitor@example.com',
-      ])
-    );
-    expect(calls.indexOf('identify:visitor@example.com')).toBeLessThan(
-      calls.indexOf('mobileWelcome:visitor@example.com')
-    );
-    expect(fake.identifiedUsers()[0]).toMatchObject({
-      id: 'visitor@example.com',
-      email: 'visitor@example.com',
-      setOnce: {
-        mobile_capture_device: expect.any(String),
-        utm_source: 'ig',
-        utm_medium: 'paid',
-        utm_campaign: 'spring',
-        utm_content: 'story',
-        fbclid: 'click',
-      },
-    });
-    expect(fake.identifiedUsers()[0]?.setOnce?.mobile_capture_at).toMatch(
-      /^\d{4}-\d{2}-\d{2}T/
-    );
-    expect(fake.identifiedUsers()[0]?.setOnce?.gclid).toBeUndefined();
+    await screen.findByText('aesv is better on desktop.');
+    expect(fake.calls()).toContain('mobileWelcome:visitor@example.com');
   });
 
   it('stays on the capture step for an empty or rejected address', async () => {

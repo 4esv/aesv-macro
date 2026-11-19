@@ -16,10 +16,10 @@ const [request, setRequest] = createSignal<AddInboxRequest | null>(null);
  * (Layout), gated on this signal, so it opens immediately and independent of
  * the settings surface.
  *
- * Entitlement is enforced by the backend: `POST /link/gmail` answers 402 when
- * the user isn't allowed another inbox, and `useAddInboxFlow` maps that to the
- * multi-inbox paywall — so callers can invoke the add-inbox flow directly
- * without a client-side gate that would have to mirror the backend's rule.
+ * Entitlement is enforced by the backend: `POST /link/gmail` refuses when the
+ * user isn't allowed another inbox, and `useAddInboxFlow` reports that as a
+ * failure, so callers can invoke the add-inbox flow directly without a
+ * client-side gate that would have to mirror the backend's rule.
  */
 export const openAddInboxDialog = (options?: AddInboxRequest) =>
   setRequest({ scopes: options?.scopes });

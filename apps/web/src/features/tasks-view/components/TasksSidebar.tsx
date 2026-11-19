@@ -4,7 +4,6 @@ import {
   ViewSidebar,
 } from '@app/components/view-shell';
 import { SidebarCreateHeader } from '@app/components/view-shell/SidebarCreateButton';
-import { ConnectorImportSidebar } from '@app/features/connector-import/connector-import';
 import { FavoriteContextMenu } from '@app/features/favorites/FavoriteContextMenu';
 import { FavoriteIcon } from '@app/features/favorites/FavoriteIcon';
 import { FavoriteUnreadIndicator } from '@app/features/favorites/FavoriteUnreadIndicator';
@@ -244,11 +243,6 @@ export function TasksSidebar() {
           onOpenChange={(open) => setSidebarSectionOpen('favorites', open)}
         />
       </ViewSidebar.Content>
-      {/* Keep import controls anchored below the navigation sections. */}
-      <ConnectorImportSidebar
-        category="tasks"
-        class="absolute inset-x-(--sidebar-gutter) bottom-(--sidebar-content-inset) z-10"
-      />
     </ViewSidebar.Root>
   );
 }

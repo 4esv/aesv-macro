@@ -1,7 +1,6 @@
 import { SearchBar, ViewSidebar } from '@app/components/view-shell';
 import { runCreateAction } from '@app/features/command/Launcher';
 import { SidebarRoutineSuggestions } from '@app/features/routine-suggestions/routine-suggestions';
-import { SlackImportSidebar } from '@app/features/slack-import/slack-import-sidebar';
 import { DEBUG_SETTING_KEYS, useDebugSetting } from '@app/lib/debugSettings';
 import { openNewChannelModal } from '@channel/CreateChannelModal';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
@@ -684,8 +683,6 @@ export function ExpandedChannelsRail(props: { search: ChannelRailSearch }) {
             </Match>
           </Switch>
         </div>
-        {/* Bottom of the rail, like the Drive, Tasks, and CRM import cards. */}
-        <SlackImportSidebar />
         <Show when={!props.search.isOpen() && rail.tab() === 'browse'}>
           <footer class="flex h-9 shrink-0 items-center justify-start gap-1 border-t border-edge-muted px-4 text-xxs text-ink-extra-muted">
             <span>Use</span>

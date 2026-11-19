@@ -8,9 +8,6 @@ const draftRoutine = vi.hoisted(() => vi.fn());
 vi.mock('@service-scheduled-action/client', () => ({
   scheduledActionClient: { draftRoutine },
 }));
-vi.mock('@app/features/paywall/ai-usage-limit-handling', () => ({
-  handleAiUsageLimitError: () => false,
-}));
 vi.mock('@core/constant/allBlocks', () => ({
   blockNameToDefaultFile: () => 'New routine',
 }));

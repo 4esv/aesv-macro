@@ -24,7 +24,6 @@ import { ComposerEditor } from '@core/component/LexicalMarkdown/component/Compos
 import { createComposerLayout } from '@core/component/LexicalMarkdown/utils/create-composer-layout';
 import { toast } from '@core/component/Toast/Toast';
 import { fileTypeToBlockName } from '@core/constant/allBlocks';
-import { PaywallKey, usePaywallState } from '@core/constant/PaywallState';
 import { TOKENS } from '@core/hotkey/tokens';
 import { hapticImpact } from '@core/mobile/haptics';
 import { isMobile } from '@core/mobile/isMobile';
@@ -79,14 +78,10 @@ export function ChatInput(props: ChatInputComponentProps) {
   const attachments = input.attachments;
   const model = input.model;
   const generating = input.isGenerating;
-  const { showPaywall } = usePaywallState();
   const hasPaidAccess = useHasPaidAccess();
 
-  // Every model is shown to every user; availability is per-plan. Free users
-  // see the premium models locked (dimmed + lock icon), and clicking one opens
-  // the paywall via `onLocked` rather than sending and being rejected by the
-  // backend. Listing only the free model would mean free users never see the
-  // upsell at all.
+  // Every model is shown to every user; availability is per-plan, and a model
+  // the plan does not allow shows locked.
   const modelOptions = createMemo(() => {
     const allowed = modelsForPlan(hasPaidAccess());
     return PAID_MODELS.map((id) => ({
@@ -323,7 +318,6 @@ export function ChatInput(props: ChatInputComponentProps) {
         selectedModel={model()}
         models={modelOptions()}
         onSelect={(m) => input.setModel(m)}
-        onLocked={() => showPaywall(PaywallKey.O1_LIMIT)}
         compact={compactSelector()}
       />
       <SpeedToggle model={model()} />

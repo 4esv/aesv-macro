@@ -35,34 +35,7 @@ async function browserTelemetryEnabled(hasExporter: boolean): Promise<boolean> {
 
   if (import.meta.hot) return hasExporter;
 
-  if (!import.meta.env.VITE_POSTHOG_API_KEY) return false;
-
-  const { analytics } = await import('@app/lib/analytics');
-  const flag = 'enable-browser-otel';
-  const current = analytics.posthog.isFeatureEnabled(flag);
-  if (current !== undefined) return current;
-
-  return new Promise((resolve) => {
-    let unsubscribe: (() => void) | undefined;
-    let settled = false;
-    const timeout = window.setTimeout(() => finish(false), 3_000);
-
-    const finish = (enabled: boolean) => {
-      settled = true;
-      window.clearTimeout(timeout);
-      unsubscribe?.();
-      resolve(enabled);
-    };
-
-    unsubscribe = analytics.posthog.onFeatureFlags((_flags, _variants, ctx) => {
-      finish(
-        !ctx?.errorsLoading &&
-          (analytics.posthog.isFeatureEnabled(flag) ?? false)
-      );
-    });
-
-    if (settled) unsubscribe();
-  });
+  return false;
 }
 
 /**

@@ -32,6 +32,8 @@ enum Cmd {
     GenCompose(ComposeArgs),
     /// Print the inventoried backend path prefixes for an external Vite launcher.
     FrontendProxyRoutes,
+    /// Build the local stack's static frontend bundle into a directory.
+    FrontendBundle(FrontendBundleArgs),
     /// Render merged compose and assert the no-build / runtime-image invariants.
     ValidateLocalCompose(ComposeArgs),
     /// Resolve env layers and assert mode-appropriate invariants.
@@ -232,6 +234,13 @@ pub struct ValidateEnvArgs {
     pub dev: bool,
 }
 
+#[derive(Args, Clone)]
+pub struct FrontendBundleArgs {
+    /// Directory to write the bundle to.
+    #[arg(long)]
+    pub out: PathBuf,
+}
+
 #[derive(Args, Clone, Default)]
 pub struct ForceArg {
     /// Rebuild without BuildKit's layer cache.
@@ -280,6 +289,7 @@ fn run(cli: Cli) -> Result<()> {
             println!("{}", super::proxy::frontend_path_prefixes().join(","));
             Ok(())
         }
+        Cmd::FrontendBundle(a) => super::frontend::build_bundle(&a.out),
         Cmd::ValidateLocalCompose(a) => {
             let instance = super::instance::Instance::resolve(
                 a.instance.instance.as_deref(),
