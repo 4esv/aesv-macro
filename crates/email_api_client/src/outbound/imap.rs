@@ -172,7 +172,8 @@ impl FolderWatch {
 pub struct ImapMailboxRepository {
     servers: MailServers,
     tls: TlsConnector,
-    pool: Arc<Mutex<HashMap<String, Vec<Pooled>>>>,
+    /// Keyed by [`pool_key`], never by the credential itself.
+    pool: Arc<Mutex<HashMap<[u8; 32], Vec<Pooled>>>>,
 }
 
 fn transient(message: &str) -> EmailApiError {
@@ -257,6 +258,22 @@ fn keyword(tag: &str) -> Result<&str, EmailApiError> {
     Ok(tag)
 }
 
+/// NOTE: the pool lives as long as the process, so its key is a digest of
+/// the credential: the address and app password never sit in it in clear.
+fn pool_key(token: &AccessToken) -> [u8; 32] {
+    use sha2::Digest;
+    sha2::Sha256::digest(token.expose_secret().as_bytes()).into()
+}
+
+/// [`Security::Plain`] sends LOGIN and AUTH in clear text, so it is refused
+/// for any server but this machine, where only a test server runs.
+fn plain_allowed(host: &str) -> bool {
+    host == "localhost"
+        || host
+            .parse::<std::net::IpAddr>()
+            .is_ok_and(|address| address.is_loopback())
+}
+
 impl ImapMailboxRepository {
     /// An adapter for these servers, trusting the public web roots for TLS.
     pub fn new(servers: MailServers) -> Result<Self, EmailApiError> {
@@ -282,7 +299,10 @@ impl ImapMailboxRepository {
             .await
             .map_err(|_| transient("the IMAP server is unreachable"))?;
         let stream = match server.security {
-            Security::Plain => Either::Left(tcp),
+            Security::Plain if plain_allowed(&server.host) => Either::Left(tcp),
+            Security::Plain => {
+                return Err(invalid("a plain IMAP connection must stay on this machine"));
+            }
             Security::Tls => {
                 let name = ServerName::try_from(server.host.clone())
                     .map_err(|_| invalid("the IMAP server name is not valid"))?;
@@ -326,17 +346,26 @@ impl ImapMailboxRepository {
                 .pool
                 .lock()
                 .map_err(|_| transient("the IMAP session pool is unavailable"))?
-                .get_mut(token.expose_secret())
+                .get_mut(&pool_key(token))
                 .and_then(Vec::pop);
             let Some(mut pooled) = pooled else { break };
-            if pooled.session.noop().await.is_ok() {
+            // A connection dropped without a FIN would hang here until TCP gives
+            // up, so a NOOP that does not answer soon marks the session dead.
+            let alive = tokio::time::timeout(Duration::from_secs(10), pooled.session.noop()).await;
+            if matches!(alive, Ok(Ok(_))) {
                 return Ok((credential, pooled));
             }
         }
         let pooled = tokio::time::timeout(Duration::from_secs(30), self.connect(&credential))
             .await
-            .map_err(|_| transient("the IMAP login did not finish in time"))??;
-        Ok((credential, pooled))
+            .map_err(|_| transient("the IMAP login did not finish in time"))?;
+        if let Err(EmailApiError::AuthRequired) = &pooled {
+            // A revoked or changed password: drop that mailbox's sessions.
+            if let Ok(mut pool) = self.pool.lock() {
+                pool.remove(&pool_key(token));
+            }
+        }
+        Ok((credential, pooled?))
     }
 
     /// Only a session whose last call succeeded goes back; a failed one may
@@ -346,7 +375,7 @@ impl ImapMailboxRepository {
             return;
         }
         if let Ok(mut pool) = self.pool.lock() {
-            let sessions = pool.entry(token.expose_secret().to_owned()).or_default();
+            let sessions = pool.entry(pool_key(token)).or_default();
             if sessions.len() < POOL_SIZE {
                 sessions.push(pooled);
             }
@@ -703,13 +732,16 @@ impl MailboxActionWriter for ImapMailboxRepository {
         let (credential, mut pooled) = self.checkout(token).await?;
         let read = bounded(Self::source(&mut pooled, draft)).await;
         self.checkin(token, pooled, &read);
-        let outgoing = smtp::outgoing(&read?)?;
+        let draft_source = read?;
+        let outgoing = smtp::outgoing(&draft_source)?;
 
         let outcome = bounded(smtp::submit(&self.servers.smtp, &credential, &outgoing)).await?;
         if outcome == SubmissionOutcome::Accepted {
             let filed = async {
                 let (_, mut pooled) = self.checkout(token).await?;
-                let result = bounded(Self::file_sent(&mut pooled, draft, &outgoing.source)).await;
+                // Sent keeps the draft's own source, Bcc lines and all, as Apple
+                // Mail does; only the copy that went out over SMTP drops them.
+                let result = bounded(Self::file_sent(&mut pooled, draft, &draft_source)).await;
                 self.checkin(token, pooled, &result);
                 result
             };

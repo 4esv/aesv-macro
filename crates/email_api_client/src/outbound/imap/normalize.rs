@@ -118,9 +118,28 @@ fn is_attachment(part: &ParsedMail<'_>) -> bool {
             && part.headers.get_first_value("Content-ID").is_some())
 }
 
+/// NOTE: mailparse recurses once per nested multipart with no limit, and a
+/// stack overflow aborts the whole process instead of unwinding. Every level
+/// needs its own `multipart/` Content-Type, so their count bounds the depth.
+/// Past this many a message is refused before parsing; real mail holds a few.
+const MAX_MULTIPART: usize = 256;
+
+/// Parse a raw message from any sender, refusing one nested deep enough to
+/// overflow the stack.
+pub(super) fn parse(raw: &[u8]) -> Option<mailparse::ParsedMail<'_>> {
+    let multiparts = raw
+        .windows(b"multipart/".len())
+        .filter(|window| window.eq_ignore_ascii_case(b"multipart/"))
+        .count();
+    if multiparts > MAX_MULTIPART {
+        return None;
+    }
+    mailparse::parse_mail(raw).ok()
+}
+
 /// The decoded bytes of one attachment, by its part number.
 pub(super) fn attachment(raw: &[u8], part_path: &str) -> Result<Option<Vec<u8>>, EmailApiError> {
-    let mail = mailparse::parse_mail(raw).map_err(|_| malformed())?;
+    let mail = parse(raw).ok_or_else(malformed)?;
     let mut found = Vec::new();
     leaves(&mail, String::new(), &mut found);
     found
@@ -138,7 +157,7 @@ pub(super) fn normalize(
     link_id: Uuid,
     folders: &[MailFolder],
 ) -> Result<MailboxMessage, EmailApiError> {
-    let mail = mailparse::parse_mail(fetched.raw).map_err(|_| malformed())?;
+    let mail = parse(fetched.raw).ok_or_else(malformed)?;
     let role = MailFolder::effective_role(folders, Some(fetched.folder));
     let has_flag = |name: &str| fetched.flags.iter().any(|f| f.eq_ignore_ascii_case(name));
     let state = MailboxState {

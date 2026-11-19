@@ -282,3 +282,33 @@ Bcc: this line is body text and stays.\r
         "From: me@icloud.com\r\nTo: sam@example.com\r\nSubject: Hi\r\n\r\nBcc: this line is body text and stays.\r\n"
     );
 }
+
+fn nested(depth: usize) -> String {
+    let mut message = String::from("From: a@example.com\nTo: b@example.com\n");
+    for level in 0..depth {
+        message.push_str(&format!(
+            "Content-Type: multipart/mixed; boundary=b{level}\n\n--b{level}\n"
+        ));
+    }
+    message.push_str("Content-Type: text/plain\n\nhi\n");
+    message
+}
+
+#[test]
+fn deeply_nested_mime_is_refused_before_it_can_overflow_the_stack() {
+    let deep = nested(5_000);
+    assert!(super::normalize::parse(deep.as_bytes()).is_none());
+    assert!(super::normalize::attachment(deep.as_bytes(), "1").is_err());
+    assert!(super::smtp::outgoing(deep.as_bytes()).is_err());
+    assert!(super::normalize::parse(nested(10).as_bytes()).is_some());
+}
+
+#[test]
+fn a_plain_connection_is_allowed_only_to_this_machine() {
+    for host in ["127.0.0.1", "::1", "localhost"] {
+        assert!(super::plain_allowed(host), "{host}");
+    }
+    for host in ["imap.mail.me.com", "10.0.0.5", "localhost.evil.example"] {
+        assert!(!super::plain_allowed(host), "{host}");
+    }
+}

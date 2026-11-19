@@ -372,6 +372,22 @@ async fn imap_draft_is_sent_over_smtp_and_filed_in_sent() {
     let folders = repository.folders(&token).await.expect("folders");
     assert_eq!(folder(&folders, "Drafts").total_items, Some(0));
     assert_eq!(folder(&folders, "Sent Messages").total_items, Some(1));
+    // The Sent copy keeps the Bcc line, as Apple Mail's does.
+    let sent_validity = client
+        .session
+        .select("Sent Messages")
+        .await
+        .expect("select Sent")
+        .uid_validity;
+    let sent = ProviderId::new(format!(
+        "{}:1:Sent Messages",
+        sent_validity.expect("uidvalidity")
+    ))
+    .expect("id");
+    let sent_copy = ImapMailboxRepository::source(&mut client, &sent)
+        .await
+        .expect("the Sent copy");
+    assert!(String::from_utf8_lossy(&sent_copy).contains("Bcc: hidden@example.com"));
 
     let http = reqwest::Client::new();
     let found: MailpitSearch = http

@@ -49,7 +49,7 @@ fn addresses(
 
 /// Read the envelope from a draft's headers and drop its `Bcc` lines.
 pub(super) fn outgoing(raw: &[u8]) -> Result<Outgoing, EmailApiError> {
-    let mail = mailparse::parse_mail(raw).map_err(|_| rejected("the draft does not parse"))?;
+    let mail = super::normalize::parse(raw).ok_or_else(|| rejected("the draft does not parse"))?;
     let from = addresses(&mail, "From")?.into_iter().next();
     let mut recipients = addresses(&mail, "To")?;
     recipients.extend(addresses(&mail, "Cc")?);
@@ -94,6 +94,11 @@ pub(super) async fn submit(
     let builder = match server.security {
         Security::Tls => AsyncSmtpTransport::<Tokio1Executor>::relay(&server.host),
         Security::StartTls => AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&server.host),
+        Security::Plain if !super::plain_allowed(&server.host) => {
+            return Err(EmailApiError::Permanent {
+                message: "a plain SMTP connection must stay on this machine".into(),
+            });
+        }
         Security::Plain => Ok(AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(
             &server.host,
         )),

@@ -20,6 +20,7 @@ outbound-gmail = [
 microsoft-gate = ["ports", "dep:redis"]
 outbound-imap = [
   "ports",
+  "dep:sha2",
   "dep:async-imap",
   "dep:futures",
   "dep:lettre",
