@@ -583,6 +583,23 @@ const HTML_PRELOADS = [
  * Adds `<link rel="preload">` for HTML_PRELOADS, so their downloads start with
  * the HTML instead of after the entry runs.
  */
+/**
+ * A local-backend bundle's API is its own origin, so it drops index.html's
+ * preconnect to Macro's gateway instead of opening a connection to macro.com.
+ */
+function localGatewayPreconnect(): Plugin {
+  return {
+    name: 'local-gateway-preconnect',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html) =>
+        process.env.VITE_LOCAL_BACKEND_ORIGIN
+          ? html.replace(/<link\s+rel="preconnect"\s+href="%GATEWAY_ORIGIN%"[^>]*>/, '')
+          : html,
+    },
+  };
+}
+
 function htmlPreloads(): Plugin {
   let base = '/';
   return {
@@ -649,6 +666,7 @@ export const createAppViteConfig = (): UserConfigFn => {
         solid(),
         wasm(),
         loroAsyncWasm(),
+        localGatewayPreconnect(),
         htmlPreloads(),
         tailwind(),
         solidSvg({ defaultAsComponent: true }),
@@ -821,13 +839,10 @@ function defineEnv(mode: string, command: string) {
     'import.meta.env.__APP_BUILD_TIME__': JSON.stringify(appBuildTime),
     'import.meta.env.ASSETS_PATH': JSON.stringify(getAssetsPath(mode, command)),
     // index.html preconnects to the API gateway; keep in sync with servers.ts.
-    // NOTE: a local-backend bundle's API is its own origin, never macro.com.
     'import.meta.env.GATEWAY_ORIGIN': JSON.stringify(
-      process.env.VITE_LOCAL_BACKEND_ORIGIN
-        ? '/'
-        : mode === 'development'
-          ? 'https://dev-gateway.macro.com'
-          : 'https://gateway.macro.com'
+      mode === 'development'
+        ? 'https://dev-gateway.macro.com'
+        : 'https://gateway.macro.com'
     ),
     'import.meta.env.__LOCAL_DOCKER__': process.env.LOCAL_DOCKER === 'true',
     'import.meta.env.__LOCAL_JWT__': JSON.stringify(process.env.LOCAL_JWT),
