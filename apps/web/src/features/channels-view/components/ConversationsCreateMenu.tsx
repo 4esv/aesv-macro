@@ -1,7 +1,7 @@
 import { ViewSidebar } from '@app/components/view-shell';
 import { ViewCreateButton } from '@app/components/view-shell/ViewCreateButton';
 import { runCreateAction } from '@app/features/command/Launcher';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { openNewChannelModal } from '@channel/CreateChannelModal';
 import { enableChatSidebarSections } from '@core/constant/featureFlags';

@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { StaticMarkdown } from '@core/component/LexicalMarkdown/component/core/StaticMarkdown';
 import { channelTheme } from '@core/component/LexicalMarkdown/theme';
 import { ChannelsContextProvider } from '@core/context/channels';
@@ -27,7 +27,7 @@ function Fixture() {
   return (
     <QueryClientProvider client={client}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <EntityProvider>
             <UserContextProvider>
               <ChannelsContextProvider>
@@ -66,7 +66,7 @@ function Fixture() {
               </ChannelsContextProvider>
             </UserContextProvider>
           </EntityProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   );

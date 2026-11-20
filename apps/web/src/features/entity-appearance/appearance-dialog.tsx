@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableEntityAppearance } from '@core/constant/featureFlags';
 import { queryClient } from '@queries/client';
 import { refreshActiveGraphqlPreviewQueries } from '@queries/preview/active-queries';

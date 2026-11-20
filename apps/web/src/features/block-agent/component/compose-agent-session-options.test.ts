@@ -35,10 +35,10 @@ describe('sessionRepositoryUrl', () => {
 });
 
 describe('harnessDisplayName', () => {
-  it('names Macro runtimes after the product', () => {
-    expect(harnessDisplayName('in-memory')).toBe('Macro Agent');
-    expect(harnessDisplayName('macro-inmem')).toBe('Macro Agent');
-    expect(harnessDisplayName('sandbox')).toBe('Macro Agent');
+  it('names aesv runtimes after the product', () => {
+    expect(harnessDisplayName('in-memory')).toBe('aesv Agent');
+    expect(harnessDisplayName('macro-inmem')).toBe('aesv Agent');
+    expect(harnessDisplayName('sandbox')).toBe('aesv Agent');
   });
 
   it('names the Cursor runtime', () => {
@@ -51,10 +51,10 @@ describe('harnessDisplayName', () => {
 });
 
 describe('harnessTitle', () => {
-  it('uses the product name for Macro slugs instead of title-casing them', () => {
-    expect(harnessTitle('macro-inmem')).toBe('Macro Agent');
-    expect(harnessTitle('in-memory')).toBe('Macro Agent');
-    expect(harnessTitle('sandbox')).toBe('Macro Agent');
+  it('uses the product name for aesv slugs instead of title-casing them', () => {
+    expect(harnessTitle('macro-inmem')).toBe('aesv Agent');
+    expect(harnessTitle('in-memory')).toBe('aesv Agent');
+    expect(harnessTitle('sandbox')).toBe('aesv Agent');
   });
 
   it('title-cases other slugs', () => {
@@ -79,9 +79,9 @@ describe('sessionHarnessTitle', () => {
     expect(sessionHarnessTitle({ harness: 'claude-code' })).toBe('Claude Code');
   });
 
-  it('uses the product name for Macro slugs', () => {
-    expect(sessionHarnessTitle({ harness: 'macro-inmem' })).toBe('Macro Agent');
-    expect(sessionHarnessTitle({ harness: 'in-memory' })).toBe('Macro Agent');
+  it('uses the product name for aesv slugs', () => {
+    expect(sessionHarnessTitle({ harness: 'macro-inmem' })).toBe('aesv Agent');
+    expect(sessionHarnessTitle({ harness: 'in-memory' })).toBe('aesv Agent');
   });
 });
 

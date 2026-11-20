@@ -4,7 +4,7 @@ import {
   makeCopyLinkAction,
 } from '@app/features/next-soup/actions';
 import { TasksCreateAction } from '@app/features/tasks-view/tasks-create-action';
-import { ShowFeatureFlag, useFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag, useFeatureFlag } from '@app/lib/analytics/flags';
 import { createSearchParams } from '@app/lib/split-router';
 import { globalSplitManager } from '@app/signal/splitLayout';
 import { useSplitLayout } from '@components/app/split-layout/layout';

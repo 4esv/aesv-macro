@@ -1,4 +1,4 @@
-import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag } from '@app/lib/analytics/flags';
 import { enableRoutineSharing } from '@core/constant/featureFlags';
 import { getDocumentMentions } from '@core/util/documentMentions';
 import { lazyNamed } from '@core/util/lazyNamed';

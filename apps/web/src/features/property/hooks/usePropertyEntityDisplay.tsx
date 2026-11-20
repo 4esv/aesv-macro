@@ -1,5 +1,5 @@
 import { supportsEntityAppearance } from '@app/features/entity-appearance/core/appearance';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { URL_PARAMS as CHANNEL_PARAMS } from '@block-channel/constants';
 import {
   EntityIcon as CoreEntityIcon,

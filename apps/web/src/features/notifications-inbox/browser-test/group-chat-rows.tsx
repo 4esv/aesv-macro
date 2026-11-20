@@ -4,7 +4,7 @@ import { isVisibleInboxRow } from '../open-notification-in-split';
 import '@app/index.css';
 import { MobileSettingsProvider } from '@app/features/settings/context/mobile-settings';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { StaticMarkdownContext } from '@core/component/LexicalMarkdown/component/core/StaticMarkdown';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
@@ -216,7 +216,7 @@ render(
   () => (
     <QueryClientProvider client={queryClient}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <EntityProvider>
             <UserContextProvider>
               <ChannelsContextProvider>
@@ -232,7 +232,7 @@ render(
               </ChannelsContextProvider>
             </UserContextProvider>
           </EntityProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   ),

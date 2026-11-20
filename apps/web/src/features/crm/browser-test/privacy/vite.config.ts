@@ -24,7 +24,7 @@ export default defineConfig({
     dedupe: ['solid-js'],
     alias: [
       ...[
-        '@app/lib/analytics/posthog',
+        '@app/lib/analytics/flags',
         '@queries/team/teams',
         '@core/context/user',
         '@core/component/Toast/Toast',

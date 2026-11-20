@@ -1,5 +1,5 @@
 import { taskSourceComposerContext } from '@app/features/task-composer/source-context';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useFlow } from '@app/observability/flow';
 import { globalSplitManager } from '@app/signal/splitLayout';
 import { applyAiOps } from '@block-md/ai-edit/applyAiOps';

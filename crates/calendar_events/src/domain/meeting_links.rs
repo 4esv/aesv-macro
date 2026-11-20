@@ -101,7 +101,10 @@ pub enum MacroCallEventError {
 
 /// Text prefixing the generated join line. The calendar UI matches on it
 /// to recognize the paragraph as generated rather than user-written.
-const JOIN_LINE_LABEL: &str = "Join Macro call";
+const JOIN_LINE_LABEL: &str = "Join aesv call";
+
+/// The label events written before the debrand carry; still stripped.
+const LEGACY_JOIN_LINE_LABEL: &str = "Join Macro call";
 
 /// Write a meeting link into an event's location and description.
 ///
@@ -166,7 +169,10 @@ pub fn strip_macro_call(description_text: &str, location: &str, url: &str) -> (S
 /// Whether `line` is the generated join line: the label alone, or the label
 /// followed by a Macro call link.
 fn is_join_line(line: &str) -> bool {
-    match line.strip_prefix(JOIN_LINE_LABEL) {
+    let rest = line
+        .strip_prefix(JOIN_LINE_LABEL)
+        .or_else(|| line.strip_prefix(LEGACY_JOIN_LINE_LABEL));
+    match rest {
         Some("") => true,
         Some(rest) => rest
             .strip_prefix(": ")

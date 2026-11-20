@@ -753,7 +753,7 @@ export async function runDocxAgentRequest(
     tracksRevisions(state.parts.get('word/settings.xml'));
   if (tracked || request.operations.some((o) => o.type === 'addComment'))
     throw new DocxAgentError(
-      "This Word document is still in Macro's previous editor format, which cannot record tracked changes or Word comments. Ask the user to open it once in Macro (that upgrades it), then try again; or pass trackChanges false to edit it directly without comments."
+      "This Word document is still in aesv's previous editor format, which cannot record tracked changes or Word comments. Ask the user to open it once in aesv (that upgrades it), then try again; or pass trackChanges false to edit it directly without comments."
     );
 
   const result = applyDocxOperations(state, request.operations);

@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableGraphqlSoup } from '@core/constant/featureFlags';
 import type { Entity } from '@core/types';
 import { useDocumentNotificationsQuery } from '@queries/notification/graphql/document-notifications';

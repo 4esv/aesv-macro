@@ -45,7 +45,7 @@ const mocks = vi.hoisted(() => ({
   autoEnabled: true,
   chooseAgentMode: vi.fn(async (_prompt: string) => 'chat' as 'chat' | 'code'),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.autoEnabled, loading: false }),
 }));
 vi.mock('@queries/agents/mode-choice', () => ({
@@ -1276,7 +1276,7 @@ describe('agent-led new conversation', () => {
       'Cursor default'
     );
   });
-  it('groups the Macro catalog and selects direct models with readable names and icons', async () => {
+  it('groups the aesv catalog and selects direct models with readable names and icons', async () => {
     const send = page(true, [
       {
         bot: { id: 'saved-agent', name: 'Reviewer', handle: 'reviewer' },
@@ -1349,7 +1349,7 @@ describe('agent-led new conversation', () => {
       modelOverride: 'anthropic/claude-sonnet-5-5',
     });
   });
-  it('keeps unavailable Macro models disabled throughout the catalog', async () => {
+  it('keeps unavailable aesv models disabled throughout the catalog', async () => {
     const roster = buildAgentRoster({
       agents: [],
       runtimes: [],
@@ -1393,7 +1393,7 @@ describe('agent-led new conversation', () => {
     fireEvent.click(extra);
     expect(onSelect).not.toHaveBeenCalled();
   });
-  it('restores a preferred Macro model on a fresh composer', () => {
+  it('restores a preferred aesv model on a fresh composer', () => {
     mocks.preferredInmemModel = 'anthropic/claude-sonnet-5-5';
     page();
     expect(screen.getByRole('button', { name: 'Agent' }).title).toBe(

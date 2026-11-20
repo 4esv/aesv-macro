@@ -139,7 +139,7 @@ describe('message sender normalization', () => {
       parent: { type: 'channel', id: 'channel-1' },
       mentions: [],
       sender_id: MACRO_AGENT_PRINCIPAL_ID,
-      bot_profile: { name: 'Macro' },
+      bot_profile: { name: 'aesv' },
       triggered_by: 'macro|alice@example.com',
       triggered_via: 'Claude Code',
       content: 'posted from Claude Code',
@@ -152,7 +152,7 @@ describe('message sender normalization', () => {
     expect(getBotDisplayName(message.sender_id, message.sender)).toBe(
       'Claude Code'
     );
-    expect(getBotDisplayName(MACRO_AGENT_PRINCIPAL_ID)).toBe('Macro');
+    expect(getBotDisplayName(MACRO_AGENT_PRINCIPAL_ID)).toBe('aesv');
   });
 
   it('uses a generic label rather than exposing an unknown bot UUID', () => {

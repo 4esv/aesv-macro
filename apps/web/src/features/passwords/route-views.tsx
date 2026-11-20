@@ -1,6 +1,6 @@
 import { ViewShell } from '@app/components/view-shell';
 import { ViewSkeleton } from '@app/components/view-shell/ViewSkeleton';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { useBeforeLeave } from '@app/lib/split-router';
 import { usePending } from '@app/observability/flow';

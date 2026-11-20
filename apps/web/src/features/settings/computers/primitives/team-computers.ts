@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableMacroComputers } from '@core/constant/featureFlags';
 import { useComputersQuery } from '@queries/computers/computers';
 import { queryReadyGate } from '@queries/gate';

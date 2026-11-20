@@ -1,7 +1,7 @@
 // Production grouping and headers over synthetic tasks; only HTTP is replaced.
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { enableGraphqlSoup, enableProjects } from '@core/constant/featureFlags';
 import { UserContextProvider } from '@core/context/user';
 import { SYSTEM_PROPERTY_IDS } from '@property/constants';
@@ -170,11 +170,11 @@ render(
   () => (
     <QueryClientProvider client={queryClient}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <UserContextProvider>
             <Fixture />
           </UserContextProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   ),

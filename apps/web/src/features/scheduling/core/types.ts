@@ -255,7 +255,7 @@ export function meetingPlaceLabel(event: {
   googleMeet: boolean;
   location: string;
 }): string {
-  if (event.macroCall) return 'Macro call';
+  if (event.macroCall) return 'aesv call';
   if (event.googleMeet) return 'Video meeting';
   return event.location || 'Meeting';
 }

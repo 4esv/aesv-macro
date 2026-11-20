@@ -214,7 +214,7 @@ export function ComposeRecipients(props: {
           activate(field);
         }
       }}
-      placeholder={ctx.isMobile() ? '' : 'Macro users or email addresses'}
+      placeholder={ctx.isMobile() ? '' : 'aesv users or email addresses'}
       focusOnMount={opts?.focusOnMount}
       openOnFocus={false}
       hideBorder

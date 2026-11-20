@@ -4,7 +4,7 @@ import {
   bookingLinksSearch,
   bookingLinksSearchCodec,
 } from '@app/features/scheduling/booking-links-search';
-import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { useNavigate as useSplitNavigate } from '@app/lib/split-router';
 import { bookingLinksRoute } from '@app/routes/routes';

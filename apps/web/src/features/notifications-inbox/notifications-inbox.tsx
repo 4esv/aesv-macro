@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import { enablePasswords } from '@core/constant/featureFlags';
 import { useSettingsState } from '@core/constant/SettingsState';

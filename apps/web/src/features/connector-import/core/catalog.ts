@@ -30,7 +30,7 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
     dialogDescription:
       'Connect an app, then pick what to bring into your Drive with the agent.',
     items: 'documents and files',
-    destination: 'my Macro Drive',
+    destination: 'my aesv Drive',
     providers: [
       {
         appSlug: 'notion',
@@ -77,7 +77,7 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
     dialogDescription:
       'Connect an app, then pick which tasks to bring over with the agent.',
     items: 'issues and tasks',
-    destination: 'Macro tasks',
+    destination: 'aesv tasks',
     providers: [
       {
         appSlug: 'linear',
@@ -126,7 +126,7 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
     dialogDescription:
       'Connect an app, and the agent brings its companies and contacts into your CRM.',
     items: 'companies and contacts',
-    destination: 'the Macro CRM',
+    destination: 'the aesv CRM',
     providers: [
       {
         appSlug: 'hubspot',
@@ -160,7 +160,7 @@ export const IMPORT_CATEGORIES: Record<ImportCategory, ImportCategoryConfig> = {
     dialogDescription:
       'Connect Slack to pick channels with the agent, or upload an export to bring history.',
     items: 'channels',
-    destination: 'Macro channels',
+    destination: 'aesv channels',
     providers: [
       {
         appSlug: 'slack',

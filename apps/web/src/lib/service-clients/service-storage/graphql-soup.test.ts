@@ -1568,7 +1568,7 @@ describe('GraphQL Soup browser cache session gate', () => {
     expect(mocks.cleanupOrder()).toEqual(['subscriptions', 'host']);
     expect(mocks.toastFailure).toHaveBeenCalledWith('Local cache unavailable', {
       subtext:
-        'Queued changes are preserved. Update or reload Macro to recover local storage.',
+        'Queued changes are preserved. Update or reload aesv to recover local storage.',
     });
     expect(warn).toHaveBeenCalledWith(
       'graphql cache async init failed; using uncached client',

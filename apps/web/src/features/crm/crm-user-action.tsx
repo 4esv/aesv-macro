@@ -1,5 +1,5 @@
 import { useCrmContactByEmailQuery } from '@app/features/crm/record-adapter';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import type { UserCardAction } from '@core/component/userCardActions';
 import { enableCrm } from '@core/constant/featureFlags';

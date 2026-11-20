@@ -113,7 +113,7 @@ export function InMacroChats(props: {
           >
             <div
               role="navigation"
-              aria-label={`${props.label} chats in Macro`}
+              aria-label={`${props.label} chats in aesv`}
               class="flex flex-col"
             >
               <ConversationSectionList

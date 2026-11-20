@@ -1,4 +1,4 @@
-import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { enableProjects } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';

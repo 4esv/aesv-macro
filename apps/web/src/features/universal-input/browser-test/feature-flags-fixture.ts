@@ -12,7 +12,7 @@ export function useFeatureFlag(flag?: { key: string }) {
   });
 }
 
-export function usePosthog() {
+export function useFlags() {
   return { flagsLoaded: () => true };
 }
 

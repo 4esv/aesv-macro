@@ -1576,7 +1576,7 @@ function agentNode(agent: AgentContextAgent): FxpNode {
     'you',
     [
       note(
-        `You are ${agent.name}, an agent in Macro. People address you as ${agent.name} or @${agent.handle}. A message that names another person or agent is meant for them, not you.`
+        `You are ${agent.name}, an agent in aesv. People address you as ${agent.name} or @${agent.handle}. A message that names another person or agent is meant for them, not you.`
       ),
     ],
     { name: agent.name, handle: agent.handle, id: agent.id }

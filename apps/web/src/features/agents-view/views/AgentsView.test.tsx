@@ -51,7 +51,7 @@ vi.mock('@app/features/settings/IntegrationsPage', () => ({
 vi.mock('@app/features/soup/entity-notifications', () => ({
   withEntityNotifications: (entity: unknown) => entity,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 vi.mock('@components/app/GlobalAppState', () => ({
@@ -310,7 +310,7 @@ it('keeps the open conversation mounted when it is selected again', async () => 
   expect(state.mounts).toEqual(['a']);
 });
 
-it('does not restore a sent Ask Macro draft when Back mounts the composer again', () => {
+it('does not restore a sent Ask aesv draft when Back mounts the composer again', () => {
   const asked = composerEntry('request-1', '@message ');
   state.entry.current = () => asked;
   render(() => <AgentsView />);
@@ -325,7 +325,7 @@ it('does not restore a sent Ask Macro draft when Back mounts the composer again'
   expect(composer().value).toBe('');
 });
 
-it('does not restore a sent Ask Macro draft when Back returns to the mounted composer', () => {
+it('does not restore a sent Ask aesv draft when Back returns to the mounted composer', () => {
   const asked = composerEntry('request-1', '@message ');
   const session: FakeEntry = {
     content: {
@@ -349,7 +349,7 @@ it('does not restore a sent Ask Macro draft when Back returns to the mounted com
   expect(composer().value).toBe('');
 });
 
-it('seeds a new Ask Macro draft but not an earlier one reached by Back', () => {
+it('seeds a new Ask aesv draft but not an earlier one reached by Back', () => {
   const first = composerEntry('request-1', '@first ');
   const [current, setCurrent] = createSignal(first);
   state.entry.current = current;
@@ -375,7 +375,7 @@ it('seeds a new Ask Macro draft but not an earlier one reached by Back', () => {
   expect(composer().value).toBe('');
 });
 
-it('does not restore a sent Ask Macro draft when a stacked pane remounts without leaving its entry', () => {
+it('does not restore a sent Ask aesv draft when a stacked pane remounts without leaving its entry', () => {
   const asked = composerEntry('request-1', '@message ');
   state.entry.current = () => asked;
   render(() => <AgentsView />);

@@ -6,7 +6,7 @@ import {
   TASK_GROUP_OPTIONS,
 } from '@app/features/next-soup/soup-view/group-options';
 import { useSoupView } from '@app/features/next-soup/soup-view/soup-view-context';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import { enableSoupGroupBy } from '@core/constant/featureFlags';
 import type { ButtonVariant } from '@ui';

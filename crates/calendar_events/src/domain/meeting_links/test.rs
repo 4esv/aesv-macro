@@ -254,7 +254,7 @@ fn attaching_fills_an_empty_location_and_appends_a_join_paragraph() {
     let (description, location) = attach_macro_call(None, None, URL);
     assert_eq!(
         description,
-        format!("<p>Join Macro call: <a href=\"{URL}\">{URL}</a></p>")
+        format!("<p>Join aesv call: <a href=\"{URL}\">{URL}</a></p>")
     );
     assert_eq!(location, URL);
 }
@@ -264,7 +264,7 @@ fn attaching_keeps_user_text_and_a_physical_location() {
     let (description, location) = attach_macro_call(Some("<p>Agenda</p>"), Some("  Room 4 "), URL);
     assert_eq!(
         description,
-        format!("<p>Agenda</p>\n<p>Join Macro call: <a href=\"{URL}\">{URL}</a></p>")
+        format!("<p>Agenda</p>\n<p>Join aesv call: <a href=\"{URL}\">{URL}</a></p>")
     );
     assert_eq!(location, "Room 4");
 }
@@ -332,9 +332,7 @@ async fn the_meeting_is_minted_as_the_requester_and_written_into_the_draft() {
     assert_eq!(written.location.as_deref(), Some(URL));
     assert_eq!(
         written.description.as_deref(),
-        Some(
-            format!("<p>Agenda</p>\n<p>Join Macro call: <a href=\"{URL}\">{URL}</a></p>").as_str()
-        )
+        Some(format!("<p>Agenda</p>\n<p>Join aesv call: <a href=\"{URL}\">{URL}</a></p>").as_str())
     );
     assert_eq!(written.conference, None);
     assert!(links.cancelled.lock().unwrap().is_empty());
@@ -534,9 +532,7 @@ async fn switching_replaces_the_conference_with_a_call_in_one_write() {
     assert_eq!(patch.location.as_deref(), Some("Room 4"));
     assert_eq!(
         patch.description.as_deref(),
-        Some(
-            format!("<p>Agenda</p>\n<p>Join Macro call: <a href=\"{URL}\">{URL}</a></p>").as_str()
-        )
+        Some(format!("<p>Agenda</p>\n<p>Join aesv call: <a href=\"{URL}\">{URL}</a></p>").as_str())
     );
     assert!(links.cancelled.lock().unwrap().is_empty());
 }
@@ -587,7 +583,7 @@ async fn switching_applies_the_changes_the_patch_carries() {
     assert_eq!(patch.location.as_deref(), Some(URL));
     assert_eq!(
         patch.description.as_deref(),
-        Some(format!("New agenda\n<p>Join Macro call: <a href=\"{URL}\">{URL}</a></p>").as_str())
+        Some(format!("New agenda\n<p>Join aesv call: <a href=\"{URL}\">{URL}</a></p>").as_str())
     );
 }
 

@@ -54,7 +54,7 @@ vi.mock('@app/lib/split-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@app/lib/split-router')>()),
   useSplitRouter: () => ({ entry: () => ({ id: 'search-entry' }) }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('../../universal-input/use-universal-input', () => ({

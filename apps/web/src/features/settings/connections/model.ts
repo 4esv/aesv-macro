@@ -84,20 +84,20 @@ export const CURATED_AI: Record<
   github: {
     title: 'GitHub',
     outcome:
-      'Macro AI can answer questions about your repos, pull requests, and issues.',
+      'aesv AI can answer questions about your repos, pull requests, and issues.',
   },
   linear: {
     title: 'Linear',
     outcome:
-      'Macro AI can create, read, and update Linear issues without leaving Macro.',
+      'aesv AI can create, read, and update Linear issues without leaving aesv.',
   },
   notion: {
     title: 'Notion',
-    outcome: 'Macro AI can search your pages and wikis.',
+    outcome: 'aesv AI can search your pages and wikis.',
   },
   slack: {
     title: 'Slack',
-    outcome: 'Macro AI can search conversations and post updates for you.',
+    outcome: 'aesv AI can search conversations and post updates for you.',
   },
 };
 

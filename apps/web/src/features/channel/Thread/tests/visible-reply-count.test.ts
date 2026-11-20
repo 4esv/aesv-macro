@@ -84,7 +84,7 @@ describe('collapsed reply groups', () => {
       reply.sender = {
         type: 'bot',
         id: 'macro',
-        name: 'Macro',
+        name: 'aesv',
         triggered_by: triggers[index],
       };
     });

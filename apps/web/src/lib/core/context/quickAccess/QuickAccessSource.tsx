@@ -9,7 +9,7 @@ import {
 import { readEntityAppearance } from '@app/features/entity-appearance/core/appearance';
 import { scheduleToEntity } from '@app/features/routines/queries/entities';
 import { useSchedulesQuery } from '@app/features/routines/queries/schedules';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { itemToSafeName } from '@core/constant/allBlocks';
 import {
   enableCrm,

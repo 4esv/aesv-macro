@@ -27,7 +27,7 @@ vi.mock('@service-connection/websocket', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@service-connection/websocket')>()),
   createConnectionWebsocketEffect: () => {},
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@core/context/user', () => ({ useUserId: () => () => undefined }));

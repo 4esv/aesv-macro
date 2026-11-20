@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableRoutineBackgroundDrafts } from '@core/constant/featureFlags';
 import { useIsAuthenticated } from '@core/context/user';
 import { lazyNamed } from '@core/util/lazyNamed';

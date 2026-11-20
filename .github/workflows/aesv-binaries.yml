@@ -96,6 +96,10 @@ jobs:
           name: frontend-bundle
           path: frontend-bundle.tar
           retention-days: 14
+      - name: No PostHog or Macro branding in the bundle
+        run: |
+          nix develop --command bash -c "node --test deploy/aesv/bundle-brand-check.test.mjs &&
+            node deploy/aesv/bundle-brand-check.mjs frontend-bundle"
 
   release:
     if: github.event_name != 'pull_request'

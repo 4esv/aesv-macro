@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableRecentView } from '@core/constant/featureFlags';
 import type { Accessor } from 'solid-js';
 

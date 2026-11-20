@@ -26,7 +26,7 @@ const mocks = vi.hoisted(() => ({
   notificationPreferences: vi.fn(),
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => mocks.graphqlFlag,
 }));
 vi.mock('@queries/channel/unread-presence', () => ({

@@ -450,7 +450,7 @@ const MICROSOFT_TEAMS_OPTION: EventComposerConferenceOption = {
 };
 const MACRO_CALL_OPTION: EventComposerConferenceOption = {
   value: 'macro',
-  label: 'Macro call',
+  label: 'aesv call',
 };
 const NO_CONFERENCING_OPTION: EventComposerConferenceOption = {
   value: 'none',

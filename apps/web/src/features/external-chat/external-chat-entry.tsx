@@ -1,5 +1,5 @@
 import { ViewSkeleton } from '@app/components/view-shell/ViewSkeleton';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useNavigate } from '@app/lib/split-router';
 import { homeSplitRoute } from '@app/routes/routes';
 import { ChannelLoading } from '@channel/Channel/ChannelLoading';

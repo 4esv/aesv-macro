@@ -20,7 +20,7 @@ vi.mock('@app/features/block-spreadsheet/queries/spreadsheet-access', () => ({
   isSpreadsheetEnabledForCurrentUser: () => true,
 }));
 vi.mock('@app/features/reminders/reminder-composer', () => ({}));
-vi.mock('@app/lib/analytics/posthog', () => ({}));
+vi.mock('@app/lib/analytics/flags', () => ({}));
 vi.mock('@app/features/routines', () => ({}));
 vi.mock('@block-md/observability', () => ({}));
 vi.mock('@channel/CreateChannelModal', () => ({}));

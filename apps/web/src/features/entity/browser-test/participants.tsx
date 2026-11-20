@@ -5,7 +5,7 @@ import { EmailMessageView } from '@app/features/email-message/views/email-messag
 import { TagSetsProvider } from '@app/features/property/tags/tag-sets-context';
 import { MobileSettingsProvider } from '@app/features/settings/context/mobile-settings';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
 import { QuickAccessProvider } from '@core/context/quickAccess/QuickAccessProvider';
@@ -132,7 +132,7 @@ render(
   () => (
     <QueryClientProvider client={queryClient}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <EntityProvider>
             <UserContextProvider>
               <ChannelsContextProvider>
@@ -150,7 +150,7 @@ render(
               </ChannelsContextProvider>
             </UserContextProvider>
           </EntityProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   ),

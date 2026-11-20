@@ -6,7 +6,7 @@ import {
   ChannelThreadCardLayout,
 } from '@app/features/next-soup/soup-view/views/inbox/inbox-card-layouts';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { UserContextProvider } from '@core/context/user';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
 import {
@@ -106,7 +106,7 @@ function Fixture() {
   };
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <UserContextProvider>
             <StaticMarkdownContext>
@@ -157,7 +157,7 @@ function Fixture() {
             </StaticMarkdownContext>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

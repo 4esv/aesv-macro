@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { onElementConnect } from '@core/util/onElementConnect';
 import { PullRequestMentionNode } from '@macro-inc/lexical-core';
 import { setDecorator } from '@macro-inc/lexical-core/decoratorRegistry';
@@ -134,7 +134,7 @@ function Fixture() {
   };
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <LexicalWrapperContext.Provider
             value={{ ...wrapper, skipPreviewFetch: true }}
@@ -166,7 +166,7 @@ function Fixture() {
             </StaticMarkdownContext>
           </LexicalWrapperContext.Provider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

@@ -4,7 +4,7 @@ const channelUrl =
   'https://dev.macro.com/app/channel/0195ceb6-ec2e-7023-80e4-6e084fa6cccd';
 const markdown = '# heading\n- item **bold**';
 
-test('pastes Macro links and Markdown into a code block verbatim', async ({
+test('pastes aesv links and Markdown into a code block verbatim', async ({
   page,
 }) => {
   await page.route('**/*', async (route) => {

@@ -52,7 +52,7 @@ vi.mock('@components/app/split-layout/layout', () => ({
     openWithSplit: (content: unknown) => mocks.replace({ next: content }),
   }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 vi.mock('@core/constant/featureFlags', async (importOriginal) => ({
@@ -84,7 +84,7 @@ vi.mock('@app/features/block-agent/context/pending-session', () => ({
 }));
 vi.mock('@app/features/agents-view/queries/agent-roster-source', () => ({
   createAgentRosterSource: () => ({
-    roster: () => [{ id: 'macro', kind: 'agent', name: 'Macro' }],
+    roster: () => [{ id: 'macro', kind: 'agent', name: 'aesv' }],
   }),
 }));
 vi.mock('@app/features/agents-view/queries/composer-models', () => ({

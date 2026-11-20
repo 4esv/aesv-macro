@@ -329,7 +329,7 @@ describe('overlaidAppSlug', () => {
   });
 });
 
-describe('apps Macro Connect serves', () => {
+describe('apps aesv Connect serves', () => {
   const popup = { closed: false, close: vi.fn() };
   const notYet = err([{ code: 'NOT_FOUND', message: 'Resource not found' }]);
 

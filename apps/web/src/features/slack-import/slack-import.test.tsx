@@ -23,7 +23,7 @@ const host = vi.hoisted(() => ({
       }
     | undefined,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: host.enabled }),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

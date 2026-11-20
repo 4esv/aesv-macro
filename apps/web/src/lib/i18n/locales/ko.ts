@@ -322,7 +322,7 @@ export default {
     projectShortTagline: '관련 작업 정리',
     reminderTagline: '원하는 시간에 나에게 알림',
     reminderDetails:
-      '다시 확인하고 싶은 일에 리마인더를 설정합니다.\n시간을 선택하면 Macro가 다시 알려 줍니다.',
+      '다시 확인하고 싶은 일에 리마인더를 설정합니다.\n시간을 선택하면 aesv가 다시 알려 줍니다.',
     reminderExample1: '다시 전화하기',
     reminderExample2: '금요일에 확인하기',
     reminderExample3: '라이선스 갱신',
@@ -673,9 +673,9 @@ export default {
     updateAvailable: '업데이트 가능',
     updateNewVersionTitle: '새 버전 사용 가능',
     updateWebDescription:
-      'Macro의 새 버전이 준비되었습니다. 페이지를 새로고침하면 사용할 수 있습니다.',
+      'aesv의 새 버전이 준비되었습니다. 페이지를 새로고침하면 사용할 수 있습니다.',
     updateWebFailedLoadDescription:
-      '새 버전이 출시되어 Macro의 일부를 불러오지 못했습니다. 페이지를 새로고침하면 사용할 수 있습니다.',
+      '새 버전이 출시되어 aesv의 일부를 불러오지 못했습니다. 페이지를 새로고침하면 사용할 수 있습니다.',
     updateReload: '새로고침',
     updateReadyTitle: '업데이트 준비 완료',
     updateBundleDescription:
@@ -683,10 +683,10 @@ export default {
     updateAction: '업데이트',
     updateDesktopReadyTitle: '데스크톱 앱 업데이트 준비 완료',
     updateNativeDescription:
-      'Macro를 다시 시작해 설치하거나, 계속 작업하면 종료할 때 설치됩니다.',
+      'aesv를 다시 시작해 설치하거나, 계속 작업하면 종료할 때 설치됩니다.',
     updateRestartAndUpdate: '다시 시작 및 업데이트',
     updateNativePreparingDescription:
-      '업데이트를 설치하기 위해 Macro를 다시 시작하기 전에 작업 내용을 저장하는 중입니다.',
+      '업데이트를 설치하기 위해 aesv를 다시 시작하기 전에 작업 내용을 저장하는 중입니다.',
     updatePreparingRestart: '다시 시작 준비 중…',
   },
   settingsLanguage: {
@@ -698,7 +698,7 @@ export default {
     yourLanguage: '내 언어',
     yourLanguageDescription: '나에게만 팀 언어 대신 적용됩니다.',
     yourLanguageNoTeamDescription:
-      'Macro가 나에게 표시되는 언어입니다. 자동으로 설정하면 브라우저 언어를 따릅니다.',
+      'aesv가 나에게 표시되는 언어입니다. 자동으로 설정하면 브라우저 언어를 따릅니다.',
     useTeamLanguage: '팀 언어 사용({{language}})',
     automatic: '자동({{language}})',
     teamAutomatic: '자동(각 구성원의 브라우저 언어)',

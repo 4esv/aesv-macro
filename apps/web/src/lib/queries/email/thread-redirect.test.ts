@@ -6,8 +6,8 @@ import { expect, it, vi } from 'vitest';
 
 const getThread = vi.hoisted(() => vi.fn());
 vi.mock('@service-email/client', () => ({ emailClient: { getThread } }));
-vi.mock('@app/lib/analytics/posthog', async (original) => ({
-  ...(await original<typeof import('@app/lib/analytics/posthog')>()),
+vi.mock('@app/lib/analytics/flags', async (original) => ({
+  ...(await original<typeof import('@app/lib/analytics/flags')>()),
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 vi.mock('./graphql/thread', () => ({

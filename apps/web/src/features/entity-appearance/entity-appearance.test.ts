@@ -14,7 +14,7 @@ const flag = vi.hoisted(() => ({
   mounted: vi.fn(),
   unmounted: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: flag.enabled() }),
 }));
 vi.mock('@core/constant/featureFlags', async (original) => ({

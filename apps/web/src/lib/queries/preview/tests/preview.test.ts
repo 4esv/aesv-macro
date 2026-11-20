@@ -13,7 +13,7 @@ const setGraphqlPreviewFileTypeMock = vi.hoisted(() => vi.fn());
 const setGraphqlPreviewNameMock = vi.hoisted(() => vi.fn());
 const setGraphqlPreviewOnCreateMock = vi.hoisted(() => vi.fn());
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true, loading: false }),
 }));
 

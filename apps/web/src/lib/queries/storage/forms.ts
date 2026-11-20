@@ -1,6 +1,6 @@
 /** Forms: their detail, layout, metadata, responses and tallies (RFC 02 §1). */
 import { analytics } from '@app/lib/analytics';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableForms } from '@core/constant/featureFlags';
 import {
   catchToResult,

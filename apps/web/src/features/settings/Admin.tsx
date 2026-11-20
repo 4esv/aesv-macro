@@ -1,5 +1,5 @@
 import { useSoupFilterPersistence } from '@app/features/next-soup/use-soup-filter-persistence';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import {
   clearAllDebugSettings,
   DEBUG_SETTINGS,
@@ -39,7 +39,7 @@ export function Admin() {
   return (
     <SettingsPage
       title="Debug"
-      description="Local toggles for debugging — only visible to Macro staff."
+      description="Local toggles for debugging — only visible to aesv staff."
       actions={
         <Button
           variant="secondary"

@@ -22,7 +22,7 @@ import {
   AssigneePickerStatus,
   useAssigneePicker,
 } from '@app/features/soup/assignee-picker';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { MobileDrawer } from '@components/app/mobile/MobileDrawer';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';

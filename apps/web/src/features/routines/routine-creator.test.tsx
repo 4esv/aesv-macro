@@ -72,7 +72,7 @@ vi.mock('@service-scheduled-action/client', async (importOriginal) => {
     },
   };
 });
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: host.flags.has(flag.key),
   }),
@@ -577,7 +577,7 @@ describe('routine composer execution selection', () => {
     expect(screen.queryByRole('tab', { name: 'Run History' })).toBeNull();
     expect(host.create).not.toHaveBeenCalled();
   });
-  it('creates recurring schedules and Macro events together', async () => {
+  it('creates recurring schedules and aesv events together', async () => {
     host.create.mockImplementation(async (body) => created(body));
     await mount();
     inputPrompt();
@@ -606,7 +606,7 @@ describe('routine composer execution selection', () => {
       },
     });
   });
-  it('offers the focused Macro event catalog and saves new task and email triggers', async () => {
+  it('offers the focused aesv event catalog and saves new task and email triggers', async () => {
     host.create.mockImplementation(async (body) => created(body));
     await mount();
     inputPrompt();
@@ -985,7 +985,7 @@ describe('new routine', () => {
     ).toBe('Weekdays at 9, sum up my day');
   });
 
-  it('offers no templates while Macro’s templates are flagged off', async () => {
+  it('offers no templates while aesv’s templates are flagged off', async () => {
     host.flags.delete('enable-routine-starter-templates');
     openNewRoutine();
     await screen.findByRole('button', { name: 'Start fresh' });

@@ -43,7 +43,7 @@ vi.mock('@core/constant/featureFlags', () => ({
 vi.mock('../../context/LexicalWrapperContext', async () => ({
   LexicalWrapperContext: (await import('solid-js')).createContext(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: control.enabled() }),
 }));
 vi.mock('./LazyDecorator', () => ({

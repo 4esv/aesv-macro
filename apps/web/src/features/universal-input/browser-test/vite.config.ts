@@ -64,7 +64,7 @@ export default defineConfig({
         )
           return `${directory}/search-app-fixture.ts`;
 
-        if (source === '@app/lib/analytics/posthog')
+        if (source === '@app/lib/analytics/flags')
           return `${directory}/feature-flags-fixture.ts`;
         if (
           (importer?.endsWith('/queries/soup/search.ts') &&

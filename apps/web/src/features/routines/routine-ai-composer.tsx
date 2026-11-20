@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableRoutineCodeSteps } from '@core/constant/featureFlags';
 import { getDefaultTimezone } from '@core/util/cron';
 import { type Accessor, onCleanup } from 'solid-js';

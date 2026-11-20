@@ -3,7 +3,7 @@ import { useCalendarUiFlag } from '@app/features/calendar/hooks/use-calendar-ui-
 import type { CalendarPeriodView } from '@app/features/calendar/types';
 import { isCalendarRangeSupported } from '@app/features/calendar/utils/calendar-supported-range';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import {
   createSearchParams,
   useNavigate,
@@ -58,7 +58,7 @@ export type CalendarViewProps = {
 /** Route-backed Calendar view, hosted by its own route or inline under another. */
 export function CalendarView(props: CalendarViewProps) {
   const calendarUiEnabled = useCalendarUiFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
   const userId = useUserId();
   const analytics = useAnalytics();
   const notificationSource = useGlobalNotificationSource();
@@ -241,7 +241,7 @@ export function CalendarView(props: CalendarViewProps) {
     <Show
       when={calendarUiEnabled()}
       fallback={
-        <Show when={posthog.flagsLoaded()} fallback={<CalendarViewSkeleton />}>
+        <Show when={flags.flagsLoaded()} fallback={<CalendarViewSkeleton />}>
           <CalendarDisabledRedirect />
         </Show>
       }

@@ -1,5 +1,5 @@
 import type { ListFilterGroup } from '@app/components/view-shell';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { EntityIcon } from '@core/component/EntityIcon';
 import { enableDatabases, enableForms } from '@core/constant/featureFlags';
 import { useContactFilterOptions } from '@core/user/use-contact-filter-options';

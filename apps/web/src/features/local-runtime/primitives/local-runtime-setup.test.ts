@@ -58,7 +58,7 @@ function withSetup(caps: SetupCapabilities) {
 }
 
 describe('createLocalRuntimeSetup', () => {
-  it('starts the preferred agent and creates a Macro agent on its runtime', async () => {
+  it('starts the preferred agent and creates a aesv agent on its runtime', async () => {
     const startDaemon = vi.fn(async () => RUNNING);
     const allowPermissionBypass = vi.fn(async () => {});
     const createAgent = vi.fn(async (agent: NewLocalAgent) => ({

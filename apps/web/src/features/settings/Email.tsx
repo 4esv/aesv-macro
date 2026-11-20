@@ -3,7 +3,7 @@ import {
   type TurnOffCalendarTarget,
 } from '@app/features/calendar/components/TurnOffCalendarDialog';
 import { useCalendarUiFlag } from '@app/features/calendar/hooks/use-calendar-ui-flag';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { toast } from '@core/component/Toast/Toast';
 import {
   ENABLE_INBOX_RESYNC,
@@ -274,7 +274,7 @@ export function EmailCard(props: { class?: string } = {}) {
                   ? 'Connect another Google Workspace account'
                   : 'Connect a Google Workspace account'
               }
-              description="Sync a Gmail or Google Workspace inbox into Macro Email."
+              description="Sync a Gmail or Google Workspace inbox into aesv Email."
             >
               <ConnectAction
                 label="Connect"
@@ -289,7 +289,7 @@ export function EmailCard(props: { class?: string } = {}) {
                 icon={<OutlookIcon />}
                 title="Connect an Outlook account"
                 badge={<OutlookBetaBadge />}
-                description="Sync an Outlook.com or Microsoft 365 inbox into Macro Email."
+                description="Sync an Outlook.com or Microsoft 365 inbox into aesv Email."
               >
                 <ConnectAction
                   label="Connect"
@@ -334,7 +334,7 @@ export function EmailCard(props: { class?: string } = {}) {
                 }
               >
                 Remove <span class="text-ink">{removeTarget()?.email}</span>?
-                This clears all of its email data from Macro and cannot be
+                This clears all of its email data from aesv and cannot be
                 undone.
               </Show>
             </Dialog.Description>

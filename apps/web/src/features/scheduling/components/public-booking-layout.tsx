@@ -28,7 +28,7 @@ export function PublicBookingLayout(
           </div>
           <Show when={!props.embedded}>
             <p class="mt-auto pt-8 text-center text-xs text-ink-muted">
-              Scheduling by Macro
+              Scheduling by aesv
             </p>
           </Show>
         </div>
@@ -40,7 +40,7 @@ export function PublicBookingLayout(
 export function PublicBookingBrand() {
   return (
     <span class="inline-flex items-center gap-2 self-start text-sm font-semibold tracking-tight">
-      Macro <span class="font-normal text-ink-muted">/ Scheduling</span>
+      aesv <span class="font-normal text-ink-muted">/ Scheduling</span>
     </span>
   );
 }

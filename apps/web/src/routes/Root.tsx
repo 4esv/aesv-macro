@@ -3,7 +3,7 @@ import { GlobalShareInboxConflictDialog } from '@app/features/inbox/ShareInboxCo
 import { MeetingSessionProvider } from '@app/features/meetings/meeting-session-provider';
 import { useRecordSuggestionsActivity } from '@app/features/suggestions/queries/use-record-suggestions-activity';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { setHotkeyRoot } from '@app/signal/hotkeyRoot';
 import { IncomingCallEvents } from '@block-call/sidebar/incoming-calls';
 import { CallProvider } from '@channel/Call/CallContext';
@@ -151,7 +151,7 @@ export function Root() {
     <MaybeTauriProvider>
       <MetaProvider>
         <AnalyticsContextProvider>
-          <PosthogProvider>
+          <FlagsProvider>
             <EntityProvider>
               <UserContextProvider>
                 <EmailLinksContextProvider>
@@ -190,7 +190,7 @@ export function Root() {
                 </EmailLinksContextProvider>
               </UserContextProvider>
             </EntityProvider>
-          </PosthogProvider>
+          </FlagsProvider>
         </AnalyticsContextProvider>
       </MetaProvider>
     </MaybeTauriProvider>

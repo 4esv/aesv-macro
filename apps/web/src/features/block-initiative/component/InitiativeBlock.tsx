@@ -1,6 +1,6 @@
 import { ViewBreadcrumbs } from '@app/components/view-shell';
 import { ProjectDetail } from '@app/features/projects/project-detail';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { SidePanel } from '@components/app/side-panel';
 import { RedirectSplit } from '@components/app/split-layout/split-router/app-route-shell';
 import { useBlockId } from '@core/block';

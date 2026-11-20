@@ -18,7 +18,7 @@ vi.mock('@core/component/Toast/Toast', () => ({
   toast: { success: mocks.toastSuccess, failure: vi.fn() },
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () =>
     flag.key === 'enable-macro-computers'
       ? mocks.computersFlag()

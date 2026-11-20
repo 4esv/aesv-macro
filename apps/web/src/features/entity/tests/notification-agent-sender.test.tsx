@@ -64,11 +64,11 @@ describe('getNotificationAgentSender', () => {
     expect(
       getNotificationAgentSender(
         commentNotification({
-          senderDisplayName: 'Macro',
+          senderDisplayName: 'aesv',
           senderProfilePictureUrl: 'https://cdn/macro.png',
         })
       )
-    ).toEqual({ name: 'Macro', avatarUrl: 'https://cdn/macro.png' });
+    ).toEqual({ name: 'aesv', avatarUrl: 'https://cdn/macro.png' });
   });
 
   it('ignores human senders and notifications without an agent name', () => {
@@ -76,7 +76,7 @@ describe('getNotificationAgentSender', () => {
       getNotificationAgentSender(
         commentNotification({
           senderId: 'macro|peter@macro.com',
-          senderDisplayName: 'Macro',
+          senderDisplayName: 'aesv',
         })
       )
     ).toBeUndefined();
@@ -88,7 +88,7 @@ describe('getNotificationAgentSender', () => {
       getNotificationAgentSender(
         commentNotification({
           tag: 'channel_mention',
-          senderDisplayName: 'Macro',
+          senderDisplayName: 'aesv',
         })
       )
     ).toBeUndefined();
@@ -97,11 +97,11 @@ describe('getNotificationAgentSender', () => {
   it('deduplicates agents across a stack by name', () => {
     expect(
       getUniqueAgentSenders([
-        commentNotification({ senderDisplayName: 'Macro' }),
-        commentNotification({ senderDisplayName: 'Macro' }),
+        commentNotification({ senderDisplayName: 'aesv' }),
+        commentNotification({ senderDisplayName: 'aesv' }),
         commentNotification({ senderDisplayName: 'Helper' }),
       ]).map((agent) => agent.name)
-    ).toEqual(['Macro', 'Helper']);
+    ).toEqual(['aesv', 'Helper']);
   });
 });
 
@@ -109,31 +109,31 @@ describe('agent-authored comment notifications', () => {
   it('names the agent before the action', () => {
     const { container } = render(() => (
       <NotificationDescription
-        notification={commentNotification({ senderDisplayName: 'Macro' })}
+        notification={commentNotification({ senderDisplayName: 'aesv' })}
       />
     ));
-    expect(container.textContent).toBe('Macro replied to a comment');
+    expect(container.textContent).toBe('aesv replied to a comment');
   });
 
   it('shows the agent icon in the sender slot', () => {
     const { getByTestId } = render(() => (
       <NotificationSenderIcon
         notification={commentNotification({
-          senderDisplayName: 'Macro',
+          senderDisplayName: 'aesv',
           senderProfilePictureUrl: 'https://cdn/macro.png',
         })}
       />
     ));
     const icon = getByTestId('bot-icon');
-    expect(icon.textContent).toBe('Macro');
+    expect(icon.textContent).toBe('aesv');
     expect(icon.dataset.avatar).toBe('https://cdn/macro.png');
   });
 
   it('counts the agent as a sender in a stack', () => {
     const stack = stackOf([
       commentNotification({ senderId: 'macro|peter@macro.com' }),
-      commentNotification({ senderDisplayName: 'Macro' }),
-      commentNotification({ senderDisplayName: 'Macro' }),
+      commentNotification({ senderDisplayName: 'aesv' }),
+      commentNotification({ senderDisplayName: 'aesv' }),
     ]);
     const { container, getAllByTestId } = render(() => (
       <>
@@ -141,7 +141,7 @@ describe('agent-authored comment notifications', () => {
         <NotificationSenderIcon stack={stack} />
       </>
     ));
-    expect(container.textContent).toContain('3 replies from Peter and Macro');
+    expect(container.textContent).toContain('3 replies from Peter and aesv');
     expect(getAllByTestId('user-icon')).toHaveLength(1);
     expect(getAllByTestId('bot-icon')).toHaveLength(1);
   });
@@ -150,11 +150,11 @@ describe('agent-authored comment notifications', () => {
     const { container } = render(() => (
       <NotificationDescription
         stack={stackOf([
-          commentNotification({ senderDisplayName: 'Macro' }),
-          commentNotification({ senderDisplayName: 'Macro' }),
+          commentNotification({ senderDisplayName: 'aesv' }),
+          commentNotification({ senderDisplayName: 'aesv' }),
         ])}
       />
     ));
-    expect(container.textContent).toBe('Macro: 2 replies');
+    expect(container.textContent).toBe('aesv: 2 replies');
   });
 });

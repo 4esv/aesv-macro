@@ -190,7 +190,7 @@ describe('buildChannelMessageListMeta', () => {
     const agentSender = (triggeredBy: string): MessageSender => ({
       type: 'bot',
       id: '00000000-0000-0000-0000-000000000000',
-      name: 'Macro',
+      name: 'aesv',
       triggered_by: triggeredBy,
     });
     const messages = [

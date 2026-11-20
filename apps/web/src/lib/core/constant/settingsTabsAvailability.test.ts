@@ -7,7 +7,7 @@ const touch = vi.hoisted(() => ({ current: false }));
 let flagEnabled: () => boolean;
 let agentsEnabled: () => boolean = () => false;
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       (flag.key === 'desktop-app' && flagEnabled()) ||

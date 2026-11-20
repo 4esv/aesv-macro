@@ -337,13 +337,13 @@ describe('Harness', () => {
     }
   );
 
-  it('lists Macro Agent and Cursor in the harness list', () => {
+  it('lists aesv Agent and Cursor in the harness list', () => {
     render(() => <Harness />);
 
-    expect(screen.getByRole('heading', { name: 'Macro Agent' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'aesv Agent' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Cursor' })).toBeTruthy();
     expect(
-      screen.getByText(/Uses official Macro tools and MCPs to get the job done/)
+      screen.getByText(/Uses official aesv tools and MCPs to get the job done/)
     ).toBeTruthy();
   });
 
@@ -636,7 +636,7 @@ describe('Harness', () => {
     expect(invalidateHarnesses).toHaveBeenCalled();
   });
 
-  it('lists a Macro computer only under Macro computers, without Remove or Rename', () => {
+  it('lists a aesv computer only under aesv computers, without Remove or Rename', () => {
     harnessMocks.query.data = [
       { ...REGISTERED_HARNESS, access: 'owner', computer_id: 'computer-1' },
     ];
@@ -647,7 +647,7 @@ describe('Harness', () => {
     expect(screen.queryByRole('button', { name: 'Rename' })).toBeNull();
   });
 
-  it('never offers Share or Remove on a Macro computer, even with computers off', () => {
+  it('never offers Share or Remove on a aesv computer, even with computers off', () => {
     teamComputers.enabled = false;
     harnessMocks.query.data = [
       { ...REGISTERED_HARNESS, access: 'owner', computer_id: 'computer-1' },

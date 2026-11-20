@@ -36,7 +36,7 @@ const mocks = vi.hoisted(() => ({
     | undefined,
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag:
     ({ key }: { key: string }) =>
     () => ({ enabled: mocks.flag(key), loading: false }),

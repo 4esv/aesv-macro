@@ -22,7 +22,7 @@ export function getBrowserTursoCacheRolloutDecision(): BrowserTursoCacheRolloutD
       graphqlTransportEnabled,
       browserSupported: true,
       disableEnvOverride: undefined,
-      posthogDisable: undefined,
+      remoteDisable: undefined,
     });
   }
 
@@ -31,6 +31,6 @@ export function getBrowserTursoCacheRolloutDecision(): BrowserTursoCacheRolloutD
     graphqlTransportEnabled,
     browserSupported: unsupportedBrowserReason() === undefined,
     disableEnvOverride: disableBrowserTursoCache.override,
-    posthogDisable: undefined,
+    remoteDisable: undefined,
   });
 }

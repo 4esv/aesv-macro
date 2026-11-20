@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { ChannelInput } from '@channel/Input/ChannelInput';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
@@ -159,7 +159,7 @@ function Fixture() {
     <QueryClientProvider client={queryClient}>
       <MaybeTauriProvider>
         <AnalyticsContextProvider>
-          <PosthogProvider>
+          <FlagsProvider>
             <EntityProvider>
               <UserContextProvider>
                 <EmailLinksContextProvider>
@@ -219,7 +219,7 @@ function Fixture() {
                 </EmailLinksContextProvider>
               </UserContextProvider>
             </EntityProvider>
-          </PosthogProvider>
+          </FlagsProvider>
         </AnalyticsContextProvider>
       </MaybeTauriProvider>
     </QueryClientProvider>

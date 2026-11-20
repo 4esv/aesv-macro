@@ -1,7 +1,7 @@
 // The real row, slots and Focus mapping over synthetic threads; no network.
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { ItemDndProvider } from '@components/app/ItemDragAndDrop';
 import { SwipableRowProvider } from '@components/app/mobile/SwipableRow';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
@@ -246,7 +246,7 @@ render(
   () => (
     <EntityProvider>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <UserContextProvider>
             <EmailLinksContextProvider>
               <ItemDndProvider>
@@ -256,7 +256,7 @@ render(
               </ItemDndProvider>
             </EmailLinksContextProvider>
           </UserContextProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </EntityProvider>
   ),

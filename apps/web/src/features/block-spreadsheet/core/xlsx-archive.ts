@@ -121,7 +121,7 @@ function archiveEntries(
   // Imports drop macros with a warning; Macro's own exports must never
   // contain them.
   if (!allowMacros && [...names].some(isMacroPart))
-    throw new Error('Workbooks written by Macro must not contain macros.');
+    throw new Error('Workbooks written by aesv must not contain macros.');
   return { entries, centralStart };
 }
 
@@ -210,7 +210,7 @@ export function xlsxFeatureWarnings(names: string[]): string[] {
       );
     if (/(^|\/)vbaProject\.bin$/i.test(name))
       warnings.add(
-        'VBA macros are not imported. Cells, formulas and formatting are; the macros do not run in Macro.'
+        'VBA macros are not imported. Cells, formulas and formatting are; the macros do not run in aesv.'
       );
     if (/^xl\/macrosheets\//i.test(name))
       warnings.add('Excel 4.0 macro sheets are not imported.');

@@ -2,7 +2,7 @@ import {
   IntegrationRow,
   SettingsSurface,
 } from '@app/features/settings/primitives';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableSlackArchiveImport } from '@core/constant/featureFlags';
 import { useSettingsState } from '@core/constant/SettingsState';
 import { useChannelsContext } from '@core/context/channels';

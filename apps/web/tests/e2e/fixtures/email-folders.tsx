@@ -18,7 +18,7 @@ import {
 import { isEmailEntity } from '../../../src/features/entity/types/entity';
 import { TagSetsProvider } from '../../../src/features/property/tags/tag-sets-context';
 import { AnalyticsContextProvider } from '../../../src/lib/analytics/analytics-context';
-import { PosthogProvider } from '../../../src/lib/analytics/posthog';
+import { FlagsProvider } from '../../../src/lib/analytics/flags';
 import { EmailLinksContextProvider } from '../../../src/lib/core/context/emailLinks';
 import { UserContextProvider } from '../../../src/lib/core/context/user';
 import { queryClient } from '../../../src/lib/queries/client';
@@ -162,11 +162,11 @@ function Fixture() {
       <UserContextProvider>
         <EmailLinksContextProvider>
           <AnalyticsContextProvider>
-            <PosthogProvider>
+            <FlagsProvider>
               <TagSetsProvider tagSets={() => []}>
                 <FolderQueryFixture />
               </TagSetsProvider>
-            </PosthogProvider>
+            </FlagsProvider>
           </AnalyticsContextProvider>
         </EmailLinksContextProvider>
       </UserContextProvider>

@@ -1,7 +1,7 @@
 import '@app/index.css';
 import { applyTheme } from '@app/features/theme/utils/themeUtils';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
 import { QuickAccessContextProvider } from '@core/context/quickAccess/context';
@@ -202,7 +202,7 @@ if (PARAMS.has('discussion')) {
 function Providers(props: ParentProps) {
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <EntityProvider>
             <UserContextProvider>
@@ -218,7 +218,7 @@ function Providers(props: ParentProps) {
             </UserContextProvider>
           </EntityProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

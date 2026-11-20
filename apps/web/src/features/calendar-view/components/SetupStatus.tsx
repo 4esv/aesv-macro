@@ -18,12 +18,12 @@ const SETUP_MESSAGES = {
   },
   permission: {
     title: 'Enable calendar',
-    description: 'Grant calendar access to show your events in Macro.',
+    description: 'Grant calendar access to show your events in aesv.',
     action: 'Grant access',
   },
   disabled: {
     title: 'Calendar is off',
-    description: 'Grant calendar access again to show your events in Macro.',
+    description: 'Grant calendar access again to show your events in aesv.',
     action: 'Turn on',
   },
   reauth: {

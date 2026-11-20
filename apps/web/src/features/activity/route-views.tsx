@@ -1,4 +1,4 @@
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import { createSearchParams } from '@app/lib/split-router';
 import {
   RedirectSplit,
@@ -25,12 +25,12 @@ function TrackedActivityView() {
 
 export const ActivityRouteView = withAuth(() => {
   const enabled = useActivityFeedFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
   return (
     <Show
       when={enabled()}
       fallback={
-        <Show when={posthog.flagsLoaded()}>
+        <Show when={flags.flagsLoaded()}>
           <RedirectSplit to={{ type: 'component', id: 'home' }} />
         </Show>
       }

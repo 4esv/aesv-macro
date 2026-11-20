@@ -3,7 +3,7 @@ import {
   channelIdForPreviewNavigation,
   getChannelEntityTarget,
 } from '@app/features/next-soup/utils';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { makePersistedState } from '@app/lib/persistence';
 import {
   createSearchParams,

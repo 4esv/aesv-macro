@@ -69,8 +69,8 @@ export default defineConfig({
       { find: exact('@queries/bots/bots'), replacement: stub('bots') },
       { find: exact('@queries/computers/claude'), replacement: stub('claude') },
       {
-        find: exact('@app/lib/analytics/posthog'),
-        replacement: stub('posthog'),
+        find: exact('@app/lib/analytics/flags'),
+        replacement: stub('flags'),
       },
       { find: exact('@core/context/user'), replacement: stub('user-context') },
       { find: exact('@core/user'), replacement: stub('user') },

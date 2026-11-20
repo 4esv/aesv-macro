@@ -30,7 +30,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@app/lib/analytics/analytics-context', () => ({
   useAnalytics: () => ({ track: vi.fn() }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true, loading: false }),
 }));
 vi.mock('@queries/notification/graphql/entity-unseen-notifications', () => ({

@@ -405,7 +405,7 @@ describe('createMagicChipModel', () => {
   );
 
   it.each(['in-memory', 'macro-inmem', 'sandbox'])(
-    'names the %s session Macro Agent, not Macro Agent Agent',
+    'names the %s session aesv Agent, not aesv Agent Agent',
     async (harness) => {
       serviceClient.get.mockResolvedValue({
         isOk: () => true,
@@ -423,7 +423,7 @@ describe('createMagicChipModel', () => {
         return dispose;
       });
       await settle();
-      expect(model.header()?.agent).toBe('Macro Agent');
+      expect(model.header()?.agent).toBe('aesv Agent');
       dispose();
     }
   );
@@ -676,7 +676,7 @@ describe('createMagicChipModel', () => {
             approvalId: 'a1',
             turn: 0,
             serverSlug: 'macro',
-            serverName: 'Macro',
+            serverName: 'aesv',
             toolName: 'GetThread',
             requestedBy: 'macro|bob@macro.com',
           },

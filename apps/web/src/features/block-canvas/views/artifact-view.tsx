@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableCanvasArtifacts } from '@core/constant/featureFlags';
 import type { ShapeViewProps } from '@macro-inc/graphics/solid';
 import { Show } from 'solid-js';

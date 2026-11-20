@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   markRead: vi.fn(async () => {}),
   graphqlSoup: () => ({ enabled: false, loading: false }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => mocks.graphqlSoup(),
 }));
 vi.mock('@notifications/notification-helpers', () => ({

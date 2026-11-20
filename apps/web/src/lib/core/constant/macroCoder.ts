@@ -13,7 +13,7 @@ export const MACRO_CODER_BOT_ID = '00000000-0000-0000-0000-00000000a9e7';
 export const MACRO_CODER_PRINCIPAL_ID = `bot|${MACRO_CODER_BOT_ID}`;
 
 /** Display name for Macro Coding Agent. */
-export const MACRO_CODER_NAME = 'Macro Coding Agent';
+export const MACRO_CODER_NAME = 'aesv Coding Agent';
 
 /** Handle used to find Macro Coding Agent in the mention typeahead (`@coder`). */
 export const MACRO_CODER_HANDLE = 'coder';

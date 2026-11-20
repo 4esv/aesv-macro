@@ -8,7 +8,7 @@ import {
   testFacets,
 } from '@app/features/soup';
 import { withEntityNotifications } from '@app/features/soup/entity-notifications';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';
 import { enableReminders } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';

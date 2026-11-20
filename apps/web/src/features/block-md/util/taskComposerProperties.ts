@@ -1,5 +1,5 @@
 import { DEFAULT_TASK_COMPOSER_PROPERTY_IDS } from '@app/features/task-composer/property-defaults';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { toast } from '@core/component/Toast/Toast';
 import { enableProjects } from '@core/constant/featureFlags';
 import { createTaskWithInitialSnapshot } from '@core/util/create';

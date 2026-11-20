@@ -23,8 +23,8 @@ import { AgentsSidebar } from './AgentsSidebar';
 const openWithSplit = vi.fn();
 const unreadFilter = vi.hoisted(() => vi.fn(() => false));
 const sidebarState = vi.hoisted(() => ({ agentUpdates: false, touch: false }));
-vi.mock('@app/lib/analytics/posthog', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@app/lib/analytics/posthog')>()),
+vi.mock('@app/lib/analytics/flags', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@app/lib/analytics/flags')>()),
   useFeatureFlag: () => () => ({ enabled: sidebarState.agentUpdates }),
 }));
 vi.mock('@app/features/routine-suggestions/routine-suggestions', () => ({
@@ -854,7 +854,7 @@ describe.each(['home', 'sidebar'] as const)('%s agent rows', (surface) => {
     ).toBeNull();
   });
 
-  it('opens a synced PR in Macro without activating its session', () => {
+  it('opens a synced PR in aesv without activating its session', () => {
     const { setEntity, open } = setup();
     setEntity({
       ...conversation,

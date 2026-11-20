@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { MacroToolCall } from './MacroToolCall';
 import type { ToolCallContext } from './shared';
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 

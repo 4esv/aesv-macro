@@ -193,7 +193,7 @@ vi.mock('@app/features/next-soup/utils', () => ({
 vi.mock('@app/features/soup/entity-notifications', () => ({
   withEntityNotifications: (channel: ChannelEntity) => channel,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 vi.mock('@app/util/favorites', () => ({ favoriteSplitContent: vi.fn() }));

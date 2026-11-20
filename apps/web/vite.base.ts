@@ -821,10 +821,13 @@ function defineEnv(mode: string, command: string) {
     'import.meta.env.__APP_BUILD_TIME__': JSON.stringify(appBuildTime),
     'import.meta.env.ASSETS_PATH': JSON.stringify(getAssetsPath(mode, command)),
     // index.html preconnects to the API gateway; keep in sync with servers.ts.
+    // NOTE: a local-backend bundle's API is its own origin, never macro.com.
     'import.meta.env.GATEWAY_ORIGIN': JSON.stringify(
-      mode === 'development'
-        ? 'https://dev-gateway.macro.com'
-        : 'https://gateway.macro.com'
+      process.env.VITE_LOCAL_BACKEND_ORIGIN
+        ? '/'
+        : mode === 'development'
+          ? 'https://dev-gateway.macro.com'
+          : 'https://gateway.macro.com'
     ),
     'import.meta.env.__LOCAL_DOCKER__': process.env.LOCAL_DOCKER === 'true',
     'import.meta.env.__LOCAL_JWT__': JSON.stringify(process.env.LOCAL_JWT),

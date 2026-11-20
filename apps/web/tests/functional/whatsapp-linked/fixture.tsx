@@ -27,7 +27,7 @@ import { createOpenSections } from '@app/features/whatsapp-linked/primitives/ope
 import { createWhatsAppLinkedCapabilities } from '@app/features/whatsapp-linked/queries/production-capabilities';
 import { WhatsAppPage } from '@app/features/whatsapp-linked/views/whatsapp-page';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { FloatRegionHost } from '@components/app/mobile/float-regions/FloatRegionHost';
 import { SidePanel } from '@components/app/side-panel';
 import { ToastRegion } from '@core/component/Toast/ToastRegion';
@@ -206,7 +206,7 @@ if (!root) throw new Error('missing #root');
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <Suspense fallback={<p>Loading identity…</p>}>
@@ -231,7 +231,7 @@ render(
             </Suspense>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   root

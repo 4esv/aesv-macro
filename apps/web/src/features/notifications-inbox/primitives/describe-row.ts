@@ -58,7 +58,7 @@ function actorName(
       { kind: 'agent' },
       (actor) => actor.name ?? getNotificationSenderFallbackName(latest)
     )
-    .with({ kind: 'macro' }, () => 'Macro')
+    .with({ kind: 'macro' }, () => 'aesv')
     .with({ kind: 'other' }, () => undefined)
     .exhaustive();
 }
@@ -213,7 +213,7 @@ function describeNotification(
       subject: metadata.content.itemName,
     }))
     .with({ tag: 'ai_response' }, () => ({
-      action: 'Macro responded',
+      action: 'aesv responded',
       subject: content ?? entityName,
     }))
     .with(

@@ -84,7 +84,7 @@ describe('EntityEmailParticipants', () => {
     expect(container.textContent).toBe('Cal.com, Nathan');
   });
 
-  it('falls back to the Macro display name when the message carries no From name', () => {
+  it('falls back to the aesv display name when the message carries no From name', () => {
     const { container } = render(() => (
       <EntityEmailParticipants
         entity={emailEntity([{ email: 'wolf@macro.com' }])}
@@ -116,7 +116,7 @@ describe('EntityEmailParticipants', () => {
     expect(container.textContent).toBe('Nathan Flurry');
   });
 
-  it("treats the row's inbox address, not the Macro login, as me", () => {
+  it("treats the row's inbox address, not the aesv login, as me", () => {
     const { container } = render(() => (
       <EntityEmailParticipants
         entity={emailEntity(

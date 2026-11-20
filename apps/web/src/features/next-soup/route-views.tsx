@@ -1,6 +1,6 @@
 import { CallsView } from '@app/features/calls-view/views/calls-view';
 import { MobileSearchResults } from '@app/features/command/mobile/MobileSearchResults';
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import {
   RedirectSplit,
@@ -34,12 +34,12 @@ function TrackedRecentView() {
 
 export const RecentRouteView = withAuth(() => {
   const enabled = useRecentViewFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
   return (
     <Show
       when={enabled()}
       fallback={
-        <Show when={posthog.flagsLoaded()}>
+        <Show when={flags.flagsLoaded()}>
           <RedirectSplit to={{ type: 'component', id: 'home' }} />
         </Show>
       }

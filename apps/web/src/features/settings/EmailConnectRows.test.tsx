@@ -25,7 +25,7 @@ vi.mock('@queries/auth/outlook-link', () => ({
   fetchEmailConnectionProviders: mocks.providers,
   useOutlookAvailable: () => outlookOffered,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: multiInbox() }),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

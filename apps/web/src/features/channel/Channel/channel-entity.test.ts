@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   rest: vi.fn<typeof import('@queries/soup/items').useSoupAstItemsQuery>(),
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.graphql }),
 }));
 vi.mock('@queries/soup/items', () => ({

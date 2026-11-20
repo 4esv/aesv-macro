@@ -128,7 +128,7 @@ export function LeftoverRow(props: {
 
   const remove = (connected: boolean) => {
     const leftover = props.leftover;
-    const ok = connected ? 'Disconnected from Macro' : 'Removed';
+    const ok = connected ? 'Disconnected from aesv' : 'Removed';
     const fail = connected ? 'Failed to disconnect' : 'Failed to remove';
     match(leftover)
       .with({ kind: 'native-mcp' }, (row) => {
@@ -323,7 +323,7 @@ export function LeftoverRow(props: {
             connectionFailed()
               ? `Last attempt failed · ${item.subtitle}`
               : props.overlaidAppSlug
-                ? 'Agents can use this app when you ask them to. Nothing is copied into Macro.'
+                ? 'Agents can use this app when you ask them to. Nothing is copied into aesv.'
                 : item.subtitle
           }
           categories={leftoverCategories(item, props.overlaidAppSlug)}
@@ -339,7 +339,7 @@ export function LeftoverRow(props: {
           icon={<ConnectedAppIcon appSlug={item.appSlug} class="size-5" />}
           name={item.title}
           kind="mcp"
-          description="Agents can use this app when you ask them to. Nothing is copied into Macro."
+          description="Agents can use this app when you ask them to. Nothing is copied into aesv."
           categories={['Agent tools']}
           status={status()}
           muted={status() === 'disconnected'}

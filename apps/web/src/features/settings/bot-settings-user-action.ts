@@ -1,5 +1,5 @@
 import { requestBotDetail } from '@app/features/channel/Bots/botSettingsState';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import type { UserCardAction } from '@core/component/userCardActions';
 import { botManagement, enableChatV3Agents } from '@core/constant/featureFlags';
 import { isBotPrincipalId, isMacroAgentId } from '@core/constant/macroAgent';

@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { setGlobalSplitManager } from '@app/signal/splitLayout';
 import type {
   SplitContent,
@@ -62,7 +62,7 @@ setGlobalSplitManager({
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <StaticMarkdownContext theme={channelTheme}>
             <main class="p-4 text-ink bg-page">
@@ -88,7 +88,7 @@ render(
             </main>
           </StaticMarkdownContext>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   document.getElementById('root')!

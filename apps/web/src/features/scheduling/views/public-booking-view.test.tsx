@@ -6,7 +6,7 @@ import { PublicBookingView } from './public-booking-view';
 
 const profile: PublicProfile = {
   id: 'team',
-  name: 'Macro',
+  name: 'aesv',
   description: 'Meet the team.',
   eventTypes: [],
 };
@@ -25,18 +25,18 @@ function renderPage(embedded?: boolean) {
 
 afterEach(cleanup);
 
-it('carries the Macro name when it is the whole page', () => {
+it('carries the aesv name when it is the whole page', () => {
   renderPage();
 
   expect(screen.getByText('/ Scheduling')).toBeTruthy();
   expect(screen.queryByRole('link')).toBeNull();
-  expect(screen.getByText('Scheduling by Macro')).toBeTruthy();
+  expect(screen.getByText('Scheduling by aesv')).toBeTruthy();
 });
 
-it('leaves the Macro name to the page that embeds it', () => {
+it('leaves the aesv name to the page that embeds it', () => {
   renderPage(true);
 
-  expect(screen.getByRole('heading', { name: 'Macro' })).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'aesv' })).toBeTruthy();
   expect(screen.queryByRole('link')).toBeNull();
-  expect(screen.queryByText('Scheduling by Macro')).toBeNull();
+  expect(screen.queryByText('Scheduling by aesv')).toBeNull();
 });

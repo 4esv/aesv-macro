@@ -33,7 +33,7 @@ vi.mock('@app/features/projects/project-detail', async () => {
 vi.mock('@queries/properties/tags', () => ({
   useTagsQuery: () => ({ isPending: false, isFetched: true, data: [] }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => mocks.flag,
 }));
 vi.mock('@components/app/side-panel', () => ({

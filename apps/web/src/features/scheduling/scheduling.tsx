@@ -1,6 +1,6 @@
 import { useViewControlHotkeys } from '@app/components/view-shell';
 import { openChatWithInput } from '@app/features/chat/ChatWithAgentButton';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { createSearchParams, useBeforeLeave } from '@app/lib/split-router';
 import {
   useSplitDisplayName,

@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableComposerAutoMode } from '@core/constant/featureFlags';
 import { createSignal } from 'solid-js';
 import type { ComposerMode } from '../core/mode';

@@ -478,12 +478,12 @@ describe('Agents', () => {
     }
   );
 
-  it('lists the built-in global Macro agent as a team agent', () => {
+  it('lists the built-in global aesv agent as a team agent', () => {
     render(() => <Agents {...agentsPageProps} />);
 
     const list = screen.getByRole('region', { name: 'Your agents' });
 
-    expect(within(list).getByText('Macro')).toBeTruthy();
+    expect(within(list).getByText('aesv')).toBeTruthy();
     expect(
       within(list)
         .getAllByText(/^@/)
@@ -491,13 +491,13 @@ describe('Agents', () => {
     ).toEqual(['@macro']);
     expect(within(list).getByText('Team')).toBeTruthy();
     expect(
-      within(list).getByText('In Macro · Sonnet 5.5 · All channels')
+      within(list).getByText('In aesv · Sonnet 5.5 · All channels')
     ).toBeTruthy();
     expect(
-      within(list).queryByRole('button', { name: 'Delete Macro' })
+      within(list).queryByRole('button', { name: 'Delete aesv' })
     ).toBeNull();
     expect(
-      within(list).queryByRole('button', { name: 'Edit Macro' })
+      within(list).queryByRole('button', { name: 'Edit aesv' })
     ).toBeNull();
   });
 
@@ -620,14 +620,14 @@ describe('Agents', () => {
       ?.parentElement as HTMLElement;
     expect(within(releaseRow).getByText('Team')).toBeTruthy();
     expect(
-      within(releaseRow).getByText('In Macro · Sonnet 5.5 · #engineering')
+      within(releaseRow).getByText('In aesv · Sonnet 5.5 · #engineering')
     ).toBeTruthy();
 
     const bugFixerRow = within(list).getByText('Bug fixer').parentElement
       ?.parentElement as HTMLElement;
     expect(within(bugFixerRow).getByText('Private')).toBeTruthy();
     expect(
-      within(bugFixerRow).getByText('In Macro · Sonnet 5.5 · All channels')
+      within(bugFixerRow).getByText('In aesv · Sonnet 5.5 · All channels')
     ).toBeTruthy();
   });
 
@@ -1190,7 +1190,7 @@ describe('Agents', () => {
     expect(within(dialog).queryByLabelText('Description')).toBeNull();
     expect(within(dialog).getByLabelText('Instructions')).toBeTruthy();
     expect(
-      within(dialog).getByRole('radio', { name: 'In Macro' })
+      within(dialog).getByRole('radio', { name: 'In aesv' })
     ).toHaveProperty('checked', true);
     expect(
       within(dialog).getByRole('radio', { name: 'In Cursor' })
@@ -1225,7 +1225,7 @@ describe('Agents', () => {
       within(dialog).getByRole('button', { name: 'Connect Cursor' })
     ).toBeTruthy();
     expect(
-      within(dialog).getByRole('radio', { name: 'In Macro' })
+      within(dialog).getByRole('radio', { name: 'In aesv' })
     ).toHaveProperty('checked', true);
   });
 
@@ -1373,7 +1373,7 @@ describe('Agents', () => {
     const dialog = screen.getByRole('region', { name: /^(New|Edit) agent$/ });
     expect(within(dialog).queryByLabelText('Anthropic API key')).toBeNull();
     expect(
-      within(dialog).getByText('Runs on Macro usage unless you add one.')
+      within(dialog).getByText('Runs on aesv usage unless you add one.')
     ).toBeTruthy();
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Add key' }));
@@ -1521,7 +1521,7 @@ describe('Agents', () => {
     );
   });
 
-  it('opens the create form on a requested Macro computer', () => {
+  it('opens the create form on a requested aesv computer', () => {
     const computer = {
       ...MACROD_HARNESS,
       id: 'computer-harness',
@@ -1538,7 +1538,7 @@ describe('Agents', () => {
     expect(where.dataset.harnessId).toBe('computer-harness');
     expect(where.dataset.checked).toBe('true');
     expect(
-      within(dialog).getByRole('radio', { name: 'In Macro' })
+      within(dialog).getByRole('radio', { name: 'In aesv' })
     ).toHaveProperty('checked', false);
     expect(agentSettingsRequest()).toBeUndefined();
   });
@@ -1551,7 +1551,7 @@ describe('Agents', () => {
 
     const dialog = screen.getByRole('region', { name: /^(New|Edit) agent$/ });
     expect(
-      within(dialog).getByRole('radio', { name: 'In Macro' })
+      within(dialog).getByRole('radio', { name: 'In aesv' })
     ).toHaveProperty('checked', true);
     expect(
       within(dialog).getByRole('radio', { name: 'In Cursor' })
@@ -2184,7 +2184,7 @@ it.each(['in-memory', 'cursor'])(
     fireEvent.click(
       within(dialog).getByRole('radio', {
         name: {
-          'in-memory': 'In Macro',
+          'in-memory': 'In aesv',
           cursor: 'In Cursor',
         }[harness]!,
       })

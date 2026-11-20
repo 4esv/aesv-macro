@@ -1,5 +1,5 @@
 import { openAgentsPage } from '@app/features/agents-view/primitives/open-page';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { ForwardToChannel } from '@core/component/ForwardToChannel';
 import { toast } from '@core/component/Toast/Toast';

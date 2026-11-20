@@ -23,7 +23,7 @@ import { UnreadNotificationsOverlay } from '../UnreadNotificationsOverlay';
 vi.mock('@core/component/UserIcon', () => ({ UserIcon: () => <span /> }));
 
 const mocks = vi.hoisted(() => ({ query: vi.fn(), source: vi.fn() }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@components/app/GlobalAppState', () => ({

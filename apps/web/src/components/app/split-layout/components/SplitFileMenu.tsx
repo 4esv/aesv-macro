@@ -13,7 +13,7 @@ import {
 } from '@app/features/next-soup/actions';
 import { ProjectAssignmentDialog } from '@app/features/projects/projects';
 import { EntityTagSubmenu } from '@app/features/property/tags/EntityTagSubmenu';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import type { BlockTool } from '@components/app/block-tool';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';

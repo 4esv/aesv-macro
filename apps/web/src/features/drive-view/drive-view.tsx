@@ -4,7 +4,7 @@ import {
   type FacetSelection,
   useSoupListNavigationHotkeys,
 } from '@app/features/soup';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { usePending } from '@app/observability/flow';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';
 import {

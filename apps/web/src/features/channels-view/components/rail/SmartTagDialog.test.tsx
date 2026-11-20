@@ -17,7 +17,7 @@ import { promptSmartTag } from './SmartTagDialog';
 vi.mock('@core/context/user', () => ({ useUserId: () => () => 'viewer' }));
 
 const fetchPreview = vi.hoisted(() => vi.fn());
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: flag.key !== 'enable-chat-sidebar-sections',
   }),

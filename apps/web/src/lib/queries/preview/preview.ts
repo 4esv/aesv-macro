@@ -2,7 +2,7 @@ import {
   type EntityAppearance,
   sameAppearance,
 } from '@app/features/entity-appearance/core/appearance';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import {
   enableGraphqlSoup,
   isFeatureEnabled,

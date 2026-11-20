@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { type PillTabItem, PillTabs } from '@components/app/mobile/PillTabs';
 import { enableCrmActivity } from '@core/constant/featureFlags';

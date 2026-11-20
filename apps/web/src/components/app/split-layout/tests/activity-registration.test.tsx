@@ -46,8 +46,8 @@ vi.mock('@app/lib/split-router', async (importOriginal) => ({
 vi.mock('@core/auth', () => ({
   useIsAuthenticated: () => () => state.authenticated(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
-  usePosthog: () => ({ flagsLoaded: () => state.flagsLoaded() }),
+vi.mock('@app/lib/analytics/flags', () => ({
+  useFlags: () => ({ flagsLoaded: () => state.flagsLoaded() }),
   useFeatureFlag: () => () => ({
     enabled: state.enabled(),
     loading: !state.flagsLoaded(),

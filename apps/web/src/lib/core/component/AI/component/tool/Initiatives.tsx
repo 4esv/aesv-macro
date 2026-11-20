@@ -5,7 +5,7 @@ import type { ProjectSection } from '@app/features/projects/core/project';
 import { projectActivityEvent } from '@app/features/projects/core/project-activity';
 import { openProject } from '@app/features/projects/open-project';
 import { refreshProjectQueries } from '@app/features/projects/queries/project-revalidation';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { StaticMarkdownContext } from '@core/component/LexicalMarkdown/component/core/StaticMarkdown';
 import { enableProjects, isFeatureEnabled } from '@core/constant/featureFlags';

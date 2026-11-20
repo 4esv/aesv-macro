@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { UserContextProvider } from '@core/context/user';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
 import { onCleanup } from 'solid-js';
@@ -17,7 +17,7 @@ function Fixture() {
   onCleanup(() => client.clear());
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <UserContextProvider>
             <StaticMarkdownContext>
@@ -43,7 +43,7 @@ function Fixture() {
             </StaticMarkdownContext>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

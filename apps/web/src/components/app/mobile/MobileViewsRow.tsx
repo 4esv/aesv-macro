@@ -1,7 +1,7 @@
 import type { MobileSearchSession } from '@app/features/command/mobile/mobileSearchState';
 import { useMobileSearchCategory } from '@app/features/command/mobile/use-mobile-search-category';
 import type { EntitySearchCategory } from '@app/features/command/queries/entity-search';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { type TranslationKey, t } from '@app/lib/i18n';
 import { enableProjects } from '@core/constant/featureFlags';
 import { type PillTabItem, PillTabs } from './PillTabs';
