@@ -25,9 +25,10 @@ perfMark('boot.entry-evaluated');
 installPlatformFetch();
 
 // The installed web app opens offline through public/sw.js (W-2096).
+// NOTE: BASE_URL is `/app`, with no trailing slash, so the slash is added here.
 if (!isTauri() && 'serviceWorker' in navigator) {
   navigator.serviceWorker
-    .register(`${import.meta.env.BASE_URL}sw.js`)
+    .register(`${import.meta.env.BASE_URL.replace(/\/?$/, '/')}sw.js`)
     .catch((error) => console.warn('service worker not registered', error));
 }
 
