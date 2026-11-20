@@ -12,6 +12,7 @@ mod actions;
 mod catalog;
 mod cursor;
 mod normalize;
+mod send;
 mod smtp;
 mod stream;
 #[cfg(test)]
