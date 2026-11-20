@@ -68,6 +68,24 @@ impl CalDavCalendarClient {
             Url::parse(Self::ICLOUD_URL).expect("the iCloud CalDAV URL is valid"),
         )
     }
+
+    /// The stack's iCloud credential as `apple-id:password`, from
+    /// `ICLOUD_APPLE_ID` and `ICLOUD_APP_PASSWORD`. Never log it.
+    // NOTE(shortcut): one iCloud account per stack, read from its env file; store a
+    // credential per link when one stack serves more than one person.
+    pub fn stack_credential() -> Option<String> {
+        let read = |name| {
+            std::env::var(name)
+                .ok()
+                .map(|value| value.trim().to_owned())
+                .filter(|value| !value.is_empty())
+        };
+        Some(format!(
+            "{}:{}",
+            read("ICLOUD_APPLE_ID")?,
+            read("ICLOUD_APP_PASSWORD")?
+        ))
+    }
 }
 
 fn error(kind: CalendarProviderErrorKind, message: impl Into<String>) -> CalendarProviderError {

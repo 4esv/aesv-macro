@@ -1829,7 +1829,7 @@ impl CalendarRepository for PgCalendarRepository {
                 r#"
                 WITH deleted_sources AS (
                     DELETE FROM calendar_event_sources source
-                    WHERE source.source_kind = 'google'
+                    WHERE source.source_kind IN ('google','icloud')
                       AND source.account_id = $1
                       AND source.calendar_id = $2
                       AND (
@@ -1863,7 +1863,7 @@ impl CalendarRepository for PgCalendarRepository {
                 r#"
                 WITH deleted_sources AS (
                     DELETE FROM calendar_event_sources source
-                    WHERE source.source_kind = 'google'
+                    WHERE source.source_kind IN ('google','icloud')
                       AND source.account_id = $1
                       AND source.calendar_id = $2
                       AND NOT (source.provider_event_id = ANY($3::text[]))
@@ -2164,7 +2164,7 @@ impl CalendarRepository for PgCalendarRepository {
             r#"
             WITH deleted_sources AS (
                 DELETE FROM calendar_event_sources source
-                WHERE source.source_kind = 'google'
+                WHERE source.source_kind IN ('google','icloud')
                   AND source.account_id = $1
                   AND (
                         source.calendar_id IS NULL

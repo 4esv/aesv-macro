@@ -60,6 +60,8 @@ pub enum UserProvider {
     Gmail,
     /// Microsoft Outlook and Microsoft 365.
     Outlook,
+    /// iCloud Mail over IMAP and SMTP, with an app-specific password.
+    ICloud,
 }
 
 impl UserProvider {
@@ -67,6 +69,7 @@ impl UserProvider {
         match self {
             UserProvider::Gmail => "GMAIL",
             UserProvider::Outlook => "OUTLOOK",
+            UserProvider::ICloud => "ICLOUD",
         }
     }
 }
@@ -82,6 +85,7 @@ impl From<crate::email::service::link::UserProvider> for UserProvider {
         match provider {
             crate::email::service::link::UserProvider::Gmail => UserProvider::Gmail,
             crate::email::service::link::UserProvider::Outlook => UserProvider::Outlook,
+            crate::email::service::link::UserProvider::ICloud => UserProvider::ICloud,
         }
     }
 }
