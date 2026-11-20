@@ -17,10 +17,13 @@ import path from 'node:path';
 
 const ts = createRequire(import.meta.url)('typescript');
 
-export const WORD = /(?<![A-Za-z0-9_$@/-])(?<!new )Macro(?![A-Za-z0-9_$-])/;
+// A `|` beside the word is a regex alternation in a syntax grammar (Apache's
+// <Macro>, Vim's Macro group), not text.
+export const WORD = /(?<![A-Za-z0-9_$@/|-])(?<!new )Macro(?![A-Za-z0-9_$|-])/;
 const POSTHOG = /posthog/i;
-// A value under these keys is data (a stored id, an enum tag), not prose.
-const KEYS = new Set(['id', 'key', 'slug', 'tag', 'kind', 'type']);
+// A value under these keys is data (a stored id, an enum tag, a Lezer
+// grammar's node names), not prose.
+const KEYS = new Set(['id', 'key', 'slug', 'tag', 'kind', 'type', 'nodeNames']);
 const TEXT_FILE = /\.(html|json|webmanifest|css|svg|txt)$/;
 const JS_FILE = /\.m?js$/;
 const TEXT_NODES = new Set([

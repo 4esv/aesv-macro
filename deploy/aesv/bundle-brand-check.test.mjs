@@ -55,3 +55,11 @@ test('data, schema text and source maps are not read by a user', () => {
   });
   assert.deepEqual(check(dir), []);
 });
+
+test("a syntax grammar's Macro is not the brand", () => {
+  const dir = bundle({
+    'apache.js': 'var g=JSON.parse(\'{"match":"(<)(Location|VirtualHost|Macro|If)(>)"}\');',
+    'cpp.js': 'let p=L.deserialize({nodeNames:`#ifndef PreprocDirectiveName Macro Program`,maxTerm:433});',
+  });
+  assert.deepEqual(check(dir), []);
+});
