@@ -278,7 +278,9 @@ async fn google_backfill(
     };
 
     if link.provider == UserProvider::ICloud {
-        let Some(credential) = CalDavCalendarClient::stack_credential() else {
+        let Some(credential) =
+            CalDavCalendarClient::stack_credential(link.email_address.0.as_ref())
+        else {
             return fail_unclaimed(
                 ctx,
                 link_id,
@@ -341,11 +343,23 @@ async fn run_coordinator(
     let range = OccurrenceRange::maintenance_horizon(Utc::now());
     let run_result = if link.provider == UserProvider::ICloud {
         ctx.icloud
-            .run(key, link.macro_id.as_ref(), access_token, range, &mut report)
+            .run(
+                key,
+                link.macro_id.as_ref(),
+                access_token,
+                range,
+                &mut report,
+            )
             .await
     } else {
         ctx.coordinator
-            .run(key, link.macro_id.as_ref(), access_token, range, &mut report)
+            .run(
+                key,
+                link.macro_id.as_ref(),
+                access_token,
+                range,
+                &mut report,
+            )
             .await
     };
     // Quiet token-only polls change nothing; only real changes nudge active

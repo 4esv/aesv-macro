@@ -13,6 +13,7 @@ pub enum UserProvider {
     /// Microsoft Outlook and Microsoft 365.
     Outlook,
     /// iCloud Mail over IMAP and SMTP, with an app-specific password.
+    #[serde(rename = "ICLOUD")]
     ICloud,
 }
 

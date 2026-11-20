@@ -2349,6 +2349,8 @@ impl CalendarRepository for PgCalendarRepository {
         Ok(retired)
     }
 
+    // FIX: add 'icloud' to both source filters below once an edit made in Macro
+    // is proven to round-trip through CalDAV; until then an iCloud event is read-only (W-2066).
     #[tracing::instrument(skip(self, requester_id), err)]
     async fn get_event_mutation_target(
         &self,
@@ -2825,7 +2827,7 @@ impl CalendarRepository for PgCalendarRepository {
             r#"
             WITH deleted_sources AS (
                 DELETE FROM calendar_event_sources source
-                WHERE source.source_kind IN ('google', 'outlook')
+                WHERE source.source_kind IN ('google', 'outlook', 'icloud')
                   AND source.account_id = $1
                   AND source.calendar_id = $2
                   AND (
@@ -3596,7 +3598,7 @@ async fn disable_calendar_capability_tx(
         r#"
         WITH deleted_sources AS (
             DELETE FROM calendar_event_sources
-            WHERE source_kind IN ('google','outlook')
+            WHERE source_kind IN ('google','outlook','icloud')
               AND account_id = $1
             RETURNING event_id
         )

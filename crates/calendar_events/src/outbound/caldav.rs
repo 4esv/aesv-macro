@@ -70,22 +70,30 @@ impl CalDavCalendarClient {
     }
 
     /// The stack's iCloud credential as `apple-id:password`, from
-    /// `ICLOUD_APPLE_ID` and `ICLOUD_APP_PASSWORD`. Never log it.
+    /// `ICLOUD_APPLE_ID` and `ICLOUD_APP_PASSWORD`, for the link whose address
+    /// is that Apple ID. Never log it.
     // NOTE(shortcut): one iCloud account per stack, read from its env file; store a
     // credential per link when one stack serves more than one person.
-    pub fn stack_credential() -> Option<String> {
+    pub fn stack_credential(link_email: &str) -> Option<String> {
         let read = |name| {
             std::env::var(name)
                 .ok()
                 .map(|value| value.trim().to_owned())
                 .filter(|value| !value.is_empty())
         };
-        Some(format!(
-            "{}:{}",
+        credential_for(
+            link_email,
             read("ICLOUD_APPLE_ID")?,
-            read("ICLOUD_APP_PASSWORD")?
-        ))
+            read("ICLOUD_APP_PASSWORD")?,
+        )
     }
+}
+
+// NOTE: another person's ICLOUD link must never sync the stack owner's calendar.
+fn credential_for(link_email: &str, apple_id: String, password: String) -> Option<String> {
+    apple_id
+        .eq_ignore_ascii_case(link_email.trim())
+        .then(|| format!("{apple_id}:{password}"))
 }
 
 fn error(kind: CalendarProviderErrorKind, message: impl Into<String>) -> CalendarProviderError {

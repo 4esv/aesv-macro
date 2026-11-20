@@ -4749,6 +4749,89 @@ async fn disconnecting_calendar_removes_the_data_and_records_the_opt_out(pool: P
     assert!(grant.opted_out);
 }
 
+/// The same fixture, as the CalDAV client writes it: `source_kind = 'icloud'`.
+fn icloud(mut upsert: CalendarEventUpsert) -> CalendarEventUpsert {
+    upsert.source = CalendarEventSource::ICloud(upsert.source.details().clone());
+    upsert
+}
+
+#[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
+async fn disconnecting_an_icloud_calendar_removes_its_events(pool: PgPool) {
+    let owner_id = "macro|calendar-disconnect-icloud@example.com";
+    let link_id = insert_link(&pool, owner_id).await;
+    let repo = PgCalendarRepository::new(pool.clone());
+    let (account_id, calendar_id, _, _) = connected_calendar(&pool, &repo, owner_id, link_id).await;
+    repo.upsert_event(CalendarEventWrite::UserMutation(icloud(timed_upsert(
+        owner_id,
+        link_id,
+        (account_id, calendar_id),
+        "icloud-disconnect@example.com",
+        "iCloud event",
+        1,
+    ))))
+    .await
+    .unwrap();
+
+    repo.disconnect_provider_calendar(owner_id, link_id)
+        .await
+        .unwrap()
+        .expect("the owner's inbox is disconnectable");
+
+    let left = sqlx::query!(
+        r#"
+        SELECT
+            (SELECT count(*) FROM calendar_events WHERE source_link_id = $1) AS "events!",
+            (SELECT count(*) FROM calendar_event_sources WHERE source_link_id = $1) AS "sources!"
+        "#,
+        link_id,
+    )
+    .fetch_one(&pool)
+    .await
+    .unwrap();
+    assert_eq!(
+        (left.events, left.sources),
+        (0, 0),
+        "disconnecting iCloud leaves none of its events behind"
+    );
+}
+
+#[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
+async fn removing_an_icloud_source_deletes_its_event(pool: PgPool) {
+    let owner_id = "macro|calendar-remove-icloud@example.com";
+    let link_id = insert_link(&pool, owner_id).await;
+    let repo = PgCalendarRepository::new(pool.clone());
+    let (account_id, calendar_id) = grant_and_provider_ids(&repo, link_id).await;
+    let event_id = repo
+        .upsert_event(CalendarEventWrite::UserMutation(icloud(timed_upsert(
+            owner_id,
+            link_id,
+            (account_id, calendar_id),
+            "icloud-remove@example.com",
+            "iCloud event",
+            1,
+        ))))
+        .await
+        .unwrap()
+        .event_id;
+
+    repo.remove_provider_source(
+        account_id,
+        calendar_id,
+        "provider-icloud-remove@example.com",
+    )
+    .await
+    .unwrap();
+
+    let remaining = sqlx::query_scalar!(
+        r#"SELECT count(*) AS "count!" FROM calendar_events WHERE id = $1"#,
+        event_id,
+    )
+    .fetch_one(&pool)
+    .await
+    .unwrap();
+    assert_eq!(remaining, 0, "an event deleted in iCloud leaves Macro");
+}
+
 /// Consent requests carry `include_granted_scopes=true`, so a later Gmail-only
 /// connect reports the calendar scopes Google still holds. That must not
 /// resurrect calendar; only a flow that asked for calendar turns it back on.
