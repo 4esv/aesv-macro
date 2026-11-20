@@ -181,6 +181,12 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
                         .context("failed to build the google calendar mutation http client")?,
                     RedisCalendarRequestGate::new((*redis_client).clone()),
                 ),
+                icloud: calendar_events::outbound::caldav::CalDavCalendarClient::icloud(
+                    reqwest::Client::builder()
+                        .timeout(std::time::Duration::from_secs(30))
+                        .build()
+                        .context("failed to build the iCloud calendar http client")?,
+                ),
             },
             CalendarTokenProviderAdapter::new(redis_conn.clone(), auth_service_client.clone()),
             macro_event_broker.clone(),

@@ -902,6 +902,8 @@ export type GraphqlCalendarOutOfOfficeAutoDeclineMode =
 export type GraphqlCalendarProvider =
   /** Google Calendar. */
   | 'GOOGLE'
+  /** iCloud calendar over CalDAV. */
+  | 'ICLOUD'
   /** Microsoft Outlook calendar. */
   | 'OUTLOOK';
 

@@ -5,7 +5,9 @@ use std::time::Duration;
 use anyhow::Context;
 use calendar_events::{
     domain::{mutations::CalendarMutationServiceImpl, service::CalendarService},
-    outbound::{google::GoogleCalendarClient, pg::PgCalendarRepository},
+    outbound::{
+        caldav::CalDavCalendarClient, google::GoogleCalendarClient, pg::PgCalendarRepository,
+    },
 };
 use calendar_service::api::context::{ApiContext, AuthorizationService};
 use calendar_service::backfill_queue::CalendarBackfillQueueClient;
@@ -255,6 +257,12 @@ async fn main() -> anyhow::Result<()> {
                         .build()
                         .context("failed to build the google calendar mutation http client")?,
                     RedisCalendarRequestGate::new(rate_limiter),
+                ),
+                icloud: CalDavCalendarClient::icloud(
+                    reqwest::Client::builder()
+                        .timeout(Duration::from_secs(30))
+                        .build()
+                        .context("failed to build the iCloud calendar http client")?,
                 ),
             },
             CalendarTokenProviderAdapter::new(redis_conn, Arc::new(auth_service_client)),
