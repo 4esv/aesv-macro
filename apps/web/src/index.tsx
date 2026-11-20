@@ -8,7 +8,7 @@ import '@fontsource-variable/playfair-display';
 // import 'solid-devtools';
 import { initializeLexical } from '@core/component/LexicalMarkdown/init';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
-import { getPlatform } from '@core/util/platform';
+import { getPlatform, isTauri } from '@core/util/platform';
 import { installPlatformFetch } from '@core/util/platformFetch';
 import { recoverFromFailedLoad } from '@core/util/reloadForNewerBuild';
 import { Telemetry } from '@macro-inc/observability';
@@ -23,6 +23,13 @@ import { Root } from './routes/Root';
 perfMark('boot.entry-evaluated');
 
 installPlatformFetch();
+
+// The installed web app opens offline through public/sw.js (W-2096).
+if (!isTauri() && 'serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register(`${import.meta.env.BASE_URL}sw.js`)
+    .catch((error) => console.warn('service worker not registered', error));
+}
 
 initializeLexical();
 initMonochromeIcons();
