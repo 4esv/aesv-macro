@@ -105,11 +105,9 @@ impl<R: InboxHealthRepository, G: InboxHealthGateway> InboxHealthService<R, G> {
                 self.renew_gmail_watch(&binding.link).await?;
                 self.gateway.sync_gmail_contacts(&binding.link).await
             }
-            UserProvider::Outlook => self.repository.wake_streams(binding).await,
-            // FIX: poll IMAP here once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => Err(MailboxError::Provider(EmailApiError::Permanent {
-                message: "iCloud Mail is not wired yet".into(),
-            })),
+            UserProvider::Outlook | UserProvider::ICloud => {
+                self.repository.wake_streams(binding).await
+            }
         }
     }
 

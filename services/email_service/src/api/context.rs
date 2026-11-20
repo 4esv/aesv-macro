@@ -184,6 +184,7 @@ pub(crate) struct ApiContext {
     pub gmail_push: Arc<GmailPushSvc>,
     pub user_inbox_deletion: Arc<UserInboxDeletionSvc>,
     pub inbox_connection: Arc<InboxConnectionSvc>,
+    pub icloud_links: Arc<crate::outbound::icloud_link::ICloudLinks>,
     pub backfill_jobs: Arc<BackfillJobSvc>,
     pub calendar_disconnect: Arc<CalendarDisconnectSvc>,
     pub contacts: Arc<ContactListSvc>,

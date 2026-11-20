@@ -266,7 +266,7 @@ pub(super) async fn inbox_details_for_macro_id(
                l.updated_at as "updated_at!",
                s.signature_on_replies_forwards as "signature_on_replies_forwards?",
                s.signature,
-               CASE WHEN l.provider = 'OUTLOOK' THEN
+               CASE WHEN l.provider IN ('OUTLOOK','ICLOUD') THEN
                    CASE WHEN NOT EXISTS (SELECT 1 FROM email_sync_streams ss WHERE ss.link_id = l.id AND ss.generation = l.sync_generation AND ss.kind IN ('folder_catalog','mail_folder'))
                        THEN 'Init'::email_backfill_job_status
                    WHEN EXISTS (SELECT 1 FROM email_sync_streams ss WHERE ss.link_id = l.id AND ss.generation = l.sync_generation AND ss.kind IN ('folder_catalog','mail_folder') AND NOT ss.initial_complete)

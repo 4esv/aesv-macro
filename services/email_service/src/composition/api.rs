@@ -207,6 +207,9 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
             ),
             email_api_client::domain::ports::AlwaysAllowRateLimiter,
         );
+    // One adapter, so every iCloud caller shares its pool of IMAP sessions.
+    let icloud_repository = crate::outbound::email_api::icloud_repository()?;
+    let icloud_mailbox = crate::outbound::email_api::icloud_mailbox(icloud_repository.clone());
     let transfer_bytes = Arc::new(
         email::domain::mailbox::drafts::content::DraftContentService {
             repository: EmailPgRepo::new(db.clone()),
@@ -217,6 +220,9 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
                     gmail: email_api.clone(),
                     outlook: crate::outbound::email_api::ProviderMailboxGateway(
                         outlook_api.clone(),
+                    ),
+                    icloud: crate::outbound::email_api::ProviderMailboxGateway(
+                        icloud_mailbox.clone(),
                     ),
                 },
                 s3: s3_client.clone(),
@@ -290,6 +296,10 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
             ),
         ),
         inbox_connection,
+        icloud_links: Arc::new(crate::outbound::icloud_link::ICloudLinks {
+            db: db.clone(),
+            repository: icloud_repository,
+        }),
         backfill_jobs,
         calendar_disconnect: Arc::new(
             email::domain::mailbox::calendar_disconnect::CalendarDisconnectService {
@@ -373,6 +383,7 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
             crate::outbound::recent_inbox::ProviderRecentInbox {
                 gmail: email_api.clone(),
                 outlook: outlook_api.clone(),
+                icloud: icloud_mailbox.clone(),
             },
         )),
         message_sources: Arc::new(email::domain::message_source::MessageSourceService {
@@ -380,6 +391,7 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
             provider: crate::outbound::message_source::ProviderMessageSource {
                 gmail: email_api.clone(),
                 outlook: outlook_api.clone(),
+                icloud: icloud_mailbox.clone(),
             },
             access: entity_access_service.as_ref().clone(),
         }),
@@ -390,6 +402,7 @@ pub(crate) async fn api_context(deps: ApiDependencies) -> anyhow::Result<ApiCont
                 bucket: config.attachment_bucket.to_string(),
                 gmail: email_api.clone(),
                 outlook: crate::outbound::email_api::ProviderMailboxGateway(outlook_api),
+                icloud: crate::outbound::email_api::ProviderMailboxGateway(icloud_mailbox),
             },
             files: crate::outbound::attachment_access::MailAttachmentFiles {
                 db: db.clone(),

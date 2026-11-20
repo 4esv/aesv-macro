@@ -1,0 +1,25 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO email_links (id,macro_id,fusionauth_user_id,email_address,provider,is_sync_active)\n                    VALUES ($1,$2,$3,$4,'ICLOUD',true) RETURNING sync_generation",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sync_generation",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "cca76475758fb0ba17ea0229812150ed84c0dc50e701b4fd6041272a31ffde9a"
+}

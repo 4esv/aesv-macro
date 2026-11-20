@@ -24,6 +24,7 @@ pub struct ProviderAttachmentBytes<A> {
     pub bucket: String,
     pub gmail: GmailApi,
     pub outlook: A,
+    pub icloud: super::email_api::ICloudGateway,
 }
 impl<A: MailboxAttachmentAccess> AttachmentBytes for ProviderAttachmentBytes<A> {
     async fn bytes(&self, record: &AttachmentReadRecord) -> Result<Vec<u8>, AttachmentError> {
@@ -61,13 +62,19 @@ impl<A: MailboxAttachmentAccess> AttachmentBytes for ProviderAttachmentBytes<A> 
                 .outlook
                 .download(record.mailbox, &record.message_provider_id, id)
                 .await
-                .map_err(|e| match e {
-                    MailboxError::Provider(e) => provider_error(e),
-                    _ => AttachmentError::Infrastructure,
-                }),
-            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => Err(provider_error(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() })),
+                .map_err(mailbox_error),
+            UserProvider::ICloud => self
+                .icloud
+                .download(record.mailbox, &record.message_provider_id, id)
+                .await
+                .map_err(mailbox_error),
         }
+    }
+}
+fn mailbox_error(error: MailboxError) -> AttachmentError {
+    match error {
+        MailboxError::Provider(error) => provider_error(error),
+        _ => AttachmentError::Infrastructure,
     }
 }
 fn provider_error(error: EmailApiError) -> AttachmentError {
@@ -192,5 +199,39 @@ impl AttachmentFiles for MailAttachmentFiles {
             }
             error => failed(error),
         })
+    }
+}
+
+/// Projection downloads for every mailbox the durable engine syncs, each
+/// through its own provider's adapter.
+pub struct MailboxAttachmentRouter<A> {
+    pub db: sqlx::PgPool,
+    pub outlook: A,
+    pub icloud: super::email_api::ICloudGateway,
+}
+impl<A: MailboxAttachmentAccess> MailboxAttachmentAccess for MailboxAttachmentRouter<A> {
+    async fn download(
+        &self,
+        mailbox: email::domain::mailbox::MailboxKey,
+        message_id: &str,
+        attachment_id: &str,
+    ) -> Result<Vec<u8>, MailboxError> {
+        let icloud = sqlx::query_scalar!(
+            r#"SELECT provider = 'ICLOUD' AS "icloud!" FROM email_links WHERE id = $1"#,
+            mailbox.link_id
+        )
+        .fetch_optional(&self.db)
+        .await
+        .map_err(|_| MailboxError::Persistence)?
+        .unwrap_or(false);
+        if icloud {
+            self.icloud
+                .download(mailbox, message_id, attachment_id)
+                .await
+        } else {
+            self.outlook
+                .download(mailbox, message_id, attachment_id)
+                .await
+        }
     }
 }

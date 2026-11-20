@@ -19,7 +19,7 @@ pub async fn insert_attachments(
     message_id: Uuid,
     attachments: &mut [service::attachment::Attachment],
 ) -> anyhow::Result<()> {
-    let stable_ids=sqlx::query_scalar!(r#"SELECT l.provider='OUTLOOK' AS "stable!" FROM email_messages m JOIN email_links l ON l.id=m.link_id WHERE m.id=$1"#,message_id)
+    let stable_ids=sqlx::query_scalar!(r#"SELECT l.provider IN ('OUTLOOK','ICLOUD') AS "stable!" FROM email_messages m JOIN email_links l ON l.id=m.link_id WHERE m.id=$1"#,message_id)
         .fetch_one(&mut *tx).await?;
     if attachments.is_empty() && !stable_ids {
         return Ok(());
@@ -29,7 +29,7 @@ pub async fn insert_attachments(
             .iter()
             .any(|attachment| attachment.provider_id.is_none())
     {
-        anyhow::bail!("Outlook attachment snapshot is missing a provider identifier");
+        anyhow::bail!("Mailbox attachment snapshot is missing a provider identifier");
     }
 
     let db_attachments = map_service_attachments_to_db(attachments, message_id);

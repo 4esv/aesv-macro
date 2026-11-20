@@ -37,6 +37,7 @@ impl InboxHealthRepository for PgInboxHealth {
             provider: match row.provider.as_str() {
                 "GMAIL" => UserProvider::Gmail,
                 "OUTLOOK" => UserProvider::Outlook,
+                "ICLOUD" => UserProvider::ICloud,
                 _ => return Err(MailboxError::Persistence),
             },
             is_sync_active: row.is_sync_active,
@@ -114,8 +115,8 @@ impl<T: MailboxTokenSource, B: MacroEventBroker, C: ContactsIngress> InboxHealth
                         message: "Microsoft token health is temporarily unavailable".into(),
                     },
                 }),
-            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
+            UserProvider::ICloud => super::email_api::ICloudEnvCredential::token()
+                .map_err(|_| EmailApiError::AuthRequired),
         }
     }
     async fn renew_gmail_watch(

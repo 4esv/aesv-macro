@@ -16,6 +16,7 @@ pub fn context(
     worker: sqs_worker::SQSWorker,
     db: PgPool,
     email_api: GmailApi,
+    icloud: crate::outbound::email_api::ICloudApi,
     attachment_bytes: std::sync::Arc<
         dyn email::domain::attachment_access::AuthorizedAttachmentBytes,
     >,
@@ -31,6 +32,7 @@ pub fn context(
                 crate::outbound::forwarded_attachments::PgForwardedAttachmentRepo(db),
             ),
         email_api,
+        icloud,
         attachment_bytes,
         s3_client,
         attachment_bucket,
@@ -54,6 +56,7 @@ pub async fn run_worker(
     worker: sqs_worker::SQSWorker,
     db: PgPool,
     email_api: GmailApi,
+    icloud: crate::outbound::email_api::ICloudApi,
     attachment_bytes: std::sync::Arc<
         dyn email::domain::attachment_access::AuthorizedAttachmentBytes,
     >,
@@ -67,6 +70,7 @@ pub async fn run_worker(
             worker,
             db,
             email_api,
+            icloud,
             attachment_bytes,
             s3_client,
             attachment_bucket,
