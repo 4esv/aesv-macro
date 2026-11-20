@@ -1959,6 +1959,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-imap"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f97b87216c9f0ccc63c516263169085fa34bba25633f6d96c6a9b9ca1fd5f70a"
+dependencies = [
+ "async-channel 2.5.0",
+ "async-compression",
+ "base64 0.23.1",
+ "bytes",
+ "chrono",
+ "futures-util",
+ "imap-proto",
+ "log",
+ "nom 8.0.0",
+ "pin-project",
+ "pin-utils",
+ "self_cell",
+ "stop-token",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
 name = "async-io"
 version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7525,16 +7548,19 @@ dependencies = [
 name = "email_api_client"
 version = "0.1.0"
 dependencies = [
+ "async-imap",
  "base64 0.22.1",
  "calendar_events",
  "chrono",
  "chrono-tz",
  "email_utils",
  "encoding_rs",
+ "futures",
  "gmail_client",
  "html-escape",
  "http 1.4.0",
  "httpdate",
+ "lettre",
  "macro_db_migrator",
  "macro_event_broker",
  "macro_service_urls",
@@ -7543,6 +7569,7 @@ dependencies = [
  "models_email",
  "redis",
  "reqwest 0.13.4",
+ "rustls",
  "scraper",
  "serde",
  "serde_json",
@@ -7551,10 +7578,13 @@ dependencies = [
  "sqlx",
  "thiserror 2.0.18",
  "tokio",
+ "tokio-rustls",
+ "tokio-util",
  "tracing",
  "tracing-subscriber",
  "url",
  "uuid",
+ "webpki-roots 1.0.10",
  "wiremock",
  "workspace-hack",
 ]
@@ -11058,6 +11088,15 @@ dependencies = [
  "utoipa",
  "utoipa-swagger-ui",
  "workspace-hack",
+]
+
+[[package]]
+name = "imap-proto"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ccf963d57074747b455398a1763d174da80bcaba6f51e3671a82252b531a68b"
+dependencies = [
+ "nom 8.0.0",
 ]
 
 [[package]]
@@ -18562,6 +18601,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "self_cell"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2ab42ca02749e120097e328d91d415325bdf43b1c72c4c8badf37375fe40a813"
+
+[[package]]
 name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -20069,6 +20114,18 @@ dependencies = [
  "tokio",
  "tracing",
  "workspace-hack",
+]
+
+[[package]]
+name = "stop-token"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af91f480ee899ab2d9f8435bfdfc14d08a5754bd9d3fef1f1a1c23336aad6c8b"
+dependencies = [
+ "async-channel 1.9.0",
+ "cfg-if",
+ "futures-core",
+ "pin-project-lite",
 ]
 
 [[package]]

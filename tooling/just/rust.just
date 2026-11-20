@@ -65,6 +65,12 @@ build_lambdas compiler="":
 
 # TESTING
 
+# The IMAP server (shaped like iCloud Mail) and SMTP sink that the iCloud mail
+# adapter's ignored tests use: cargo test -p email_api_client --features outbound-imap -- --ignored imap
+icloud-mail-test-servers:
+    docker run -d --rm --name icloud-imap-test -p 127.0.0.1:1143:143 -v {{justfile_directory()}}/crates/email_api_client/fixtures/imap/dovecot.conf:/etc/dovecot/dovecot.conf:ro dovecot/dovecot:2.3.21
+    docker run -d --rm --name icloud-smtp-test -p 127.0.0.1:1025:1025 -p 127.0.0.1:8025:8025 axllent/mailpit:v1.20 --smtp-auth-accept-any --smtp-auth-allow-insecure
+
 # Copies over necessary .env files for sqlx tests
 setup_test_envs:
     echo "DATABASE_URL={{ DATABASE_URL }}" >> ./crates/contacts/.env

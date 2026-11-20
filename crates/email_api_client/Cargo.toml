@@ -18,9 +18,36 @@ outbound-gmail = [
   "dep:serde_json",
 ]
 microsoft-gate = ["ports", "dep:redis"]
+outbound-imap = [
+  "ports",
+  "dep:sha2",
+  "dep:async-imap",
+  "dep:futures",
+  "dep:lettre",
+  "dep:mailparse",
+  "dep:rustls",
+  "dep:serde_json",
+  "dep:tokio-rustls",
+  "dep:tokio-util",
+  "dep:webpki-roots",
+  "tokio/net",
+  "tokio/io-util",
+]
 outbound-outlook = ["dep:macro_service_urls", "dep:scraper", "dep:html-escape", "dep:calendar_events", "dep:chrono-tz", "ports", "dep:sha2", "dep:base64", "dep:reqwest", "dep:serde_json", "dep:url", "dep:httpdate", "dep:mailparse", "dep:serde_path_to_error"]
 
 [dependencies]
+async-imap = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
+# The same lettre build as ses_client: rustls, no native-tls.
+lettre = { version = "0.11", default-features = false, features = [
+  "builder",
+  "smtp-transport",
+  "tokio1-rustls-tls",
+], optional = true }
+rustls = { workspace = true, optional = true }
+tokio-rustls = { workspace = true, optional = true }
+tokio-util = { workspace = true, optional = true }
+webpki-roots = { workspace = true, optional = true }
 scraper = { workspace = true, optional = true }
 calendar_events = { path = "../calendar_events", features = ["outlook"], optional = true }
 chrono-tz = { workspace = true, optional = true }
@@ -50,6 +77,7 @@ uuid = { workspace = true }
 workspace-hack = { version = "0.1", path = "../workspace-hack" }
 
 [dev-dependencies]
+reqwest = { workspace = true, features = ["json"] }
 calendar_events = { path = "../calendar_events", features = ["outlook", "postgres"] }
 macro_db_migrator = { path = "../macro_db_migrator" }
 macro_event_broker = { path = "../macro_event_broker", default-features = false }
