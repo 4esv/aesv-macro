@@ -9,6 +9,10 @@ import { isTauri } from '@core/util/platform';
 import { clearPostLoginRedirect } from '@core/util/postLoginRedirect';
 import { clearRegisteredCaches } from '@graphql-cache/lifecycle';
 import { rotateCacheScope } from '@graphql-cache/scope';
+import {
+  clearLocalDocumentCopies,
+  countUnsentEdits,
+} from '@macro-inc/collaboration/collab/local-copies';
 import { authKeys, type UserInfoData } from '@queries/auth/user-info';
 import { clearTeamCalendarQueries } from '@queries/calendar/team-cache';
 import { queryClient, queryPersistence } from '@queries/client';
@@ -67,6 +71,7 @@ export function clearLocalAuthSession(
     syncLoginStorage(false);
     clearMcpAuthAttempts();
     const documentContextsCleared = clearOfflineDocumentContexts();
+    const documentCopiesCleared = clearLocalDocumentCopies();
     clearDocumentQueryCache(queryClient);
     clearTeamCalendarQueries();
     // Start every wipe before waiting, including stores not hydrated this session.
@@ -76,6 +81,7 @@ export function clearLocalAuthSession(
       recordGraphqlMutationQueueCleared(cause),
       Promise.resolve().then(clearComposerStorage),
       documentContextsCleared,
+      documentCopiesCleared,
       // Publishing a signed-out query can retire the physical cache host.
       // Keep that publication behind its write drain and storage cleanup.
       (async () => {
@@ -110,13 +116,14 @@ export function useLogout() {
     try {
       const inspectDrafts = async () => {
         await flushLocalDrafts();
-        const [drafts, sends] = await Promise.all([
+        const [drafts, sends, edits] = await Promise.all([
           listLocalDrafts(),
           readEmailSendIntents(),
+          countUnsentEdits(),
         ]);
-        return { drafts, sends };
+        return { drafts, sends, edits };
       };
-      const { drafts, sends } = await Promise.race([
+      const { drafts, sends, edits } = await Promise.race([
         inspectDrafts(),
         new Promise<never>((_, reject) => {
           timer = setTimeout(
@@ -128,6 +135,13 @@ export function useLogout() {
       const unsynced = drafts.filter((draft) => draft.status !== 'synced');
       if (unsynced.length)
         warning = `${unsynced.length} draft(s) have changes saved only on this device. Signing out removes those changes and their pending attachments.`;
+      if (edits > 0)
+        warning = [
+          warning,
+          `${edits} note edit(s) have not reached the server yet. Signing out removes them.`,
+        ]
+          .filter(Boolean)
+          .join(' ');
       if (sends.some((send) => settledSendAttempt(send)?.status !== 'SENT'))
         warning = [
           warning,

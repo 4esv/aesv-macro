@@ -45,6 +45,10 @@ vi.mock('@queries/email/send-queue', () => ({
   readEmailSendIntents: vi.fn(async () => []),
   settledSendAttempt: () => ({ status: 'ACCEPTED' }),
 }));
+vi.mock('@macro-inc/collaboration/collab/local-copies', () => ({
+  clearLocalDocumentCopies: vi.fn(async () => {}),
+  countUnsentEdits: vi.fn(async () => 0),
+}));
 vi.mock('@queries/email/outbox-session', () => ({
   setEmailOutboxSession: vi.fn(),
 }));
@@ -93,6 +97,10 @@ import {
   replaceCacheWriteSession,
 } from '@graphql-cache/lifecycle';
 import {
+  clearLocalDocumentCopies,
+  countUnsentEdits,
+} from '@macro-inc/collaboration/collab/local-copies';
+import {
   clearLocalDrafts,
   flushLocalDrafts,
   listLocalDrafts,
@@ -120,6 +128,8 @@ describe('logout GraphQL session teardown', () => {
     await clearLocalAuthSession();
     expect(order).toEqual(['wipe', 'teardown']);
     expect(setGraphqlSoupSessionActive).toHaveBeenCalledWith(false);
+    // Another account on this device never opens these notes or replays their edits.
+    expect(clearLocalDocumentCopies).toHaveBeenCalled();
     client.current.clear();
   });
 });
@@ -255,6 +265,27 @@ describe('local draft logout warning', () => {
         expect.anything()
       );
       expect(authServiceClient.logout).not.toHaveBeenCalled();
+    } finally {
+      dispose();
+    }
+  });
+
+  it('warns before sign-out removes note edits the server has not seen', async () => {
+    vi.mocked(countUnsentEdits).mockResolvedValueOnce(2);
+    const { logout, dispose } = createRoot((dispose) => ({
+      logout: useLogout(),
+      dispose,
+    }));
+    try {
+      await logout();
+      expect(confirmDialog).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          body: expect.stringContaining('2 note edit(s)'),
+        }),
+        expect.anything()
+      );
+      expect(authServiceClient.logout).not.toHaveBeenCalled();
+      expect(clearLocalDocumentCopies).not.toHaveBeenCalled();
     } finally {
       dispose();
     }

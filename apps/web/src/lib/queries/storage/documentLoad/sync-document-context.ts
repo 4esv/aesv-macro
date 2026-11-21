@@ -1,5 +1,5 @@
 import { LoadErrors, loadResult } from '@core/block';
-import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
+import { keepsOfflineCopies } from '@core/mobile/isNativeMobilePlatform';
 import {
   catchToResult,
   ThrownResultError,
@@ -129,7 +129,7 @@ const fileLoader = createSyncDocumentContextLoader({
 });
 
 async function openWith(opener: typeof loader, documentId: string) {
-  if (isNativeMobilePlatform() && !offlineDocumentContextCache.capture()) {
+  if (keepsOfflineCopies() && !offlineDocumentContextCache.capture()) {
     const epoch = documentSessionEpoch();
     await prefetchUserInfo();
     if (
