@@ -704,13 +704,13 @@ export default {
     updateAvailable: 'Päivitys saatavilla',
     updateNewVersionTitle: 'Uusi versio saatavilla',
     updateWebDescription:
-      'Macron uusi versio on valmis. Lataa sivu uudelleen ottaaksesi sen käyttöön.',
+      'aesvin uusi versio on valmis. Lataa sivu uudelleen ottaaksesi sen käyttöön.',
     updateWebFailedLoadDescription:
-      'Osaa Macrosta ei voitu ladata, koska uusi versio on julkaistu. Lataa sivu uudelleen ottaaksesi sen käyttöön.',
+      'Osaa aesvista ei voitu ladata, koska uusi versio on julkaistu. Lataa sivu uudelleen ottaaksesi sen käyttöön.',
     updateReload: 'Lataa uudelleen',
     updateReadyTitle: 'Päivitys valmis',
     updateBundleDescription:
-      'Macron työpöytäsovelluksen uusi versio on ladattu. Päivitä ottaaksesi sen käyttöön.',
+      'aesvin työpöytäsovelluksen uusi versio on ladattu. Päivitä ottaaksesi sen käyttöön.',
     updateAction: 'Päivitä',
     updateDesktopReadyTitle: 'Työpöytäsovelluksen päivitys valmis',
     updateNativeDescription:

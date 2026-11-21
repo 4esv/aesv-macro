@@ -63,3 +63,20 @@ test("a syntax grammar's Macro is not the brand", () => {
   });
   assert.deepEqual(check(dir), []);
 });
+
+test('the brand fails inflected or hyphenated', () => {
+  const dir = bundle({
+    'a.js': [
+      'let t={id:`Macro-Gruvbox`,name:`Macro-Gruvbox`};',
+      'let sv=`En ny version av Macros skrivbordsapp har laddats ned.`;',
+      'let fi=[`Macron uusi versio on valmis.`,`Osaa Macrosta ei voitu ladata.`];',
+      'let d=`Codex, or other harness, via Macrod.`;',
+    ].join('\n'),
+  });
+  assert.equal(check(dir).length, 5);
+});
+
+test("pdf.js's macron glyph is not the brand", () => {
+  const dir = bundle({ 'pdfjs-worker-a1.js': 'let g=[`Macron`,63184,`Macronsmall`,63407];' });
+  assert.deepEqual(check(dir), []);
+});
