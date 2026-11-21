@@ -791,6 +791,9 @@ where
         } = match finalize_result {
             Ok(initialized) => initialized,
             Err(error) => {
+                // FIX: this removes the row but not a sync room that finalize
+                // already made, so a retry with the same client id (W-2096) is
+                // refused as "already in use" for good. Remove the room too.
                 self.cleanup_created_document(&document_id).await;
                 return Err(error);
             }

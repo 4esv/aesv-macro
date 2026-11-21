@@ -45,6 +45,14 @@ vi.mock('@queries/email/send-queue', () => ({
   readEmailSendIntents: vi.fn(async () => []),
   settledSendAttempt: () => ({ status: 'ACCEPTED' }),
 }));
+vi.mock('@macro-inc/collaboration/collab/local-copies', () => ({
+  clearLocalDocumentCopies: vi.fn(async () => {}),
+  countUnsentEdits: vi.fn(async () => 0),
+}));
+vi.mock('@app/lib/persistence/offline-notes', () => ({
+  clearOfflineNotes: vi.fn(async () => {}),
+  countOfflineNotes: vi.fn(async () => 0),
+}));
 vi.mock('@queries/email/outbox-session', () => ({
   setEmailOutboxSession: vi.fn(),
 }));
@@ -87,11 +95,19 @@ vi.mock('./push-registration-lifecycle', () => ({
 }));
 
 import {
+  clearOfflineNotes,
+  countOfflineNotes,
+} from '@app/lib/persistence/offline-notes';
+import {
   clearRegisteredCaches,
   recordSessionCacheWrite,
   registerCacheHost,
   replaceCacheWriteSession,
 } from '@graphql-cache/lifecycle';
+import {
+  clearLocalDocumentCopies,
+  countUnsentEdits,
+} from '@macro-inc/collaboration/collab/local-copies';
 import {
   clearLocalDrafts,
   flushLocalDrafts,
@@ -120,6 +136,21 @@ describe('logout GraphQL session teardown', () => {
     await clearLocalAuthSession();
     expect(order).toEqual(['wipe', 'teardown']);
     expect(setGraphqlSoupSessionActive).toHaveBeenCalledWith(false);
+    // Another account on this device never opens these notes or replays their edits.
+    expect(clearLocalDocumentCopies).toHaveBeenCalled();
+    expect(clearOfflineNotes).toHaveBeenCalled();
+    client.current.clear();
+  });
+});
+
+describe('session expiry', () => {
+  it('keeps notes and unsent edits, which the same user sends after signing back in', async () => {
+    client.current = new QueryClient();
+    vi.mocked(clearLocalDocumentCopies).mockClear();
+    vi.mocked(clearOfflineNotes).mockClear();
+    await clearLocalAuthSession('session-expired');
+    expect(clearLocalDocumentCopies).not.toHaveBeenCalled();
+    expect(clearOfflineNotes).not.toHaveBeenCalled();
     client.current.clear();
   });
 });
@@ -255,6 +286,48 @@ describe('local draft logout warning', () => {
         expect.anything()
       );
       expect(authServiceClient.logout).not.toHaveBeenCalled();
+    } finally {
+      dispose();
+    }
+  });
+
+  it('warns before sign-out removes note edits the server has not seen', async () => {
+    vi.mocked(countUnsentEdits).mockResolvedValueOnce(2);
+    const { logout, dispose } = createRoot((dispose) => ({
+      logout: useLogout(),
+      dispose,
+    }));
+    try {
+      await logout();
+      expect(confirmDialog).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          body: expect.stringContaining('2 note change(s)'),
+        }),
+        expect.anything()
+      );
+      expect(authServiceClient.logout).not.toHaveBeenCalled();
+      expect(clearLocalDocumentCopies).not.toHaveBeenCalled();
+    } finally {
+      dispose();
+    }
+  });
+
+  it('warns before sign-out removes notes written offline', async () => {
+    vi.mocked(countOfflineNotes).mockResolvedValueOnce(1);
+    const { logout, dispose } = createRoot((dispose) => ({
+      logout: useLogout(),
+      dispose,
+    }));
+    try {
+      await logout();
+      expect(confirmDialog).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          body: expect.stringContaining('1 note change(s)'),
+        }),
+        expect.anything()
+      );
+      expect(authServiceClient.logout).not.toHaveBeenCalled();
+      expect(clearOfflineNotes).not.toHaveBeenCalled();
     } finally {
       dispose();
     }

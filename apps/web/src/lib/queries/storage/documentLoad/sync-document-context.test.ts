@@ -30,6 +30,7 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock('@core/mobile/isNativeMobilePlatform', () => ({
   isNativeMobilePlatform: () => mocks.native,
+  keepsOfflineCopies: () => mocks.native,
 }));
 vi.mock('@core/util/cookies', () => ({ hasLoginCookie: () => mocks.login }));
 vi.mock('@core/auth/push-registration-lifecycle', () => ({

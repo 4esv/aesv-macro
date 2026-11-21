@@ -557,6 +557,10 @@ pub struct CreateMarkdownDocumentRequest {
     /// Whether to add a viewed_at record for this document upon creation.
     #[serde(default)]
     pub skip_history: bool,
+    /// An ID chosen by the client, so a create sent again (a note written
+    /// offline, retried after a lost response) can never make a second copy.
+    #[serde(default)]
+    pub id: Option<uuid::Uuid>,
 }
 
 /// Request for a backend-initialized native Canvas.

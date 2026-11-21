@@ -1,4 +1,4 @@
-import { isNativeMobilePlatform } from '@core/mobile/isNativeMobilePlatform';
+import { keepsOfflineCopies } from '@core/mobile/isNativeMobilePlatform';
 import { hasLoginCookie } from '@core/util/cookies';
 import { getOrCreateCacheScope } from '@graphql-cache/scope';
 import { hashKey, partialMatchKey, type QueryKey } from '@tanstack/query-core';
@@ -71,7 +71,7 @@ export function createQueryPersistenceScopes(
         partialMatchKey(queryKey, ['email', 'threadMessages']),
       shouldRestore: hasLoginCookie,
     },
-    ...(isNativeMobilePlatform()
+    ...(keepsOfflineCopies()
       ? [
           {
             store: createPerQueryIDBStore({

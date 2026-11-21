@@ -22,6 +22,7 @@ import {
 
 vi.mock('@core/mobile/isNativeMobilePlatform', () => ({
   isNativeMobilePlatform: () => true,
+  keepsOfflineCopies: () => true,
 }));
 vi.mock('@core/util/cookies', () => ({ hasLoginCookie: () => true }));
 
