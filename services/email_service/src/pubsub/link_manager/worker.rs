@@ -142,6 +142,13 @@ pub(crate) async fn context(
         sqs_client.clone(),
         connection_gateway_client.clone(),
     ));
+    let icloud_repository = match crate::outbound::email_api::icloud_repository() {
+        Ok(repository) => repository,
+        Err(error) => {
+            tracing::error!(%error, "could not build the iCloud Mail adapter");
+            return None;
+        }
+    };
     let inbox_health = Arc::new(crate::composition::inbox_health(
         db.clone(),
         email_api.clone(),
@@ -150,6 +157,7 @@ pub(crate) async fn context(
         sqs_client.clone(),
         macro_event_broker.clone(),
         contacts_ingress,
+        icloud_repository,
     ));
     let ctx = LinkManagerContext {
         sqs_worker: worker.clone(),

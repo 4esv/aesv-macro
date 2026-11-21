@@ -311,6 +311,32 @@ async fn main() -> anyhow::Result<()> {
     );
     let mailbox_repository = email::outbound::mailbox_pg::PgMailboxSync::new(db.clone())
         .with_imports_paused(config.outlook_imports_paused);
+    // iCloud mail runs on the same durable engine, through the IMAP adapter. Its
+    // repository claims only ICLOUD links, and Outlook's only OUTLOOK links. One
+    // adapter serves every iCloud caller, so they share its IMAP sessions.
+    let icloud_repository = email_service::outbound::email_api::icloud_repository()?;
+    let icloud_mailbox =
+        email_service::outbound::email_api::icloud_mailbox(icloud_repository.clone(), db.clone());
+    let icloud_api = email_service::outbound::email_api::icloud_api(icloud_repository);
+    let icloud_sync_repository = email::outbound::mailbox_pg::PgMailboxSync::new(db.clone())
+        .for_provider(models_email::service::link::UserProvider::ICloud);
+    // NOTE: the folder streams poll every two minutes; IMAP IDLE could push
+    // new mail sooner through `ImapMailboxRepository::watch`.
+    worker_tracker.spawn(email_service::mailbox_sync_worker::run(
+        email::domain::mailbox::MailboxSyncService::new(
+            icloud_sync_repository.clone(),
+            email_service::outbound::email_api::ProviderMailboxGateway(icloud_mailbox.clone()),
+            icloud_sync_repository.clone(),
+        ),
+        worker_cancellation_token.clone(),
+    ));
+    worker_tracker.spawn(email_service::mailbox_sync_worker::run_commands(
+        email::domain::mailbox::commands::MailboxCommandService::new(
+            icloud_sync_repository,
+            email_service::outbound::email_api::ProviderMailboxGateway(icloud_mailbox.clone()),
+        ),
+        worker_cancellation_token.clone(),
+    ));
     if config.outlook_sync_enabled {
         let mailbox_sync = email::domain::mailbox::MailboxSyncService::new(
             mailbox_repository.clone(),
@@ -461,6 +487,9 @@ async fn main() -> anyhow::Result<()> {
                     outlook: email_service::outbound::email_api::ProviderMailboxGateway(
                         outlook_api.clone(),
                     ),
+                    icloud: email_service::outbound::email_api::ProviderMailboxGateway(
+                        icloud_mailbox.clone(),
+                    ),
                 },
                 s3: s3_client.clone(),
                 bucket: config.attachment_bucket.to_string(),
@@ -498,9 +527,15 @@ async fn main() -> anyhow::Result<()> {
             mailbox_repository,
             email_service::outbound::mailbox_projection::MailboxEffects {
                 db: db.clone(),
-                attachments: email_service::outbound::email_api::ProviderMailboxGateway(
-                    outlook_api,
-                ),
+                attachments: email_service::outbound::attachment_access::MailboxAttachmentRouter {
+                    db: db.clone(),
+                    outlook: email_service::outbound::email_api::ProviderMailboxGateway(
+                        outlook_api,
+                    ),
+                    icloud: email_service::outbound::email_api::ProviderMailboxGateway(
+                        icloud_mailbox,
+                    ),
+                },
                 invitations: email::outbound::invitation_pg::InvitationPgRepository(db.clone()),
                 broker: macro_event_broker.clone(),
                 notification: notification_ingress_service.clone(),
@@ -753,6 +788,7 @@ async fn main() -> anyhow::Result<()> {
                 scheduled_worker,
                 db_scheduled,
                 email_api_scheduled,
+                icloud_api,
                 draft_content,
                 s3_client_scheduled,
                 attachment_bucket_scheduled,

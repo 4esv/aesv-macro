@@ -25,6 +25,12 @@ impl UserProvider {
             UserProvider::ICloud => "ICLOUD",
         }
     }
+
+    /// True when the durable mailbox engine syncs this provider's folders and
+    /// applies its organization changes (read, flagged, archive) as commands.
+    pub fn uses_mailbox_engine(self) -> bool {
+        matches!(self, UserProvider::Outlook | UserProvider::ICloud)
+    }
 }
 
 /// Status of the latest initial mailbox backfill, when one exists.

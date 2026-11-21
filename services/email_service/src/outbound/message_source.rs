@@ -16,6 +16,7 @@ use models_email::service::link::UserProvider;
 pub struct ProviderMessageSource<R, T, L> {
     pub gmail: GmailApi,
     pub outlook: MailboxApiService<R, T, L>,
+    pub icloud: super::email_api::ICloudMailbox,
 }
 impl<R, T, L> MessageSourceBytes for ProviderMessageSource<R, T, L>
 where
@@ -30,23 +31,21 @@ where
                 .get_raw_message(record.link.id, &record.message_provider_id)
                 .await
                 .map_err(provider_error),
-            UserProvider::Outlook => {
+            UserProvider::Outlook | UserProvider::ICloud => {
                 let message = ProviderId::new(record.message_provider_id.clone())
                     .map_err(|_| AttachmentError::NotFound)?;
-                self.outlook
-                    .mime(
-                        MailboxAccess {
-                            link_id: record.mailbox.link_id,
-                            sync_generation: record.mailbox.sync_generation,
-                            grant_generation: record.mailbox.grant_generation,
-                        },
-                        &message,
-                    )
-                    .await
-                    .map_err(provider_error)
+                let access = MailboxAccess {
+                    link_id: record.mailbox.link_id,
+                    sync_generation: record.mailbox.sync_generation,
+                    grant_generation: record.mailbox.grant_generation,
+                };
+                if record.link.provider == UserProvider::ICloud {
+                    self.icloud.mime(access, &message).await
+                } else {
+                    self.outlook.mime(access, &message).await
+                }
+                .map_err(provider_error)
             }
-            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => Err(provider_error(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() })),
         }
     }
 }

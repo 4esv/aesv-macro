@@ -35,7 +35,7 @@ import {
   announceLinkedInbox,
   type InboxAddition,
 } from './link-outcome';
-import { selectEmailProvider } from './ProviderDialog';
+import { type EmailProvider, selectEmailProvider } from './ProviderDialog';
 import { rememberInboxLinkReturn } from './return-layout';
 import { requestShareInboxConfirmation } from './share-conflict';
 
@@ -218,7 +218,7 @@ const TOO_MANY_PENDING_LINKS_MESSAGE =
 
 type AddInboxOptions = {
   scopes?: ConsentScopes;
-  provider?: 'GMAIL' | 'OUTLOOK';
+  provider?: EmailProvider;
   reconnectLinkId?: string;
   emailAddress?: string;
 };
@@ -363,6 +363,17 @@ export function useAddInboxFlow() {
     const scopes = options?.scopes ?? 'gmail';
     const provider = options?.provider ?? (await selectEmailProvider(owner));
     if (!provider) return;
+    // iCloud signs in with the stack's app-specific password: no consent screen.
+    if (provider === 'ICLOUD') {
+      const linked = await emailClient.linkICloud();
+      if (linked.isErr()) {
+        toast.failure('Failed to connect iCloud Mail');
+        return;
+      }
+      await invalidateEmailLinks();
+      toast.success('iCloud Mail connected');
+      return;
+    }
     const addition = await plainAddition(provider, scopes, options);
     if (isNativeMobilePlatform()) {
       await startNativeFlow(

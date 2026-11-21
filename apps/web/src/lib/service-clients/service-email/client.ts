@@ -186,6 +186,11 @@ export const SIGNATURE_IMAGES_UNRESOLVED_CODE =
   'SIGNATURE_IMAGES_UNRESOLVED' as const;
 
 export const emailClient = {
+  /** Whether this stack has an iCloud Mail account to link. */
+  icloudAvailability: () => emailFetch<{ available: boolean }>('/email/icloud'),
+  /** Links the stack's iCloud Mail account to the caller and starts its sync. */
+  linkICloud: () =>
+    emailFetch<{ link_id: string }>('/email/icloud', { method: 'POST' }),
   settingsOperations: (linkId: string) =>
     emailFetch<MailboxSettingsOperation[]>('/email/settings/operations', {
       headers: emailLinkHeaders(linkId),

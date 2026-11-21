@@ -6,6 +6,8 @@ pub mod invitation_extraction;
 
 /// Email provider API adapters and composition types.
 pub mod email_api;
+/// Linking the stack's iCloud Mail account.
+pub mod icloud_link;
 /// Frozen content and attachment inputs for durable Outlook draft work.
 pub mod mailbox_drafts;
 /// Verified mailbox setup storage and authentication adapters.

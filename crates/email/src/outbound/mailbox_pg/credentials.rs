@@ -18,7 +18,7 @@ impl MailboxCredentialHealthRepository for PgMailboxSync {
             ),
         };
         let mut tx = self.db.begin().await.map_err(failed)?;
-        let current = sqlx::query!("SELECT sync_generation,needs_reauth FROM email_links WHERE id = $1 AND grant_generation = $2 AND is_sync_active AND provider = 'OUTLOOK' AND sync_generation = $3 FOR UPDATE",mailbox.link_id,mailbox.grant_generation,mailbox.sync_generation)
+        let current = sqlx::query!("SELECT sync_generation,needs_reauth FROM email_links WHERE id = $1 AND grant_generation = $2 AND is_sync_active AND provider IN ('OUTLOOK','ICLOUD') AND sync_generation = $3 FOR UPDATE",mailbox.link_id,mailbox.grant_generation,mailbox.sync_generation)
             .fetch_optional(&mut *tx).await.map_err(failed)?.ok_or(TokenError::ReauthRequired)?;
         let reauth = matches!(health, CredentialHealth::ReauthorizationRequired);
         if let CredentialHealth::Available(scopes) = &health {

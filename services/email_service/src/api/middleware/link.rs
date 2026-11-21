@@ -20,6 +20,7 @@ where
     let provider = match link.provider.as_str() {
         "GMAIL" => models_email::email::service::link::UserProvider::Gmail,
         "OUTLOOK" => models_email::email::service::link::UserProvider::Outlook,
+        "ICLOUD" => models_email::email::service::link::UserProvider::ICloud,
         other => {
             tracing::error!(provider = other, "unknown provider in link");
             return Err((

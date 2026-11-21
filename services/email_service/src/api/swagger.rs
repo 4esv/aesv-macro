@@ -76,6 +76,8 @@ use utoipa::OpenApi;
         email::backfill::get::active_handler,
         email::backfill::get::list_handler,
         email::init::handler,
+        email::icloud::availability,
+        email::icloud::link,
         inbound::axum::draft_router::create_draft_handler,
         inbound::axum::draft_router::resolve_message_operation_handler,
         inbound::axum::draft_router::message_operation_status_handler,
@@ -146,6 +148,8 @@ use utoipa::OpenApi;
             // Init types
             InitErrorCodeResponse,
             InitResponse,
+            crate::api::email::icloud::ICloudAvailability,
+            crate::api::email::icloud::ICloudLinkResponse,
             SharedInboxConflictResponse,
             // Label types
             CreateLabelRequest,

@@ -21,7 +21,11 @@ use email_api_client::domain::models::{EmailApiError, PreparedSendMessage, SendR
 use macro_event_broker::{KafkaEventPublisher, MacroEventBroker, MacroEventBrokerService};
 use macro_user_id::cowlike::CowLike as _;
 use macro_user_id::user_id::MacroUserIdStr;
-use models_email::service::{attachment::AttachmentDraft, link::Link, message::MessageToSend};
+use models_email::service::{
+    attachment::AttachmentDraft,
+    link::{Link, UserProvider},
+    message::MessageToSend,
+};
 use std::time::Instant;
 use tokio_util::task::TaskTracker;
 use uuid::Uuid;
@@ -37,6 +41,8 @@ pub struct ScheduledDeliveryAdapter {
         crate::outbound::forwarded_attachments::PgForwardedAttachmentRepo,
     >,
     pub email_api: GmailApi,
+    /// iCloud Mail sends, the same way: prepared MIME, then reconciliation by Message-ID.
+    pub icloud: crate::outbound::email_api::ICloudApi,
     pub attachment_bytes:
         std::sync::Arc<dyn email::domain::attachment_access::AuthorizedAttachmentBytes>,
     pub s3_client: s3_client::S3,
@@ -96,10 +102,12 @@ impl ScheduledDeliveryRepo for ScheduledDeliveryAdapter {
             return Ok(None);
         };
         // Outlook delivery is claimed by its durable draft coordinator. This
-        // legacy adapter must never claim it or release an uncertain send.
+        // adapter must never claim it or release an uncertain send. iCloud has
+        // no server drafts to coordinate, so it sends here as Gmail does.
         if !matches!(
             link.provider,
             models_email::service::link::UserProvider::Gmail
+                | models_email::service::link::UserProvider::ICloud
         ) {
             return Ok(None);
         }
@@ -289,14 +297,15 @@ impl ScheduledMessageSender<ScheduledClaim, SentDelivery> for ScheduledDeliveryA
 
     async fn send_prepared(
         &self,
-        _: &ScheduledClaim,
+        claim: &ScheduledClaim,
         mut prepared: PreparedDelivery,
     ) -> Result<SentDelivery, SubmissionError> {
-        let ids = self
-            .email_api
-            .send_prepared(prepared.provider)
-            .await
-            .map_err(classify_submission_error)?;
+        let ids = if claim.link.provider == UserProvider::ICloud {
+            self.icloud.send_prepared(prepared.provider).await
+        } else {
+            self.email_api.send_prepared(prepared.provider).await
+        }
+        .map_err(classify_submission_error)?;
         apply_sent_ids(&mut prepared.delivery.message, ids);
         Ok(prepared.delivery)
     }
@@ -305,11 +314,14 @@ impl ScheduledMessageSender<ScheduledClaim, SentDelivery> for ScheduledDeliveryA
         let Some(header) = claim.delivery.message_id_header.as_deref() else {
             return Ok(None);
         };
-        let Some(ids) = self
-            .email_api
-            .find_sent_message(claim.link.id, header)
-            .await?
-        else {
+        let found = if claim.link.provider == UserProvider::ICloud {
+            self.icloud.find_sent_message(claim.link.id, header).await
+        } else {
+            self.email_api
+                .find_sent_message(claim.link.id, header)
+                .await
+        };
+        let Some(ids) = found? else {
             return Ok(None);
         };
         let (mut message, _) = email_db_client::messages::get::get_message_to_send(
@@ -402,14 +414,16 @@ impl ScheduledDeliveryAdapter {
             references,
             message_id: claim.delivery.message_id_header.clone(),
         };
-        let provider = self
-            .email_api
-            .prepare_send(
-                claim.link.id,
-                &request,
-                message.provider_thread_id.as_deref(),
-            )
-            .await?;
+        let thread = message.provider_thread_id.as_deref();
+        let provider = if claim.link.provider == UserProvider::ICloud {
+            self.icloud
+                .prepare_send(claim.link.id, &request, thread)
+                .await?
+        } else {
+            self.email_api
+                .prepare_send(claim.link.id, &request, thread)
+                .await?
+        };
         tracing::info!(
             event = "email_send.mime_prepared",
             duration_ms = started.elapsed().as_millis() as u64,

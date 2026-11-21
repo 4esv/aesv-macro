@@ -1,6 +1,6 @@
 //! UpdateThreadLabels tool for adding or removing a label from all messages in a thread.
 
-use crate::domain::models::{LinkLabel, UserProvider, mailbox_action::MailboxAction};
+use crate::domain::models::{LinkLabel, mailbox_action::MailboxAction};
 use crate::domain::ports::{EmailService, GmailTokenProvider};
 use ai_toolset::{AsyncTool, RequestContext, ServiceContext, ToolCallError, ToolResult};
 use ai_toolset::{ToolAnnotated, ToolAnnotations};
@@ -176,9 +176,9 @@ where
                 internal_error: anyhow::anyhow!("no owned link for thread"),
             })?;
 
-        // Outlook has no system labels: archive, read, flag, trash and junk
+        // Outlook and iCloud have no system labels: archive, read, flag, trash and junk
         // are mailbox states there, so set the state instead.
-        if link.provider == UserProvider::Outlook
+        if link.provider.uses_mailbox_engine()
             && let LabelSelector::Name(name) = selector
             && let Some(state) = outlook_mailbox_state(name, self.add)
         {

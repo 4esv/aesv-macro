@@ -54,6 +54,7 @@ impl RecentInboxMailboxes for PgRecentInboxes {
 pub struct ProviderRecentInbox<R, T, L> {
     pub gmail: GmailApi,
     pub outlook: MailboxApiService<R, T, L>,
+    pub icloud: super::email_api::ICloudMailbox,
 }
 
 impl<R, T, L> RecentInboxReader for ProviderRecentInbox<R, T, L>
@@ -69,23 +70,25 @@ where
     ) -> Result<Vec<RecentInboxMessage>, EmailApiError> {
         let messages = match mailbox.provider {
             UserProvider::Gmail => self.gmail_inbox(mailbox.key.link_id, limit).await?,
-            UserProvider::Outlook => self
-                .outlook
-                .recent_inbox_messages(
-                    MailboxAccess {
-                        link_id: mailbox.key.link_id,
-                        sync_generation: mailbox.key.sync_generation,
-                        grant_generation: mailbox.key.grant_generation,
-                    },
-                    limit,
-                    &[],
-                )
-                .await?
+            UserProvider::Outlook | UserProvider::ICloud => {
+                let access = MailboxAccess {
+                    link_id: mailbox.key.link_id,
+                    sync_generation: mailbox.key.sync_generation,
+                    grant_generation: mailbox.key.grant_generation,
+                };
+                if mailbox.provider == UserProvider::ICloud {
+                    self.icloud
+                        .recent_inbox_messages(access, limit, &[])
+                        .await?
+                } else {
+                    self.outlook
+                        .recent_inbox_messages(access, limit, &[])
+                        .await?
+                }
                 .into_iter()
                 .map(|message| message.content.message)
-                .collect(),
-            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => return Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
+                .collect()
+            }
         };
 
         Ok(messages

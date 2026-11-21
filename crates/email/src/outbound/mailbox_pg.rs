@@ -5,6 +5,7 @@ use crate::domain::mailbox::*;
 use email_api_client::domain::models::{
     MailFolder, MailboxChangePage, ProviderId, StreamPosition, StreamToken,
 };
+use models_email::service::link::UserProvider;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -29,6 +30,8 @@ mod watches;
 pub struct PgMailboxSync {
     pub(super) db: PgPool,
     imports_paused: bool,
+    /// The `email_links.provider` whose mailboxes this repository claims.
+    provider: &'static str,
 }
 
 impl PgMailboxSync {
@@ -36,7 +39,15 @@ impl PgMailboxSync {
         Self {
             db,
             imports_paused: false,
+            provider: UserProvider::Outlook.as_str(),
         }
+    }
+
+    /// Claim the sync work of this provider's mailboxes instead of Outlook's,
+    /// so each provider's workers drive only the adapter that can serve them.
+    pub fn for_provider(mut self, provider: UserProvider) -> Self {
+        self.provider = provider.as_str();
+        self
     }
 
     /// While paused, message claims take only live work: import rows wait,
@@ -134,7 +145,7 @@ impl MailboxSyncRepository for PgMailboxSync {
         let row = sqlx::query!(r#"
             WITH candidate AS (
                 SELECT s.id, s.notified_traceparent FROM email_sync_streams s JOIN email_links l ON l.id = s.link_id
-                WHERE l.is_sync_active AND NOT l.needs_reauth AND l.provider = 'OUTLOOK' AND s.generation = l.sync_generation
+                WHERE l.is_sync_active AND NOT l.needs_reauth AND l.provider = $2::text::email_user_provider_enum AND s.generation = l.sync_generation
                     AND s.kind = 'mail_folder' AND s.next_run_at <= now()
                     AND (s.lease_until IS NULL OR s.lease_until < now())
                 ORDER BY s.next_run_at, s.id LIMIT 1 FOR UPDATE OF s SKIP LOCKED
@@ -146,7 +157,7 @@ impl MailboxSyncRepository for PgMailboxSync {
             FROM candidate c, email_links l WHERE s.id = c.id AND l.id = s.link_id
             RETURNING s.id, s.link_id, s.generation, l.grant_generation, s.scope_id,
                 s.position, s.initial_complete, s.fence, s.notified_at, c.notified_traceparent
-        "#, lease_id).fetch_optional(&self.db).await.map_err(db_error)?;
+        "#, lease_id, self.provider).fetch_optional(&self.db).await.map_err(db_error)?;
         row.map(|row| {
             Ok(StreamLease {
                 id: row.id,
@@ -290,7 +301,7 @@ impl MailboxSyncRepository for PgMailboxSync {
             WITH candidate AS (
                 SELECT q.link_id,q.generation,q.provider_id,q.notified_traceparent FROM email_message_reconciliation q
                 JOIN email_links l ON l.id = q.link_id
-                WHERE q.generation = l.sync_generation AND l.is_sync_active AND NOT l.needs_reauth AND l.provider = 'OUTLOOK'
+                WHERE q.generation = l.sync_generation AND l.is_sync_active AND NOT l.needs_reauth AND l.provider = $3::text::email_user_provider_enum
                     AND q.is_import IN (false,$2)
                     AND q.available_at <= now() AND (q.lease_until IS NULL OR q.lease_until < now())
                 ORDER BY q.is_import,q.available_at,q.link_id,q.provider_id LIMIT 1 FOR UPDATE OF q SKIP LOCKED
@@ -301,7 +312,7 @@ impl MailboxSyncRepository for PgMailboxSync {
             FROM candidate c,email_links l
             WHERE q.link_id = c.link_id AND q.generation = c.generation AND q.provider_id = c.provider_id AND l.id = q.link_id
             RETURNING q.link_id,q.generation,l.grant_generation,q.provider_id,q.revision,q.is_import,q.attempts,q.notified_at,c.notified_traceparent
-        "#,lease_id,!self.imports_paused).fetch_optional(&self.db).await.map_err(db_error)?;
+        "#,lease_id,!self.imports_paused,self.provider).fetch_optional(&self.db).await.map_err(db_error)?;
         row.map(|row| {
             Ok(MessageLease {
                 mailbox: MailboxKey {

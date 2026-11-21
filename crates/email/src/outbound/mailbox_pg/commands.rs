@@ -66,7 +66,7 @@ impl MailboxCommandRepository for PgMailboxSync {
         let row = sqlx::query!(r#"
             WITH candidate AS (
                 SELECT c.id FROM email_mailbox_commands c JOIN email_links l ON l.id = c.link_id
-                WHERE l.is_sync_active AND l.provider = 'OUTLOOK' AND c.generation = l.sync_generation
+                WHERE l.is_sync_active AND l.provider = $2::text::email_user_provider_enum AND c.generation = l.sync_generation
                     AND c.status IN ('pending','running') AND c.available_at <= now()
                     AND (c.lease_until IS NULL OR c.lease_until < now())
                     AND c.intent->>'kind' IN ('read','flagged','archived','trashed','junk','category')
@@ -87,7 +87,7 @@ impl MailboxCommandRepository for PgMailboxSync {
                 status = 'running',attempts = attempts + 1,updated_at = now()
             FROM candidate q,email_links l WHERE c.id = q.id AND l.id = c.link_id
             RETURNING c.id,c.link_id,c.generation,l.grant_generation,c.intent,c.attempts
-        "#,lease_id).fetch_optional(&mut *tx).await.map_err(db_error)?;
+        "#,lease_id,self.provider).fetch_optional(&mut *tx).await.map_err(db_error)?;
         tx.commit().await.map_err(db_error)?;
         row.map(|row| {
             Ok(CommandLease {

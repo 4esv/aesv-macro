@@ -417,3 +417,48 @@ async fn imap_draft_is_sent_over_smtp_and_filed_in_sent() {
     assert!(received.contains("Sent from Macro."));
     assert!(!received.contains("hidden@example.com"));
 }
+
+#[tokio::test]
+#[ignore = "needs the IMAP and SMTP test servers: just icloud-mail-test-servers"]
+async fn imap_prepared_send_is_filed_and_found_by_message_id() {
+    use crate::domain::ports::MailboxSendRecoveryClient;
+    let repository = repository();
+    let (address, token) = new_mailbox();
+    let message_id = format!("{}@icloud.test", Uuid::new_v4().simple());
+    let mime = format!(
+        "From: {address}\r\nTo: sam@example.com\r\nSubject: prepared\r\nMessage-ID: <{message_id}>\r\nReferences: <root@example.com>\r\n\r\nSent from Macro.\r\n"
+    );
+
+    assert!(
+        repository
+            .find_sent_message(&token, &message_id)
+            .await
+            .expect("search before")
+            .is_none()
+    );
+    let sent = repository
+        .send_prepared(&token, mime.as_bytes(), None)
+        .await
+        .expect("send");
+    assert!(sent.provider_message_id.ends_with(":1:Sent Messages"));
+    // The thread root is what sync gives the Sent copy.
+    assert_eq!(sent.provider_thread_id, "<root@example.com>");
+    let found = repository
+        .find_sent_message(&token, &message_id)
+        .await
+        .expect("search after")
+        .expect("the Sent copy");
+    assert_eq!(found.provider_message_id, sent.provider_message_id);
+    assert_eq!(found.provider_thread_id, sent.provider_thread_id);
+
+    let found: MailpitSearch = reqwest::Client::new()
+        .get("http://127.0.0.1:8025/api/v1/search")
+        .query(&[("query", format!("message-id:\"{message_id}\""))])
+        .send()
+        .await
+        .expect("search Mailpit")
+        .json()
+        .await
+        .expect("search result");
+    assert_eq!(found.messages.len(), 1);
+}

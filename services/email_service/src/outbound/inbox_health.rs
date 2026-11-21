@@ -37,6 +37,7 @@ impl InboxHealthRepository for PgInboxHealth {
             provider: match row.provider.as_str() {
                 "GMAIL" => UserProvider::Gmail,
                 "OUTLOOK" => UserProvider::Outlook,
+                "ICLOUD" => UserProvider::ICloud,
                 _ => return Err(MailboxError::Persistence),
             },
             is_sync_active: row.is_sync_active,
@@ -78,6 +79,8 @@ impl InboxHealthRepository for PgInboxHealth {
 pub struct ProviderInboxHealth<T, B, C> {
     pub gmail: crate::outbound::email_api::GmailApi,
     pub outlook: T,
+    /// Logs in on each probe, so a revoked app password marks the link.
+    pub icloud: super::email_api::ICloudEnvCredential,
     pub db: sqlx::PgPool,
     pub queue: sqs_client::SQS,
     pub broker: B,
@@ -91,31 +94,38 @@ impl<T: MailboxTokenSource, B: MacroEventBroker, C: ContactsIngress> InboxHealth
         binding: &InboxHealthBinding,
         freshness: TokenFreshness,
     ) -> Result<AccessToken, EmailApiError> {
+        let access = MailboxAccess {
+            link_id: binding.link.id,
+            grant_generation: binding.grant_generation,
+            sync_generation: binding.sync_generation,
+        };
         match binding.link.provider {
             UserProvider::Gmail => {
                 self.gmail
                     .get_access_token(binding.link.id, freshness)
                     .await
             }
-            UserProvider::Outlook => self
-                .outlook
-                .access_token(
-                    MailboxAccess {
-                        link_id: binding.link.id,
-                        grant_generation: binding.grant_generation,
-                        sync_generation: binding.sync_generation,
-                    },
-                    freshness,
-                )
+            UserProvider::Outlook => {
+                self.outlook
+                    .access_token(access, freshness)
+                    .await
+                    .map_err(|error| match error {
+                        TokenError::ReauthRequired => EmailApiError::AuthRequired,
+                        _ => EmailApiError::Transient {
+                            message: "Microsoft token health is temporarily unavailable".into(),
+                        },
+                    })
+            }
+            UserProvider::ICloud => self
+                .icloud
+                .access_token(access, TokenFreshness::Fresh)
                 .await
                 .map_err(|error| match error {
                     TokenError::ReauthRequired => EmailApiError::AuthRequired,
                     _ => EmailApiError::Transient {
-                        message: "Microsoft token health is temporarily unavailable".into(),
+                        message: "iCloud login health is temporarily unavailable".into(),
                     },
                 }),
-            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
-            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         }
     }
     async fn renew_gmail_watch(

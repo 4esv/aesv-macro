@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id,macro_id,is_sync_active,\n                (deleting_at IS NOT NULL OR disconnect_requested_at IS NOT NULL) AS \"removing!\"\n            FROM email_links WHERE provider = 'ICLOUD' AND lower(email_address) = $1 FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "macro_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "is_sync_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "removing!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "67410fee33031d6ac7796cd9cead730a48e4f9d6e61296793ceb044224edd947"
+}

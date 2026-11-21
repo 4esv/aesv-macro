@@ -1,4 +1,5 @@
 import { fetchEmailConnectionProviders } from '@queries/auth/outlook-link';
+import { emailClient } from '@service-email/client';
 import {
   Button,
   Dialog,
@@ -9,7 +10,7 @@ import {
 import { type Owner, onCleanup, runWithOwner, Show } from 'solid-js';
 import { OutlookBetaBadge } from './OutlookBetaBadge';
 
-export type EmailProvider = 'GMAIL' | 'OUTLOOK';
+export type EmailProvider = 'GMAIL' | 'OUTLOOK' | 'ICLOUD';
 
 /**
  * Shared provider choice for onboarding, empty states and additional inboxes.
@@ -20,6 +21,7 @@ export function EmailProviderDialog(
     onSelect: (provider: EmailProvider) => void;
     disabled?: boolean;
     outlookAvailable: boolean;
+    icloudAvailable?: boolean;
   }
 ) {
   return (
@@ -66,6 +68,15 @@ export function EmailProviderDialog(
               <OutlookBetaBadge />
             </Button>
           </Show>
+          <Show when={props.icloudAvailable}>
+            <Button
+              variant="secondary"
+              disabled={props.disabled}
+              onClick={() => props.onSelect('ICLOUD')}
+            >
+              iCloud Mail
+            </Button>
+          </Show>
           <Button
             variant="ghost"
             disabled={props.disabled}
@@ -96,18 +107,27 @@ export async function selectEmailProvider(
       })
     );
   let outlookAvailable = false;
-  try {
-    outlookAvailable = (await fetchEmailConnectionProviders()).outlook;
-  } catch {
-    /* Gmail remains available when the availability read fails. */
-  }
+  let icloudAvailable = false;
+  await Promise.all([
+    fetchEmailConnectionProviders()
+      .then((providers) => {
+        outlookAvailable = providers.outlook;
+      })
+      .catch(() => {
+        /* Gmail remains available when the availability read fails. */
+      }),
+    fetchICloudAvailable().then((available) => {
+      icloudAvailable = available;
+    }),
+  ]);
   if (disposed) return undefined;
-  if (!outlookAvailable) return 'GMAIL';
+  if (!outlookAvailable && !icloudAvailable) return 'GMAIL';
   let selected: EmailProvider | undefined;
   const handle = openDialog(
     EmailProviderDialog,
     {
-      outlookAvailable: true,
+      outlookAvailable,
+      icloudAvailable,
       onSelect: (provider) => {
         selected = provider;
         handle.close();
@@ -117,4 +137,10 @@ export async function selectEmailProvider(
   );
   await handle.closed;
   return selected;
+}
+
+/** Whether the stack offers iCloud Mail. A failed read offers none. */
+export async function fetchICloudAvailable(): Promise<boolean> {
+  const result = await emailClient.icloudAvailability();
+  return result.isOk() && result.value.available;
 }
