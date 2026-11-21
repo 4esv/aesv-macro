@@ -22,7 +22,7 @@ vi.hoisted(() => {
   vi.stubGlobal('WebSocket', FakeWebSocket);
 });
 // This viewer is outside the forms rollout; a flagged owner attached a form.
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 vi.mock('@service-storage/client', () => ({

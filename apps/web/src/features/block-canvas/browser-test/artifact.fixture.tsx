@@ -1,6 +1,6 @@
 import '../../../index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { UserContextProvider } from '@core/context/user';
 import { createScene, type ShapeItem, translation } from '@macro-inc/graphics';
 import { queryClient } from '@queries/client';
@@ -42,7 +42,7 @@ render(
   () => (
     <div style={{ width: '100vw', height: '100vh' }}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <QueryClientProvider client={queryClient}>
             <UserContextProvider>
               <DragDropProvider>
@@ -55,7 +55,7 @@ render(
               </DragDropProvider>
             </UserContextProvider>
           </QueryClientProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </div>
   ),

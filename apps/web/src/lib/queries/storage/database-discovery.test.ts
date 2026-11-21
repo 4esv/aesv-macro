@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   invalidate: vi.fn(async () => {}),
 }));
 vi.mock('@app/lib/analytics', () => ({ analytics: {} }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.flag() }),
 }));
 vi.mock('@service-storage/client', () => ({ storageServiceClient: {} }));

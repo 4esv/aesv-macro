@@ -11,7 +11,7 @@ import {
 } from '@app/features/command/Launcher';
 import { openMacroMcpSetupModal } from '@app/features/integrations/mcp-setup/MacroMcpSetupModal';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { inEnglish, t } from '@app/lib/i18n';
 import { beginInteraction } from '@app/observability/flow';
 import { useSubscribeToKeypress } from '@app/signal/hotkeyRoot';

@@ -105,7 +105,7 @@ async function withinDeadline<T extends ObjectLike, Code extends string>(
     const result = await request(controller.signal);
     if (result.isErr() && controller.signal.aborted) {
       return err([
-        { code: TIMED_OUT, message: 'Macro did not answer in time.' },
+        { code: TIMED_OUT, message: 'aesv did not answer in time.' },
       ]);
     }
     return result;
@@ -152,11 +152,11 @@ async function sharedComputerError(
     >()
     .with(422, () => ({
       code: NO_PAID_PLAN,
-      message: 'Your team has no paid Macro plan to add a computer to.',
+      message: 'Your team has no paid aesv plan to add a computer to.',
     }))
     .with(502, () => ({
       code: BILLING_PROVIDER_FAILED,
-      message: "Macro's billing provider didn't answer.",
+      message: "aesv's billing provider didn't answer.",
     }))
     .with(P.number.gte(500), () => statusError(500))
     .otherwise(() => undefined);

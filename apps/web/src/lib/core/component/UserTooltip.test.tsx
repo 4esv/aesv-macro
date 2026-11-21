@@ -34,7 +34,7 @@ vi.mock('@app/features/runtime-sharing/views/AgentRuntime', () => ({
   AgentRuntime: () => null,
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: flag.key === 'enable-crm' ? mocks.crmFlagEnabled : true,
     payload: undefined,
@@ -321,11 +321,11 @@ describe('UserTooltip settings action', () => {
     });
   });
 
-  it('opens the Agents list for Macro', async () => {
+  it('opens the Agents list for aesv', async () => {
     const user = userEvent.setup({ skipHover: true });
     render(() => (
       <UserTooltip
-        displayName="Macro"
+        displayName="aesv"
         id="bot|00000000-0000-0000-0000-00000000a1a1"
       />
     ));

@@ -6,7 +6,7 @@ import { RoutineAiComposer } from './routine-ai-composer';
 const compose = vi.hoisted(() => vi.fn());
 
 vi.mock('./queries/compose-routine', () => ({ composeRoutine: compose }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true, loading: false }),
 }));
 

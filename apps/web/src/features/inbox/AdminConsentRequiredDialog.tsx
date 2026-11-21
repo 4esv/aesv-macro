@@ -46,7 +46,7 @@ export function AdminConsentRequiredDialog(props: {
         </Panel.Header>
         <Panel.Body class="p-6 font-sans flex flex-col gap-3">
           <Dialog.Description class="text-ink-muted text-sm/tight font-normal">
-            Your organization requires an IT admin to approve Macro before you
+            Your organization requires an IT admin to approve aesv before you
             can connect this account.
           </Dialog.Description>
           <Show when={props.adminConsentUrl === undefined}>

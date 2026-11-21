@@ -4,7 +4,6 @@ import IconGithub from '@icon/mcp-github.svg';
 import IconGrafana from '@icon/mcp-grafana.svg';
 import IconLinear from '@icon/mcp-linear.svg';
 import IconNotion from '@icon/mcp-notion.svg';
-import IconPostHog from '@icon/mcp-posthog.svg';
 import IconSlack from '@icon/mcp-slack.svg';
 import type { Component, JSX } from 'solid-js';
 
@@ -36,12 +35,6 @@ export const QUICK_CONNECT_SERVERS = [
     icon: IconNotion as SvgIcon,
   },
   {
-    server_name: 'PostHog',
-    app_slug: 'posthog',
-    url: 'https://mcp.posthog.com/mcp',
-    icon: IconPostHog as SvgIcon,
-  },
-  {
     server_name: 'Datadog',
     app_slug: 'datadog',
     url: 'https://mcp.datadoghq.com/v1/mcp',
@@ -64,10 +57,9 @@ export type QuickConnectServer = (typeof QUICK_CONNECT_SERVERS)[number];
  * presets absent from {@link QUICK_CONNECT_SERVERS} are dropped automatically.
  */
 const FEATURED_SERVER_TAGLINES: [name: string, tagline: string][] = [
-  ['Linear', 'Create and update issues without leaving Macro.'],
+  ['Linear', 'Create and update issues without leaving aesv.'],
   ['Slack', 'Search conversations and post updates to channels.'],
   ['Notion', 'Search your pages, databases, and wikis.'],
-  ['PostHog', 'Query product analytics and user insights.'],
   ['GitHub', 'Give the agent access to your repos, PRs, and issues.'],
   ['Datadog', 'Query metrics, logs, and monitors.'],
   ['Grafana', 'Search dashboards and query your data sources.'],

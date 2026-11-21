@@ -12,7 +12,7 @@ import type {
 } from '@app/features/saved-views/context/saved-views-source';
 import { normalizeFacetSelection } from '@app/features/soup';
 import { createTagFacetContext } from '@app/features/soup/filters/facets/tag-facet';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import {
   enableGantt,
   enableProjects,

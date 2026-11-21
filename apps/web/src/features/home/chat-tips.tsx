@@ -56,7 +56,7 @@ export function ChatTipsSection() {
         <SetupRow
           icon={<PlugsConnectedIcon class="size-4" />}
           title="Connect your tools"
-          desc="Give the agent access to Linear, Notion, PostHog & more"
+          desc="Give the agent access to Linear, Notion, GitHub & more"
           trailing={
             /* The arrow MUST stay BLACK. See comment at top of file. */
             <ChevronRightIcon class={SETUP_ROW_ARROW_CLASSES} />
@@ -66,7 +66,7 @@ export function ChatTipsSection() {
         <SetupRow
           icon={<PuzzlePieceIcon class="size-4" />}
           title="Connect your own agents"
-          desc="Use Macro as a tool from Claude Code, Cursor, or any MCP client"
+          desc="Use aesv as a tool from Claude Code, Cursor, or any MCP client"
           trailing={
             /* The arrow MUST stay BLACK. See comment at top of file. */
             <ChevronRightIcon class={SETUP_ROW_ARROW_CLASSES} />

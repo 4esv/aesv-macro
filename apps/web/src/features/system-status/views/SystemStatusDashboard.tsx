@@ -39,7 +39,7 @@ export function SystemStatusDashboard() {
         <header class="flex flex-col gap-1">
           <h1 class="text-xl font-semibold tracking-tight">System status</h1>
           <p class="text-sm text-ink-muted">
-            While Macro isn't operational, every user sees a banner with the
+            While aesv isn't operational, every user sees a banner with the
             status and your message. Changes reach open apps immediately.
           </p>
         </header>
@@ -66,7 +66,7 @@ export function SystemStatusDashboard() {
 function Gate(props: { body: string }) {
   return (
     <div class="flex flex-col gap-1 rounded-xl border border-edge p-6">
-      <h2 class="text-base font-semibold">Macro staff only</h2>
+      <h2 class="text-base font-semibold">aesv staff only</h2>
       <p class="text-sm text-ink-muted">{props.body}</p>
     </div>
   );

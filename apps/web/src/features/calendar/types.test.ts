@@ -20,7 +20,7 @@ const PRIMARY: CalendarSource = {
 };
 const SHARED: CalendarSource = {
   id: 'shared',
-  name: 'Macro Vacation',
+  name: 'aesv Vacation',
   color: 'orange',
 };
 const sourceById = new Map([

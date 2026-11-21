@@ -54,7 +54,7 @@ export default defineConfig({
         '@service-storage/crm-visibility',
         '@service-storage/crm-contact-edit',
         '@app/lib/analytics',
-        '@app/lib/analytics/posthog',
+        '@app/lib/analytics/flags',
         '@app/features/next-soup/filters/filter-store',
         '../context/crm-context',
       ].map((find) => ({

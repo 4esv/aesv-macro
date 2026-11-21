@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const fixture = vi.hoisted(() => ({ client: undefined as Client | undefined }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

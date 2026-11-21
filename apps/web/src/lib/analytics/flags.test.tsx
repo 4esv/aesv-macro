@@ -1,6 +1,6 @@
 import type { RemoteFlag } from '@core/constant/featureFlags';
 import { describe, expect, it } from 'vitest';
-import { useFeatureFlag } from './posthog';
+import { useFeatureFlag } from './flags';
 
 const flag = (override: boolean | undefined): RemoteFlag => ({
   key: 'enable-channel-tags',

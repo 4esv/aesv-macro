@@ -33,7 +33,7 @@ const mocks = vi.hoisted(() => ({
   rename: vi.fn(),
   channels: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-chat-sidebar-sections' ? false : mocks.enabled(),

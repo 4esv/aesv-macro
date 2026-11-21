@@ -1,5 +1,5 @@
 import { useViewControlHotkeys } from '@app/components/view-shell';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import { openInNewTab } from '@components/app/tab-layout/open-in-new-tab';

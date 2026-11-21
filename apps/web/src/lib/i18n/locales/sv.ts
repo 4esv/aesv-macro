@@ -709,7 +709,7 @@ export default {
     updateReload: 'Läs in igen',
     updateReadyTitle: 'Uppdateringen är klar',
     updateBundleDescription:
-      'En ny version av Macros skrivbordsapp har laddats ned. Uppdatera för att börja använda den.',
+      'En ny version av aesv-skrivbordsappen har laddats ned. Uppdatera för att börja använda den.',
     updateAction: 'Uppdatera',
     updateDesktopReadyTitle: 'Uppdatering av skrivbordsappen klar',
     updateNativeDescription:

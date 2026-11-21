@@ -61,7 +61,7 @@ vi.mock('@app/features/routines/routine-mentions', () => ({
 vi.mock('@app/lib/analytics/analytics-context', () => ({
   useAnalytics: () => ({ track: vi.fn() }),
 }));
-vi.mock('@app/lib/analytics/posthog', async () => {
+vi.mock('@app/lib/analytics/flags', async () => {
   const { createSignal } = await import('solid-js');
   const [disabled, setDisabled] = createSignal(false);
   mocks.setContactSearchDisabled = setDisabled;

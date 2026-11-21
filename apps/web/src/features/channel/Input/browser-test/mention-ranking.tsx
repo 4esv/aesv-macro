@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { DocumentMentionStatic } from '@core/component/LexicalMarkdown/component/decorator/DocumentMention';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
@@ -203,7 +203,7 @@ function Fixture() {
   return (
     <QueryClientProvider client={client}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <EntityProvider>
             <UserContextProvider>
               <EmailLinksContextProvider>
@@ -267,7 +267,7 @@ function Fixture() {
               </EmailLinksContextProvider>
             </UserContextProvider>
           </EntityProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   );

@@ -1,7 +1,7 @@
 import '@fontsource-variable/inter';
 import '../../../../index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { setGlobalSplitManager } from '@app/signal/splitLayout';
 import type {
   SplitContent,
@@ -130,7 +130,7 @@ if (root)
     () => (
       <QueryClientProvider client={queryClient}>
         <AnalyticsContextProvider>
-          <PosthogProvider>
+          <FlagsProvider>
             <UserContextProvider>
               <EmailLinksContextProvider>
                 <Layer>
@@ -149,7 +149,7 @@ if (root)
                 </Layer>
               </EmailLinksContextProvider>
             </UserContextProvider>
-          </PosthogProvider>
+          </FlagsProvider>
         </AnalyticsContextProvider>
       </QueryClientProvider>
     ),

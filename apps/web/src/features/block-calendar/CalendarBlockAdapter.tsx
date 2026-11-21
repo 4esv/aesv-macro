@@ -6,7 +6,7 @@ import { createCalendarFocusTarget } from '@app/features/calendar-view/calendar-
 import { createCalendarTargetAim } from '@app/features/calendar-view/calendar-target-request';
 import { Workspace } from '@app/features/calendar-view/components/Workspace';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import { globalSplitManager } from '@app/signal/splitLayout';
 import { useSplitPanelOrThrow } from '@components/app/split-layout/layoutUtils';
 import { LoadingBlock } from '@core/component/LoadingBlock';
@@ -29,7 +29,7 @@ function CalendarBlockDisabledRedirect() {
 /** Compatibility host for inline previews that still mount a Calendar block. */
 function CalendarBlockAdapter(props: CalendarBlockProps) {
   const calendarUiEnabled = useCalendarUiFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
   const userId = useUserId();
   const analytics = useAnalytics();
   const blockHandle = blockHandleSignal.get;
@@ -92,7 +92,7 @@ function CalendarBlockAdapter(props: CalendarBlockProps) {
     <Show
       when={calendarUiEnabled()}
       fallback={
-        <Show when={posthog.flagsLoaded()} fallback={<LoadingBlock />}>
+        <Show when={flags.flagsLoaded()} fallback={<LoadingBlock />}>
           <CalendarBlockDisabledRedirect />
         </Show>
       }

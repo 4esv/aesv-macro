@@ -1,4 +1,4 @@
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import {
   RedirectSplit,
   usePageViewTracking,
@@ -26,12 +26,12 @@ function TrackedNotificationsInbox() {
  */
 export const NotificationsRouteView = withAuth(() => {
   const enabled = useUnifiedNotificationsFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
   return (
     <Show
       when={enabled()}
       fallback={
-        <Show when={posthog.flagsLoaded()}>
+        <Show when={flags.flagsLoaded()}>
           <RedirectSplit to={{ type: 'component', id: 'home' }} />
         </Show>
       }

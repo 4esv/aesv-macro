@@ -58,7 +58,7 @@ describe('CRM ownership boundaries', () => {
             path
           );
         // UI rollout gates read flags directly rather than threading boolean props.
-        const uiFlagReader = path === '@app/lib/analytics/posthog';
+        const uiFlagReader = path === '@app/lib/analytics/flags';
         const rootAdapter =
           target && !target.includes('/') && /adapter|^crm(?:-|$)/.test(target);
         const otherLayer = target?.split('/')[0];

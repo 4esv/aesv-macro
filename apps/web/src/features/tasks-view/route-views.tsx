@@ -2,7 +2,7 @@ import { ProjectBreadcrumb } from '@app/features/projects/project-breadcrumb';
 import { ProjectDetail } from '@app/features/projects/project-detail';
 import { Projects } from '@app/features/projects/projects';
 import { ProjectTasksProvider } from '@app/features/projects/views/project-tasks-list';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import {
   createSearchParams,
   SplitRouter,

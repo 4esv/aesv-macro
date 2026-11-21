@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { SidebarPrefsProvider } from '@components/app/sidebar-next/use-sidebar-prefs';
 import { ViewSwitcher } from '@components/app/sidebar-next/view-switcher';
 import {
@@ -42,7 +42,7 @@ function Fixture() {
 
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <SidebarPrefsProvider>
           <SplitPanelContext.Provider value={panel}>
             <ViewSwitcherContext.Provider value={ViewSwitcher}>
@@ -105,7 +105,7 @@ function Fixture() {
             </ViewSwitcherContext.Provider>
           </SplitPanelContext.Provider>
         </SidebarPrefsProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

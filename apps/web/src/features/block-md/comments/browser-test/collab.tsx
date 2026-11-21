@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { CollabProvider } from '@core/component/LexicalMarkdown/collaboration/CollabProvider';
 import type { MarkdownEditorErrors } from '@core/component/LexicalMarkdown/constants';
 import {
@@ -297,7 +297,7 @@ const client = new QueryClient();
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <UserContextProvider>
             <DragDropProvider>
@@ -305,7 +305,7 @@ render(
             </DragDropProvider>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   document.getElementById('root')!

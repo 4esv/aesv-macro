@@ -3,7 +3,7 @@ import { expect, it, vi } from 'vitest';
 import type { SharingSource } from '../context/contracts';
 import { createDirectAccessInvite } from './direct-access-invite';
 
-it('grants view access by Macro email and preserves the address when the write fails', async () => {
+it('grants view access by aesv email and preserves the address when the write fails', async () => {
   const setGrant = vi.fn().mockResolvedValue(undefined);
   const state = createRoot((dispose) => {
     const source: SharingSource = {

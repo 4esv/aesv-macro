@@ -199,7 +199,7 @@ export function calculationFidelity(
           (fidelity.mismatchedFunctions[name] ?? 0) + 1;
       if (fidelity.examples.length < exampleLimit)
         fidelity.examples.push(
-          `${sheet.name}!${address} ${source.slice(0, 80)} → Excel ${JSON.stringify(expected.value)}, Macro ${JSON.stringify(results[address]?.value ?? results[address]?.display ?? null)}`
+          `${sheet.name}!${address} ${source.slice(0, 80)} → Excel ${JSON.stringify(expected.value)}, aesv ${JSON.stringify(results[address]?.value ?? results[address]?.display ?? null)}`
         );
     }
   });

@@ -114,8 +114,7 @@ function PrShareModal(props: PrShareModalProps) {
                 <Panel.Body>
                   <div class="flex items-center justify-between p-4 text-sm">
                     <span class="text-ink-muted">
-                      Anyone with access to the PR on GitHub can view it in
-                      Macro
+                      Anyone with access to the PR on GitHub can view it in aesv
                     </span>
                     <Button
                       variant="secondary"

@@ -27,7 +27,7 @@ import { prepareEmailBody } from '@app/features/email-compose/primitives/prepare
 import { uploadAttachmentDocuments } from '@app/features/email-compose/upload-documents';
 import { ComposeLayout } from '@app/features/email-compose/views/compose-layout';
 import { EmailComposeToolbar } from '@app/features/email-compose/views/compose-toolbar';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { toast } from '@core/component/Toast/Toast';
 import { enableEmailSignatures } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';

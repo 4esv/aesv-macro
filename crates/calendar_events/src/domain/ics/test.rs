@@ -276,6 +276,20 @@ fn a_share_never_carries_the_join_link() {
 }
 
 #[test]
+fn a_share_strips_the_join_line_an_event_written_before_the_debrand_carries() {
+    let mut event = export(all_day());
+    event.description = Some(format!(
+        "<p>Agenda</p>\n<p>Join Macro call: <a href=\"{CALL_URL}\">{CALL_URL}</a></p>"
+    ));
+    event.location = Some(CALL_URL.to_string());
+
+    let document = render_event_ics(&event, IcsPurpose::Share);
+
+    assert!(document.contains("Agenda"), "{document}");
+    assert!(!document.contains("Join"), "{document}");
+}
+
+#[test]
 fn a_forward_keeps_the_macro_call_it_would_strip_from_a_share() {
     let mut event = export(all_day());
     let (description, location) =
@@ -293,7 +307,7 @@ fn a_forward_keeps_the_macro_call_it_would_strip_from_a_share() {
         .expect("the description stays");
     assert!(description.contains("Bring the budget draft"), "{lines:?}");
     assert!(
-        description.ends_with(&format!("\\nJoin Macro call: {CALL_URL}")),
+        description.ends_with(&format!("\\nJoin aesv call: {CALL_URL}")),
         "{lines:?}"
     );
     assert!(lines.contains(&"METHOD:PUBLISH".to_string()));

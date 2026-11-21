@@ -9,7 +9,7 @@ import {
   AssigneePickerStatus,
   useAssigneePicker,
 } from '@app/features/soup/assignee-picker';
-import { usePosthog } from '@app/lib/analytics/posthog';
+import { useFlags } from '@app/lib/analytics/flags';
 import { EntityIcon } from '@core/component/EntityIcon';
 import { UserIcon } from '@core/component/UserIcon';
 import { useQuickAccess } from '@core/context/quickAccess';
@@ -295,7 +295,7 @@ export function useSearchFacets(
 
   const tagSource = tagOptions ?? useTagOptions();
   const calendarSearchEnabled = useCalendarSearchUiFlag();
-  const posthog = usePosthog();
+  const flags = useFlags();
 
   // The calendar type exists only while calendar search is enabled. If the flag
   // turns off (or a persisted search restores a calendar scope while it is off),
@@ -307,7 +307,7 @@ export function useSearchFacets(
   // arrives.
   createEffect(() => {
     if (
-      posthog.flagsLoaded() &&
+      flags.flagsLoaded() &&
       !calendarSearchEnabled() &&
       controller.type() === 'calendar'
     ) {

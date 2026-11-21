@@ -2,7 +2,7 @@ import '@app/index.css';
 import type { ReviewUpdates } from '@app/features/agent-reviews/queries/reviews';
 import { PersistedReview } from '@app/features/agent-reviews/views/persisted-review';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { ChannelsContextProvider } from '@core/context/channels';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
 import { QuickAccessProvider } from '@core/context/quickAccess/QuickAccessProvider';
@@ -48,7 +48,7 @@ function Fixture() {
   return (
     <QueryClientProvider client={queryClient}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <EntityProvider>
             <UserContextProvider>
               <EmailLinksContextProvider>
@@ -68,7 +68,7 @@ function Fixture() {
               </EmailLinksContextProvider>
             </UserContextProvider>
           </EntityProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   );

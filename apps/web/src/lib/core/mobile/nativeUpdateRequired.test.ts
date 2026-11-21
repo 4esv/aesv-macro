@@ -13,9 +13,9 @@ describe('requireNativeUpdate', () => {
   it('keeps the first reason, so the request is shown once', () => {
     expect(nativeUpdateRequired()).toBeUndefined();
 
-    requireNativeUpdate('Update Macro to use the local cache.');
-    requireNativeUpdate('Update Macro to sync drafts.');
+    requireNativeUpdate('Update aesv to use the local cache.');
+    requireNativeUpdate('Update aesv to sync drafts.');
 
-    expect(nativeUpdateRequired()).toBe('Update Macro to use the local cache.');
+    expect(nativeUpdateRequired()).toBe('Update aesv to use the local cache.');
   });
 });

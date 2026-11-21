@@ -7,7 +7,7 @@ import { CrmSidebar } from './crm-sidebar';
 
 const measurement = vi.hoisted(() => ({ width: 1200 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 vi.mock('@app/features/routine-suggestions/routine-suggestions', () => ({

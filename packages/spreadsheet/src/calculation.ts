@@ -1028,7 +1028,7 @@ function readCell(
       formatted = formatExcelNumber(cell.numberFormat, number);
     } catch {
       warning =
-        'This Excel number format cannot be displayed in Macro. Its value and original format are retained for export.';
+        'This Excel number format cannot be displayed in aesv. Its value and original format are retained for export.';
     }
   }
   return {
@@ -1100,7 +1100,7 @@ function readSpills(
 }
 
 function buildWorkbook(sheets: CalculationSheet[]): EngineWorkbook {
-  const model = calculationModel('Macro spreadsheet');
+  const model = calculationModel('aesv spreadsheet');
   try {
     const bounded = sheets.map((sheet) => ({
       ...sheet,
@@ -1620,7 +1620,7 @@ export function createInitializedSpreadsheetCalculator(): SpreadsheetCalculator 
     },
     copy(copies, context) {
       if (disposed) throw new Error('The spreadsheet calculator is disposed.');
-      const model = new Model('Macro copy', 'en', 'UTC', 'en');
+      const model = new Model('aesv copy', 'en', 'UTC', 'en');
       const edits: SpreadsheetCellEdits = {};
       const sheet = context?.activeSheet ?? 0;
       try {

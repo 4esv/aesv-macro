@@ -168,7 +168,7 @@ test('a failed provider sign-up falls back to the email form with the reason', a
   });
   await expect(
     page.getByText(
-      'Your organization needs an admin to approve Macro. Continue with your email instead.'
+      'Your organization needs an admin to approve aesv. Continue with your email instead.'
     )
   ).toBeVisible();
   await expect(page.getByPlaceholder(/you@company\.com/)).toBeVisible();

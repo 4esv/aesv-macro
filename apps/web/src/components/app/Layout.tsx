@@ -26,7 +26,7 @@ import { MobileSettingsProvider } from '@app/features/settings/context/mobile-se
 import { NativeShareSheet } from '@app/features/sharing/native-share-sheet/NativeShareSheet';
 import { StatusBanner } from '@app/features/system-status/components/StatusBanner';
 import { useBannerStatus } from '@app/features/system-status/primitives/use-banner-status';
-import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag } from '@app/lib/analytics/flags';
 import { mountGlobalFocusListener } from '@app/signal/focus';
 import { CreateChannelModal } from '@channel/CreateChannelModal';
 import { GoToHotkeys } from '@components/app/app-sidebar/sidebar';

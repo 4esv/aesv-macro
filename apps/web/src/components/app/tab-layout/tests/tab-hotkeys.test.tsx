@@ -25,8 +25,8 @@ vi.mock('@core/util/platform', async (importOriginal) => ({
   isPlatform: () => true,
 }));
 vi.mock('@tauri-apps/plugin-os', () => ({ type: () => 'macos' }));
-vi.mock('@app/lib/analytics/posthog', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@app/lib/analytics/posthog')>()),
+vi.mock('@app/lib/analytics/flags', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@app/lib/analytics/flags')>()),
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@core/context/user', async (importOriginal) => ({

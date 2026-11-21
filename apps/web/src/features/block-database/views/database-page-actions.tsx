@@ -1,6 +1,6 @@
 import { EntityAppearanceMenu } from '@app/features/entity-appearance/appearance-menu';
 import { readEntityAppearance } from '@app/features/entity-appearance/core/appearance';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { enableEntityAppearance } from '@core/constant/featureFlags';
 import { fireAndForget } from '@core/util/fireAndForget';

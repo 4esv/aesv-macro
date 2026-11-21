@@ -1,7 +1,7 @@
 import { isListViewID } from '@app/constants/list-views';
 import { useCrmContactDiscovery } from '@app/features/crm/record-adapter';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import {
   beginInteraction,

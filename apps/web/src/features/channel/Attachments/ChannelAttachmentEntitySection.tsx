@@ -5,7 +5,7 @@ import {
   queryStateFrom,
 } from '@app/features/next-soup/filters/filter-store';
 import { ProjectAttachment } from '@app/features/projects/project-attachment';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import { enableProjects } from '@core/constant/featureFlags';
 import type { EntityData } from '@entity';

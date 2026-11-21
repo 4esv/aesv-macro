@@ -438,9 +438,7 @@ export function ImportDialog(props: Props): JSX.Element {
           <ActionDialogShell.Body class="space-y-6">
             <ActionDialogShell.Header>
               <ActionDialogShell.Title>
-                {choosingMethod()
-                  ? 'Bring Slack to Macro'
-                  : 'Import from Slack'}
+                {choosingMethod() ? 'Bring Slack to aesv' : 'Import from Slack'}
               </ActionDialogShell.Title>
               <ActionDialogShell.Description>
                 {choosingMethod()

@@ -46,7 +46,7 @@ vi.mock('./hooks/use-calendar-sources', () => ({
   }),
 }));
 vi.mock('@core/context/user', () => ({ useUserId: () => () => 'macro|self' }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 

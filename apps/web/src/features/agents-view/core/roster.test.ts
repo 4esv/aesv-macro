@@ -90,7 +90,7 @@ describe('buildAgentRoster', () => {
       'coder',
     ]);
     expect(saved[0]?.runtime).toEqual({
-      label: 'Macro Agent',
+      label: 'aesv Agent',
       connected: true,
     });
     expect(saved[0]?.unavailableReason).toBeUndefined();
@@ -107,7 +107,7 @@ describe('buildAgentRoster', () => {
     expect(saved[3]?.runtime.label).toBe('Disconnected machine');
   });
 
-  it('marks an agent on a turned-off Macro computer powered off, never reconnectable', () => {
+  it('marks an agent on a turned-off aesv computer powered off, never reconnectable', () => {
     const roster = buildAgentRoster({
       ...EMPTY,
       runtimes: [
@@ -190,24 +190,24 @@ describe('rosterForAgentPicker and kindForBot', () => {
       persisted({ harness: 'future-runtime' }),
       persisted({
         harness: 'in-memory',
-        bot: { id: MACRO_AGENT_BOT_ID, name: 'Macro', handle: 'macro' },
+        bot: { id: MACRO_AGENT_BOT_ID, name: 'aesv', handle: 'macro' },
       }),
       persisted({
         harness: 'in-memory',
         bot: {
           id: `bot|${MACRO_AGENT_BOT_ID}`,
-          name: 'Macro',
+          name: 'aesv',
           handle: 'macro',
         },
       }),
       persisted({
         harness: 'in-memory',
-        bot: { id: 'saved-macro-name', name: 'Macro', handle: 'my-macro' },
+        bot: { id: 'saved-macro-name', name: 'aesv', handle: 'my-macro' },
       }),
     ],
   });
 
-  it('includes every runtime and excludes only the built-in Macro identity', () => {
+  it('includes every runtime and excludes only the built-in aesv identity', () => {
     expect(rosterForAgentPicker(roster).map((a) => a.id)).toEqual([
       CURSOR_BOT_ID,
       'bot-in-memory',

@@ -172,7 +172,7 @@ function UploadedWorkbookPreview(props: {
           disabled={!!actions.pending()}
           onClick={() => fireAndForget(actions.edit(), 'uploaded-workbook')}
         >
-          {actions.pending() ? 'Saving…' : 'Edit in Macro'}
+          {actions.pending() ? 'Saving…' : 'Edit in aesv'}
         </Button>
         <Show when={props.workbook.warnings.length}>
           <details class="w-full">

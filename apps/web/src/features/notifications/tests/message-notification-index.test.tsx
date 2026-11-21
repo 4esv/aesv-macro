@@ -49,7 +49,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@components/app/GlobalAppState', () => ({
   useOptionalGlobalNotificationSource: () => mocks.source,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => mocks.graphqlSoup(),
 }));
 vi.mock('@app/lib/urql-solid', () => ({ createUrqlQuery: mocks.createQuery }));

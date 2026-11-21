@@ -16,7 +16,7 @@ let state: ReturnType<typeof createDriveState>;
 vi.mock('../context/drive-context', () => ({
   useDriveView: () => ({ state, actions: { userId: () => 'me' } }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@core/component/EntityIcon', () => ({ EntityIcon: () => null }));

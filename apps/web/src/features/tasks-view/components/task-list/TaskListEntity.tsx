@@ -1,5 +1,5 @@
 import '@entity/composed/ListEntity.css';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import {
   SwipableRow,
   SwipableRowContext,

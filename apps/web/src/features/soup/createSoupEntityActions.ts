@@ -40,7 +40,7 @@ import { useAllProperties } from '@app/features/property/editor/hooks/useAllProp
 import { openPropertyEditor } from '@app/features/property/editor/state/propertyEditor';
 import { EntityTagSubmenu } from '@app/features/property/tags/EntityTagSubmenu';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { globalSplitManager } from '@app/signal/splitLayout';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';

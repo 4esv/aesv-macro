@@ -25,7 +25,7 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableCodexAgents: { key: 'enable-codex-agents' },
   enableCursorAgents: { key: 'enable-cursor-agents' },
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-chat-v3-agents'
@@ -66,7 +66,7 @@ describe('useAgentMentionUsers', () => {
     });
   });
 
-  it('offers the classic Macro bot as the only Macro entry without the rollout', () => {
+  it('offers the classic aesv bot as the only aesv entry without the rollout', () => {
     createRoot((dispose) => {
       const users = useAgentMentionUsers(() => []);
       expect(macroEntries(users())).toEqual([
@@ -96,14 +96,14 @@ describe('useAgentMentionUsers', () => {
     });
   });
 
-  it('keeps one Macro entry when the other Macro bot is already in the list', () => {
+  it('keeps one aesv entry when the other aesv bot is already in the list', () => {
     createRoot((dispose) => {
       flags.agents = () => true;
       const users = useAgentMentionUsers(() => [
         {
           id: MACRO_AGENT_PRINCIPAL_ID,
-          name: 'Macro',
-          email: 'Macro',
+          name: 'aesv',
+          email: 'aesv',
         },
         {
           id: MACRO_NEW_PRINCIPAL_ID,

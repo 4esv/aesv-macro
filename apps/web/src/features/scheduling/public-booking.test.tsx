@@ -1,4 +1,4 @@
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,7 +17,7 @@ vi.mock('./queries/public', () => ({
   usePublicProfileQuery: vi.fn(() => ({
     isSuccess: true,
     isError: false,
-    data: { id: 'team', name: 'Macro', eventTypes: [] },
+    data: { id: 'team', name: 'aesv', eventTypes: [] },
   })),
 }));
 vi.mock('./views/booking-receipt-view', () => ({
@@ -40,9 +40,9 @@ import { createBookingReceiptSource } from './queries/public';
 
 function openBookingLink() {
   render(() => (
-    <PosthogProvider>
+    <FlagsProvider>
       <PublicBookingPage profile="team" />
-    </PosthogProvider>
+    </FlagsProvider>
   ));
 }
 

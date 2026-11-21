@@ -7,7 +7,7 @@ import {
   queryStateFrom,
 } from '@app/features/next-soup/filters/filter-store';
 import { EMPTY_TAG_FACET_CONTEXT } from '@app/features/soup/filters/facets/tag-facet';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useGlobalNotificationSource } from '@components/app/GlobalAppState';
 import { enableGraphqlSoup } from '@core/constant/featureFlags';
 import { notificationIsRead } from '@entity/utils/notification';

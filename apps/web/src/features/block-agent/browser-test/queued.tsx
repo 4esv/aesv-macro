@@ -6,7 +6,7 @@
  */
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { StaticMarkdownContext } from '@core/component/LexicalMarkdown/component/core/StaticMarkdown';
 import {
   createLexicalWrapper,
@@ -90,7 +90,7 @@ function Fixture() {
 
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <EntityProvider>
             <UserContextProvider>
@@ -171,7 +171,7 @@ function Fixture() {
             </UserContextProvider>
           </EntityProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

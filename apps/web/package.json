@@ -171,7 +171,6 @@
     "neverthrow": "^8.2.0",
     "papaparse": "^5.7.0",
     "pdfjs-dist": "github:macro-inc/pdf.js#v2.16.52-web",
-    "posthog-js": "^1.424.0",
     "quill": "^2.0.3",
     "saxes": "6.0.0",
     "short-uuid": "^5.2.0",

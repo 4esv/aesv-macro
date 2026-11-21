@@ -14,7 +14,7 @@ import { AgentActivitySourceProvider } from '@app/features/agent-session-activit
 import { createAgentActivitySource } from '@app/features/agent-session-activity/queries/create-agent-activity-source';
 import { AgentActivitySection } from '@app/features/agent-session-activity/views/agent-activity-section';
 import { useOptionalChanges } from '@app/features/changes/context/changes-controller';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { SidePanel } from '@components/app/side-panel';
 import { EntityMetadata } from '@components/app/side-panel/EntityMetadata';
 import { ModelIcon } from '@core/component/AI/component/ProviderIcon';

@@ -1,5 +1,5 @@
 import { DatabaseCardSkeleton } from '@app/features/block-database/component/DatabaseCardSkeleton';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableDatabases } from '@core/constant/featureFlags';
 import {
   $convertCardToMention,

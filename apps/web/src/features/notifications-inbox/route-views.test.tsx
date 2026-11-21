@@ -17,8 +17,8 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableUnifiedNotifications: { key: 'enable-unified-notifications' },
   enableGraphqlSoup: { key: 'enable-graphql-soup' },
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
-  usePosthog: () => ({ flagsLoaded: () => state.flagsLoaded() }),
+vi.mock('@app/lib/analytics/flags', () => ({
+  useFlags: () => ({ flagsLoaded: () => state.flagsLoaded() }),
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-graphql-soup'

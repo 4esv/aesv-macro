@@ -88,7 +88,7 @@ vi.mock('../primitives/team-computers', () => ({
   }),
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.rollout, loading: false }),
 }));
 

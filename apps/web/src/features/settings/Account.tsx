@@ -1,6 +1,6 @@
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
 import type { AccountDeletionReason } from '@app/lib/analytics/app-events';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useLogout } from '@core/auth/logout';
 import { toast } from '@core/component/Toast/Toast';
 import { UserIcon } from '@core/component/UserIcon';
@@ -465,7 +465,7 @@ export function Account() {
       <SettingsCard>
         <SettingsRow
           label="Log out"
-          description="Sign out of Macro on this device."
+          description="Sign out of aesv on this device."
         >
           <Button variant="secondary" size="sm" onClick={() => logout()}>
             <SignOutIcon class="size-4" />
@@ -564,7 +564,7 @@ export function Account() {
                   onInput={(event) =>
                     setDeleteFeedback(event.currentTarget.value)
                   }
-                  placeholder="Your feedback helps us improve Macro"
+                  placeholder="Your feedback helps us improve aesv"
                 />
                 <span class="text-ink-extra-muted text-xs">
                   Please don't include sensitive information.

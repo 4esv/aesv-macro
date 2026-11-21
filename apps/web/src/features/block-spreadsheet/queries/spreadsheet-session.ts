@@ -190,9 +190,7 @@ export function createSpreadsheetSession(
   async function startEditor(): Promise<void> {
     const version = manager.doc.getMap('spreadsheetMeta').get('formatVersion');
     if (version !== undefined && version !== SPREADSHEET_FORMAT_VERSION) {
-      setError(
-        'This spreadsheet uses a newer format. Update Macro to open it.'
-      );
+      setError('This spreadsheet uses a newer format. Update aesv to open it.');
       return;
     }
     // Persist the base before accepting edits so a crash can always replay

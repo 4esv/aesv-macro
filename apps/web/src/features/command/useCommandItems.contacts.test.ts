@@ -26,7 +26,7 @@ vi.mock('@queries/team/members', () => ({
     isError: () => false,
   }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 vi.mock('@core/context/user', () => ({
@@ -350,7 +350,7 @@ describe('command menu contact discovery', () => {
     expect(t.discovery.active?.()).toBe(true);
   });
 
-  it('prefers the Macro user sharing the email even when only the CRM name matched', () => {
+  it('prefers the aesv user sharing the email even when only the CRM name matched', () => {
     const t = setup('dms');
     const asher = user('asher@macro.com', 'Asher Smith');
     t.setUsers([asher]);

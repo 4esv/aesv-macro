@@ -21,7 +21,7 @@ const runQuery = () =>
     client: { invalidateQueries: mocks.invalidateQueries },
   });
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => mocks.flag,
 }));
 vi.mock('@core/constant/featureFlags', () => ({ enableDatabases: {} }));

@@ -14,7 +14,7 @@ const world = vi.hoisted(() => ({
   auth: undefined as ReturnType<typeof createFakeAuth> | undefined,
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: flag.key === 'enable-microsoft-signup' && world.microsoftSignup,
   }),

@@ -5,7 +5,7 @@ import { useSpreadsheetAccess } from './use-spreadsheet-access';
 const state = vi.hoisted(() => ({
   flag: (): boolean => false,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: state.flag() }),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

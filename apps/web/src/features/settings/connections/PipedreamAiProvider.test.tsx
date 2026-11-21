@@ -10,7 +10,7 @@ import {
 
 const flag = vi.hoisted(() => ({ on: false }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (requested: { key: string }) => () => ({
     enabled: requested.key === 'macro-connect' && flag.on,
     loading: false,
@@ -61,17 +61,17 @@ describe('PipedreamAiProvider label', () => {
   });
   afterEach(cleanup);
 
-  it('says Macro Connect on a Connect grant with the macro-connect flag on', () => {
+  it('says aesv Connect on a Connect grant with the macro-connect flag on', () => {
     flag.on = true;
     renderLinear('connect');
-    expect(screen.getByText('Powered by Macro Connect')).toBeTruthy();
+    expect(screen.getByText('Powered by aesv Connect')).toBeTruthy();
     expect(screen.queryByText(/Pipedream/)).toBeNull();
   });
 
-  it('says Macro Connect before connecting with the flag on', () => {
+  it('says aesv Connect before connecting with the flag on', () => {
     flag.on = true;
     renderLinear();
-    expect(screen.getByText('Powered by Macro Connect')).toBeTruthy();
+    expect(screen.getByText('Powered by aesv Connect')).toBeTruthy();
   });
 
   it('keeps the Pipedream label with the flag off', () => {

@@ -8,7 +8,7 @@ export type BrowserTursoCacheRolloutInput = {
   /** Whether the browser has the worker, lock and storage APIs the cache needs. */
   browserSupported: boolean;
   disableEnvOverride: BooleanFlag;
-  posthogDisable: BooleanFlag;
+  remoteDisable: BooleanFlag;
 };
 
 export type BrowserTursoCacheRolloutDecision = {
@@ -49,7 +49,7 @@ export function resolveBrowserTursoCacheRollout(
       nativeCacheUnchanged: false,
     };
   }
-  if (input.disableEnvOverride === true || input.posthogDisable === true) {
+  if (input.disableEnvOverride === true || input.remoteDisable === true) {
     return {
       enabled: false,
       cohort: 'control',

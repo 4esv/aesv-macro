@@ -1,6 +1,6 @@
 import { QUERY_FILTERS_BASE } from '@app/features/next-soup/filters/query-filters';
 import { TaskListEntity } from '@app/features/next-soup/soup-view/views/tasks/TaskListEntity';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableTaskDuplicates } from '@core/constant/featureFlags';
 import { ListLayoutProvider } from '@entity';
 import CaretRightIcon from '@icon/system/regular/caret-right.svg';

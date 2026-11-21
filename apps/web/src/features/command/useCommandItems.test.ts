@@ -26,7 +26,7 @@ vi.mock('@queries/team/members', () => ({
     isError: () => false,
   }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 vi.mock('@core/context/user', () => ({

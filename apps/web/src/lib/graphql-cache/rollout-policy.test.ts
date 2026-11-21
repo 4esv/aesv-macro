@@ -9,18 +9,18 @@ const values: BooleanFlag[] = [undefined, false, true];
 describe('browser Turso cache rollout policy', () => {
   it('follows the GraphQL soup gate unless an emergency kill is active', () => {
     for (const disableEnvOverride of values) {
-      for (const posthogDisable of values) {
+      for (const remoteDisable of values) {
         const decision = resolveBrowserTursoCacheRollout({
           isTauri: false,
           graphqlTransportEnabled: true,
           browserSupported: true,
           disableEnvOverride,
-          posthogDisable,
+          remoteDisable,
         });
-        const killed = disableEnvOverride === true || posthogDisable === true;
+        const killed = disableEnvOverride === true || remoteDisable === true;
         expect(
           decision.enabled,
-          JSON.stringify({ disableEnvOverride, posthogDisable })
+          JSON.stringify({ disableEnvOverride, remoteDisable })
         ).toBe(!killed);
         expect(decision.reason).toBe(
           killed ? 'emergency-disabled' : 'graphql-transport-enabled'
@@ -36,7 +36,7 @@ describe('browser Turso cache rollout policy', () => {
         graphqlTransportEnabled: true,
         browserSupported: true,
         disableEnvOverride: undefined,
-        posthogDisable: undefined,
+        remoteDisable: undefined,
       })
     ).toEqual({
       enabled: true,
@@ -53,7 +53,7 @@ describe('browser Turso cache rollout policy', () => {
         graphqlTransportEnabled: false,
         browserSupported: true,
         disableEnvOverride: false,
-        posthogDisable: false,
+        remoteDisable: false,
       })
     ).toMatchObject({
       enabled: false,
@@ -68,7 +68,7 @@ describe('browser Turso cache rollout policy', () => {
         graphqlTransportEnabled: true,
         browserSupported: false,
         disableEnvOverride: undefined,
-        posthogDisable: undefined,
+        remoteDisable: undefined,
       })
     ).toEqual({
       enabled: false,
@@ -88,7 +88,7 @@ describe('browser Turso cache rollout policy', () => {
           browserSupported: false,
           // Browser emergency values are irrelevant on native.
           disableEnvOverride: true,
-          posthogDisable: true,
+          remoteDisable: true,
         })
       ).toEqual({
         enabled: graphqlTransportEnabled,

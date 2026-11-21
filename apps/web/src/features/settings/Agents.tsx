@@ -151,10 +151,10 @@ const IN_MEMORY_HARNESS: ConnectedHarness = {
 
 const MACRO_AGENT: AgentSummary = {
   id: MACRO_AGENT_BOT_ID,
-  name: 'Macro',
+  name: 'aesv',
   tag: 'macro',
   instructions: '',
-  whereItRuns: 'In Macro',
+  whereItRuns: 'In aesv',
   defaultModel: MODEL_PRETTYNAME[Model.sonnet55],
   channelSummary: 'All channels',
   share: 'Team',
@@ -562,7 +562,7 @@ function summarizeAgent(
 }
 
 function whereItRunsLabel(id: string, harness?: ConnectedHarness): string {
-  if (id === 'in-memory') return 'In Macro';
+  if (id === 'in-memory') return 'In aesv';
   if (id === 'cursor') return 'In Cursor';
   // Any other id is a registered macrod harness uuid; if it is not in the
   // connected list any more, the harness has been removed.
@@ -1045,11 +1045,11 @@ function AgentEditorPage(props: {
     const saved = savedApiKey();
     if (apiKeyLocked())
       return saved
-        ? 'Agent API keys are part of the Premium and Max plans. This agent runs on Macro usage until you upgrade.'
+        ? 'Agent API keys are part of the Premium and Max plans. This agent runs on aesv usage until you upgrade.'
         : 'Agent API keys are part of the Premium and Max plans.';
     if (saved && saved.provider !== provider.id)
       return `The saved ${apiKeyProviderName(saved.provider)} key isn’t used with this model.`;
-    return `Bills this agent’s usage to your ${provider.name} account instead of Macro. Leave it empty to run on Macro.`;
+    return `Bills this agent’s usage to your ${provider.name} account instead of aesv. Leave it empty to run on aesv.`;
   };
   // Optional, so it stays a one-line offer until asked for or already set.
   const [apiKeyOpen, setApiKeyOpen] = createSignal(false);
@@ -1072,7 +1072,7 @@ function AgentEditorPage(props: {
                 <p class="mt-0.5 text-xs text-ink-extra-muted">
                   {apiKeyLocked()
                     ? apiKeyHelp(provider())
-                    : 'Runs on Macro usage unless you add one.'}
+                    : 'Runs on aesv usage unless you add one.'}
                 </p>
               </div>
               <Show when={!apiKeyLocked()}>
@@ -1388,8 +1388,8 @@ function AgentEditorPage(props: {
                   <legend class="sr-only">Where it runs</legend>
                   <WhereItRunsOption
                     value="in-memory"
-                    title="In Macro"
-                    description="Fast and built in. Uses Macro tools and your connected apps."
+                    title="In aesv"
+                    description="Fast and built in. Uses aesv tools and your connected apps."
                     icon={<MacroLogo />}
                     checked={harnessId() === IN_MEMORY_HARNESS.id}
                     onSelect={() => handleHarnessChange(IN_MEMORY_HARNESS.id)}
@@ -1432,7 +1432,7 @@ function AgentEditorPage(props: {
                   <WhereItRunsOption
                     value="harness"
                     title="On your machine"
-                    description="Your own agent on your own machine. Local Claude Code, Codex, or other harness, via Macrod."
+                    description="Your own agent on your own machine. Local Claude Code, Codex, or another harness."
                     icon={<TerminalIcon />}
                     checked={macrodHarnesses().some(
                       (harness) => harness.id === harnessId()

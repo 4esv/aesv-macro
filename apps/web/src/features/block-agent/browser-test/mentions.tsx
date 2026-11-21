@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { StaticMarkdownContext } from '@core/component/LexicalMarkdown/component/core/StaticMarkdown';
 import {
   createLexicalWrapper,
@@ -98,7 +98,7 @@ function Fixture() {
   setAccess(true);
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <LexicalWrapperContext.Provider
             value={{ ...wrapper, skipPreviewFetch: true }}
@@ -127,7 +127,7 @@ function Fixture() {
             </StaticMarkdownContext>
           </LexicalWrapperContext.Provider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

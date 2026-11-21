@@ -5,7 +5,7 @@ import type { PreviewItem } from '../types';
 const fetchPreviewBatch = vi.hoisted(() => vi.fn());
 const graphqlSoup = vi.hoisted(() => ({ enabled: false }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({
     enabled: graphqlSoup.enabled,
     loading: false,

@@ -170,7 +170,7 @@ export function Harness(
     if (disconnectCursor.isPending) return;
     const confirmed = await confirmDialog({
       title: 'Disconnect Cursor?',
-      body: "Remove your Cursor connection from Macro? This removes Macro's copy of the API key but does not revoke it in Cursor.",
+      body: "Remove your Cursor connection from aesv? This removes aesv's copy of the API key but does not revoke it in Cursor.",
       confirmLabel: 'Disconnect',
       tone: 'danger',
     });
@@ -255,8 +255,8 @@ export function Harness(
                       </span>
                     </div>
                     <p class="mt-1 text-sm text-ink-muted">
-                      Macro in house fast and powerful agent. Uses official
-                      Macro tools and MCPs to get the job done.
+                      aesv in house fast and powerful agent. Uses official aesv
+                      tools and MCPs to get the job done.
                     </p>
                   </div>
                 </MachineSection>
@@ -277,7 +277,7 @@ export function Harness(
                       </Show>
                     </div>
                     <p class="mt-1 text-sm text-ink-muted">
-                      Bring your own Cursor subscription to Macro. Manage Cursor
+                      Bring your own Cursor subscription to aesv. Manage Cursor
                       Cloud sessions directly in the app.
                     </p>
 
@@ -334,7 +334,7 @@ export function Harness(
                             </div>
                             <p class="text-xs text-ink-extra-muted">
                               Create an API key in Cursor and paste it here.
-                              Macro stores it encrypted.
+                              aesv stores it encrypted.
                             </p>
                           </div>
                         }
@@ -355,7 +355,7 @@ export function Harness(
 
                         <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
                           <p class="flex-1 basis-56 text-xs text-ink-extra-muted">
-                            Disconnecting removes Macro's copy of the key but
+                            Disconnecting removes aesv's copy of the key but
                             does not revoke it in Cursor.
                           </p>
                           <Button

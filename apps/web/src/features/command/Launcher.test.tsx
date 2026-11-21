@@ -54,7 +54,7 @@ vi.mock('@app/features/block-spreadsheet/queries/spreadsheet-access', () => ({
 }));
 vi.mock('@app/features/email-compose/core/constants', () => ({}));
 vi.mock('@app/features/reminders/reminder-composer', () => ({}));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-carousel-create-menu'

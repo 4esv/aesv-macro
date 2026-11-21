@@ -34,8 +34,8 @@ vi.mock('@app/features/calendar/utils/calendar-supported-range', () => ({
 vi.mock('@app/lib/analytics/analytics-context', () => ({
   useAnalytics: () => ({ pageView: vi.fn(), track: vi.fn() }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
-  usePosthog: () => ({ flagsLoaded: () => true }),
+vi.mock('@app/lib/analytics/flags', () => ({
+  useFlags: () => ({ flagsLoaded: () => true }),
 }));
 vi.mock('@app/lib/split-router', () => ({
   createSearchParams: () => [

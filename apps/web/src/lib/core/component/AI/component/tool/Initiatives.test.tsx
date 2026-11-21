@@ -13,7 +13,7 @@ import { initiativeToolHandlers } from './Initiatives';
 const open = vi.hoisted(() => vi.fn());
 const refreshProjects = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const [projectsEnabled, setProjectsEnabled] = createSignal(true);
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: projectsEnabled() }),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

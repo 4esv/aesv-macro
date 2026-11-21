@@ -10,7 +10,7 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableChatV3Agents: { key: 'enable-chat-v3-agents' },
   enableCodexAgents: { key: 'enable-codex-agents' },
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-chat-v3-agents' ? flags.agents() : flags.codex(),

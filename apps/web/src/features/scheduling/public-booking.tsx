@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableCalendarScheduling } from '@core/constant/featureFlags';
 import { useLocation, useNavigate } from '@solidjs/router';
 import { Show, Suspense } from 'solid-js';

@@ -4,7 +4,7 @@ import type { EntityData } from '@app/features/entity/types/entity';
 import { macroDarkTheme } from '@app/features/theme/themes/macro-dark';
 import { macroLightTheme } from '@app/features/theme/themes/macro-light';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { EmailLinksContextProvider } from '@core/context/emailLinks';
 import { UserContextProvider } from '@core/context/user';
 import { hasLoginCookie } from '@core/util/cookies';
@@ -124,7 +124,7 @@ render(
   () => (
     <QueryClientProvider client={client}>
       <AnalyticsContextProvider>
-        <PosthogProvider>
+        <FlagsProvider>
           <UserContextProvider>
             <EmailLinksContextProvider>
               <ListEntityNoopMetadataProvider>
@@ -158,7 +158,7 @@ render(
               </ListEntityNoopMetadataProvider>
             </EmailLinksContextProvider>
           </UserContextProvider>
-        </PosthogProvider>
+        </FlagsProvider>
       </AnalyticsContextProvider>
     </QueryClientProvider>
   ),

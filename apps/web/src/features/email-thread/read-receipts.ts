@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableEmailReadReceipts } from '@core/constant/featureFlags';
 import { useEmailLinksQuery } from '@queries/email/link';
 import { useThreadReadReceiptsQuery } from '@queries/email/read-receipts';

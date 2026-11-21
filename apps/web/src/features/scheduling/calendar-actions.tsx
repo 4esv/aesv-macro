@@ -1,5 +1,5 @@
 import { ViewSidebar } from '@app/components/view-shell';
-import { ShowFeatureFlag } from '@app/lib/analytics/posthog';
+import { ShowFeatureFlag } from '@app/lib/analytics/flags';
 import { useNavigate } from '@app/lib/split-router';
 import { bookingLinksRoute } from '@app/routes/routes';
 import { toast } from '@core/component/Toast/Toast';

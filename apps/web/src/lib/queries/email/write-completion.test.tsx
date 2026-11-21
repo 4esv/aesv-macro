@@ -44,7 +44,7 @@ vi.mock('./graphql/thread', () => ({
 vi.mock('@app/lib/analytics/analytics-context', () => ({
   useAnalytics: () => ({ track: mocks.track }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({ useFeatureFlag: vi.fn() }));
+vi.mock('@app/lib/analytics/flags', () => ({ useFeatureFlag: vi.fn() }));
 vi.mock('@macro-inc/observability', () => ({
   Telemetry: { error: mocks.report },
 }));

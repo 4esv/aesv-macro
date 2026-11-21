@@ -583,6 +583,23 @@ const HTML_PRELOADS = [
  * Adds `<link rel="preload">` for HTML_PRELOADS, so their downloads start with
  * the HTML instead of after the entry runs.
  */
+/**
+ * A local-backend bundle's API is its own origin, so it drops index.html's
+ * preconnect to Macro's gateway instead of opening a connection to macro.com.
+ */
+function localGatewayPreconnect(): Plugin {
+  return {
+    name: 'local-gateway-preconnect',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html) =>
+        process.env.VITE_LOCAL_BACKEND_ORIGIN
+          ? html.replace(/<link\s+rel="preconnect"\s+href="%GATEWAY_ORIGIN%"[^>]*>/, '')
+          : html,
+    },
+  };
+}
+
 function htmlPreloads(): Plugin {
   let base = '/';
   return {
@@ -649,6 +666,7 @@ export const createAppViteConfig = (): UserConfigFn => {
         solid(),
         wasm(),
         loroAsyncWasm(),
+        localGatewayPreconnect(),
         htmlPreloads(),
         tailwind(),
         solidSvg({ defaultAsComponent: true }),

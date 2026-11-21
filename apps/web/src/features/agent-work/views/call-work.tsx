@@ -1,5 +1,5 @@
 import { CollapsibleSection } from '@app/components/view-shell/CollapsibleSection';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { UserGroup } from '@core/component/UserGroup';
 import { UserIcon } from '@core/component/UserIcon';

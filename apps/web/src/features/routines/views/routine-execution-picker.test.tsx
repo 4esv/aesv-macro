@@ -187,7 +187,7 @@ afterEach(() => {
 });
 
 describe('routine execution picker', () => {
-  it('selects Macro models with the keyboard and restores trigger focus', async () => {
+  it('selects aesv models with the keyboard and restores trigger focus', async () => {
     const { selection } = mount({
       kind: 'agent',
       agentId: managedId,
@@ -322,7 +322,7 @@ describe('routine execution picker', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('preserves a missing agent and override visibly instead of falling back to Macro', () => {
+  it('preserves a missing agent and override visibly instead of falling back to aesv', () => {
     const { selection, onChange } = mount({
       kind: 'agent',
       agentId: missingId,

@@ -1,5 +1,5 @@
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { createUrqlQuery } from '@app/lib/urql-solid/create-urql-query';
 import { disableBrowserTursoCache } from '@core/constant/featureFlags';
 import { UserContextProvider } from '@core/context/user';
@@ -302,7 +302,7 @@ if (!root) throw new Error('missing functional test root');
 const dispose = render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <TagSetsProvider tagSets={() => tagSets}>
@@ -310,7 +310,7 @@ const dispose = render(
             </TagSetsProvider>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   root

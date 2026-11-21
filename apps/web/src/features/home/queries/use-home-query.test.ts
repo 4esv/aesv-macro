@@ -43,7 +43,7 @@ vi.mock('@entity', async () => ({
 }));
 vi.mock('@notifications', async () => await import('@notifications/types'));
 const flags = vi.hoisted(() => ({ graphqlSoup: false }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: flag.key === 'enable-graphql-soup' ? flags.graphqlSoup : true,
   }),

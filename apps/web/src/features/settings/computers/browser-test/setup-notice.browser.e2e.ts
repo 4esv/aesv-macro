@@ -173,7 +173,7 @@ test('closes during setup, is told the computer is ready, and finishes from the 
   await dialog(page).getByRole('link', { name: 'Open claude.ai' }).click();
   await (await claudeTab).close();
   await dialog(page)
-    .getByRole('button', { name: 'Use Macro credits instead' })
+    .getByRole('button', { name: 'Use aesv credits instead' })
     .click();
   await expect(
     dialog(page).getByRole('heading', { name: "Maya's Agent is ready" })
@@ -189,7 +189,7 @@ test('closes during setup, is told the computer is ready, and finishes from the 
       .getByRole('radio', { name: /On a Macro computer/ })
   ).toBeChecked();
   await form
-    .getByText('On a Macro computer')
+    .getByText('On a aesv computer')
     .evaluate((label) => label.scrollIntoView({ block: 'center' }));
   // Hold on the result so the recording ends on it.
   await page.waitForTimeout(1_500);
@@ -247,7 +247,7 @@ test('a failed setup notice says why and reopens setup to Retry', async ({
     'Everyone using this computer can use this Claude sign-in'
   );
   await expect(
-    dialog(page).getByRole('button', { name: 'Use Macro credits instead' })
+    dialog(page).getByRole('button', { name: 'Use aesv credits instead' })
   ).toHaveCount(0);
   await shoot(page, 'notice-failed-reopened');
 });

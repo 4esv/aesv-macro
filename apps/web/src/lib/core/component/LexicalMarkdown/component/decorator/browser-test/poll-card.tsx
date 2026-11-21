@@ -5,7 +5,7 @@ import type { FormDetail } from '@app/features/block-form/core/form-model';
 import { createMockFormContext } from '@app/features/block-form/tests/mock-context';
 import { FormCardView } from '@app/features/block-form/views/form-card-view';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { UserContextProvider } from '@core/context/user';
 import { createBlockInstance } from '@core/orchestrator';
 import { authKeys } from '@queries/auth/keys';
@@ -247,7 +247,7 @@ function Fixture() {
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <StaticMarkdownContext theme={channelTheme}>
@@ -257,7 +257,7 @@ render(
             </StaticMarkdownContext>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   document.getElementById('root')!

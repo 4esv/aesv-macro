@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { setGlobalSplitManager } from '@app/signal/splitLayout';
 import type {
   SplitContent,
@@ -160,13 +160,13 @@ function DocumentFixture() {
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <DocumentFixture />
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   document.getElementById('root')!

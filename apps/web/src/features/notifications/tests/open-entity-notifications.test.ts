@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   loading: false,
   createDocumentQuery: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({
     enabled: mocks.graphql && !mocks.loading,
     loading: mocks.loading,

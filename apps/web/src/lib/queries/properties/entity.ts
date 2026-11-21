@@ -1,5 +1,5 @@
 import { analytics } from '@app/lib/analytics';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { toast } from '@core/component/Toast/Toast';
 import {
   enableGraphqlSoup,

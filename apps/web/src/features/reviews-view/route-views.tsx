@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { useNavigate, useParams } from '@app/lib/split-router';
 import { tasksSplitRoute } from '@app/routes/routes';
 import {

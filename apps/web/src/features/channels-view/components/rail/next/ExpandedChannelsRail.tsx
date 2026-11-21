@@ -3,7 +3,7 @@ import { createLayoutAnimation } from '@app/components/drag-drop/create-layout-a
 import type { ListScrollHandle } from '@app/components/list';
 import { ViewSidebar } from '@app/components/view-shell';
 import { SidebarRoutineSuggestions } from '@app/features/routine-suggestions/routine-suggestions';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { enableChatSidebarSectionResize } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';

@@ -137,7 +137,7 @@ vi.mock('@components/app/side-panel', () => ({
   },
   useSidePanel: () => null,
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 vi.mock('@components/app/split-layout/components/SplitFileMenu', () => ({

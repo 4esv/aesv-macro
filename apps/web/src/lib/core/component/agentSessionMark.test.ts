@@ -33,7 +33,7 @@ describe('agentSessionMark', () => {
     ).toBe(agentSessionMark({ harness: 'codex' }).Icon);
   });
 
-  it('uses the Macro mark for Macro runtimes and first-party Macro bots', () => {
+  it('uses the aesv mark for aesv runtimes and first-party aesv bots', () => {
     expect(agentSessionMark({ harness: 'macro-inmem' }).class).toBe(
       'text-accent'
     );

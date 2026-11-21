@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import type { BlockAlias, BlockName } from '@core/block';
 import { UserContextProvider } from '@core/context/user';
 import { onElementConnect } from '@core/util/onElementConnect';
@@ -318,7 +318,7 @@ function Fixture() {
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <StaticMarkdownContext theme={channelTheme}>
@@ -328,7 +328,7 @@ render(
             </StaticMarkdownContext>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   document.getElementById('root')!

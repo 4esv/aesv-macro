@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
   enabled: (): boolean => true,
   mountQuery: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   ShowFeatureFlag: (props: ParentProps) => (
     <Show when={mocks.enabled()}>{props.children}</Show>
   ),

@@ -1749,7 +1749,7 @@ describe('getChannelEntityTarget', () => {
       content: {
         messageId: 'agent-msg',
         sender: null,
-        senderDisplayName: 'Macro Agent',
+        senderDisplayName: 'aesv Agent',
       },
     } as UnifiedNotification['notification_metadata'];
     const olderNotification = sendNotification('older-notification', 'older');

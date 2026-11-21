@@ -10,7 +10,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TaskDuplicateMatchPill } from './TaskDuplicateMatches';
 
 const mocks = vi.hoisted(() => ({ matches: vi.fn(), enabled: true }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.enabled }),
 }));
 vi.mock('@queries/storage/task-duplicates', () => ({

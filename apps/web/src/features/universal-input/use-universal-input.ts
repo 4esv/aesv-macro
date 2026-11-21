@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableUniversalInput } from '@core/constant/featureFlags';
 
 /** The rollout flag is the only control for enabling Universal Input. */

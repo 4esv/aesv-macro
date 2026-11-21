@@ -2,7 +2,7 @@ import '@app/index.css';
 import { Content } from '@app/features/channel/Message/Content';
 import { MessageProvider } from '@app/features/channel/Message/context';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import type { MessageData } from '@core/messages/types';
 import { isTouchDevice } from '@core/mobile/isTouchDevice';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
@@ -75,7 +75,7 @@ function Fixture() {
   onCleanup(() => client.clear());
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <StaticMarkdownContext>
             <main
@@ -91,7 +91,7 @@ function Fixture() {
             </main>
           </StaticMarkdownContext>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

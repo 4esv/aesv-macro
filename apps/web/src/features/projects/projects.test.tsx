@@ -27,7 +27,7 @@ const mocks = vi.hoisted(() => ({
   get: vi.fn(),
   changeIcon: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => createMemo(() => ({ enabled: mocks.enabled() })),
   ShowFeatureFlag: (props: ParentProps) => (
     <Show when={mocks.enabled()}>{props.children}</Show>

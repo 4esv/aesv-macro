@@ -107,7 +107,7 @@ describe('eventForwardSummary', () => {
         conferenceUrl: 'https://meet.google.com/abc-defg-hij',
         conferenceProvider: 'google_meet',
         location: callUrl,
-        description: `<p>Notes</p><p>Join Macro call: <a href="${callUrl}">${callUrl}</a></p>`,
+        description: `<p>Notes</p><p>Join aesv call: <a href="${callUrl}">${callUrl}</a></p>`,
       }),
       '12-hour'
     );

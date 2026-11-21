@@ -18,7 +18,7 @@ vi.mock('@app/features/chat/ChatWithAgentButton', () => ({
 vi.mock('@components/app/split-layout/layout', () => ({
   useSplitLayout: () => ({ openWithSplit: mocks.open }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@app/signal/splitLayout', () => ({

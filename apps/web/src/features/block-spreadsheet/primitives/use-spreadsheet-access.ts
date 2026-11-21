@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableSpreadsheets } from '@core/constant/featureFlags';
 
 /** PostHog owns rollout targeting, just like other app feature flags. */

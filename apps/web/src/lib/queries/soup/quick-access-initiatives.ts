@@ -1,5 +1,5 @@
 import { QUERY_FILTERS_BASE } from '@app/features/next-soup/filters/query-filters';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableProjects } from '@core/constant/featureFlags';
 import type { InitiativeEntity } from '@entity';
 import { queryReadyGate } from '@queries/gate';

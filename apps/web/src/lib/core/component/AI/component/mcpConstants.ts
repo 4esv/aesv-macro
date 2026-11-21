@@ -1,9 +1,10 @@
-export const MACRO_MCP_URL = 'https://mcp-server.macro.com/mcp';
+// FIX: the self-hosted stack serves no /mcp route yet; W-2065 adds one.
+export const MACRO_MCP_URL = `${globalThis.location?.origin ?? ''}/mcp`;
 
 export const MACRO_MCP_CONFIG = JSON.stringify(
   {
     mcpServers: {
-      macro: {
+      aesv: {
         type: 'http',
         url: MACRO_MCP_URL,
       },
@@ -17,12 +18,12 @@ export const CLI_COMMANDS = [
   {
     key: 'claude-cli',
     label: 'Claude Code',
-    command: `claude mcp add --transport http macro ${MACRO_MCP_URL}`,
+    command: `claude mcp add --transport http aesv ${MACRO_MCP_URL}`,
   },
   {
     key: 'codex-cli',
     label: 'Codex CLI',
-    command: `codex mcp add macro --url ${MACRO_MCP_URL}`,
+    command: `codex mcp add aesv --url ${MACRO_MCP_URL}`,
   },
 ] as const;
 

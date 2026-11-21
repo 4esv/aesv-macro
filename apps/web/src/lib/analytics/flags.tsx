@@ -12,8 +12,8 @@ type JsonType =
 
 // This build has no remote flag service: a flag is its env override or
 // `default`, and the answer is known at startup.
-export const [PosthogProvider, usePosthog] = createAssertedContextProvider(
-  'PosthogProvider',
+export const [FlagsProvider, useFlags] = createAssertedContextProvider(
+  'FlagsProvider',
   () => ({ flagsLoaded: () => true })
 );
 

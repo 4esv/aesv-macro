@@ -16,7 +16,7 @@ const graphqlMocks = vi.hoisted(() => ({
   hydrateGraphqlSoup: vi.fn(),
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: vi.fn(),
 }));
 vi.mock('@core/constant/featureFlags', () => ({

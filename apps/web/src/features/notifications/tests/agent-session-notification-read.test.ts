@@ -86,7 +86,7 @@ const settled: UnifiedNotification = {
       sessionId: session.id,
       sessionName: session.name,
       botId: session.botId,
-      botName: 'Macro Coder',
+      botName: 'aesv Coder',
       channelId: 'channel',
       threadId: 'thread',
       turn: 3,

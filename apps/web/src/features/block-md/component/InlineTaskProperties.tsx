@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { ProgressChip } from '@core/component/LexicalMarkdown/component/status/Progress';
 import { enableProjects } from '@core/constant/featureFlags';
 import { fireAndForget } from '@core/util/fireAndForget';

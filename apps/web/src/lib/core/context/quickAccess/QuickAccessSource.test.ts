@@ -97,7 +97,7 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableProjects: { key: 'enable-projects' },
   isFeatureEnabled: () => mocks.crmEnabled(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key?: string }) => () => ({
     enabled:
       flag.key === 'enable-graphql-soup'

@@ -436,7 +436,7 @@ describe('composeAgentContextPrompt', () => {
       '<you name="pickle" handle="pickle" id="bot|00000000-0000-0000-0000-00000000c5c5">'
     );
     expect(text).toContain(
-      'You are pickle, an agent in Macro. People address you as pickle or @pickle.'
+      'You are pickle, an agent in aesv. People address you as pickle or @pickle.'
     );
     expect(text?.indexOf('<you')).toBeLessThan(text?.indexOf('<session') ?? 0);
   });

@@ -29,7 +29,7 @@ vi.mock('@app/features/soup', async () => ({
   ...(await import('@app/features/soup/collection/row-store')),
 }));
 vi.mock('@entity', async () => await import('@entity/types/entity'));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => mocks.flag,
 }));
 vi.mock('@components/app/GlobalAppState', () => ({

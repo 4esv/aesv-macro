@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import settingsNavMessages from '@app/lib/i18n/locales/en/settings-nav';
 import BellIcon from '@icon/system/regular/bell-simple.svg';

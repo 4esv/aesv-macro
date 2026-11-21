@@ -1,6 +1,6 @@
 import { ViewSidebar } from '@app/components/view-shell';
 import { MobileFilterDrawer } from '@app/components/view-shell/MobileFilterDrawer';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { MobileDrawer } from '@components/app/mobile/MobileDrawer';
 import { enableMultiInbox } from '@core/constant/featureFlags';
 import { useAddInboxFlow } from '@core/email-link';

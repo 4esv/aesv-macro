@@ -37,7 +37,7 @@ vi.mock('@entity', async () => ({
   ...(await import('@entity/utils/company-properties')),
 }));
 vi.mock('@notifications', async () => await import('@notifications/types'));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.features() }),
 }));
 vi.mock('@core/constant/featureFlags', async (importOriginal) => ({

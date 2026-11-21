@@ -1,5 +1,5 @@
 import { filterSoupItemByRequestBody } from '@app/features/next-soup/filters/query-filters';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableGraphqlSoup } from '@core/constant/featureFlags';
 import { throwOnErr } from '@core/util/result';
 import type { EntityData } from '@entity';

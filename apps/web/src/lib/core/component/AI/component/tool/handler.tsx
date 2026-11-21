@@ -5,7 +5,7 @@ import {
   listCompaniesHandler,
 } from '@app/features/crm/crm-tool-renderers';
 import { pipelineToolHandlers } from '@app/features/crm/pipeline-tool-renderers';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableDatabases } from '@core/constant/featureFlags';
 import {
   deserializeToolCall,

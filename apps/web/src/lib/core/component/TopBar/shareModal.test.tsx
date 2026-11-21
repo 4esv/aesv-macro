@@ -1,4 +1,4 @@
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { AppProviders } from '@components/app/AppProviders';
 import { useGlobalBlockOrchestrator } from '@components/app/GlobalAppState';
 import { createBlockOrchestrator } from '@core/orchestrator';
@@ -214,13 +214,13 @@ describe('useShareModal', () => {
 
     const view = render(() => (
       <Show when={showApp()}>
-        <PosthogProvider>
+        <FlagsProvider>
           <AppProviders>
             <Show when={showMenu()}>
               <Menu />
             </Show>
           </AppProviders>
-        </PosthogProvider>
+        </FlagsProvider>
       </Show>
     ));
 

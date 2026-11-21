@@ -1,6 +1,6 @@
 /** Database schemas and the typed ops that change them and their rows; row reads run in `@queries/database-sql`. */
 import { analytics } from '@app/lib/analytics';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableDatabases } from '@core/constant/featureFlags';
 import type { DatabaseOp } from '@core/database-sql/generated/types';
 import { traceDatabaseOps } from '@core/database-sql/trace';

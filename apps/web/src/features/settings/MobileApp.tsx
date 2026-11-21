@@ -5,7 +5,7 @@ export function MobileApp() {
   return (
     <NativeAppInfo
       title="Mobile app"
-      description="Your installed version of Macro."
+      description="Your installed version of aesv."
     />
   );
 }

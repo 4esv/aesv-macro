@@ -55,7 +55,7 @@ describe('agentClaudeState', () => {
     expect(agentClaudeState(undefined, now)).toBe('loading');
   });
 
-  it('runs on Macro credits without a sign-in', () => {
+  it('runs on aesv credits without a sign-in', () => {
     expect(agentClaudeState({ mode: 'macro_credits' }, now)).toBe('credits');
   });
 

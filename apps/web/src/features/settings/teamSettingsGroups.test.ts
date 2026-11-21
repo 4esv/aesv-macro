@@ -25,9 +25,9 @@ const teamGroup = () =>
 
 describe('team settings group', () => {
   it('names the group after the team and lists every team page', () => {
-    setTeamsQuery({ isSuccess: true, data: [{ name: 'Macro' }] });
+    setTeamsQuery({ isSuccess: true, data: [{ name: 'aesv' }] });
     const group = teamGroup();
-    expect(group().label).toBe('Team · Macro');
+    expect(group().label).toBe('Team · aesv');
     expect(group().items.map((item) => item.label)).toEqual([
       'General',
       'Members',

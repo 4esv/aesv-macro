@@ -17,7 +17,7 @@ vi.mock('@core/mobile/isTouchDevice', () => ({
   isTouchDevice: () => device.touch,
 }));
 vi.mock('@app/lib/analytics', () => ({ analytics: { track: vi.fn() } }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@app/features/agents-view/primitives/open-page', () => ({

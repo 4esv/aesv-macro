@@ -11,7 +11,7 @@
 
 import '../../../../../index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import type { CollabSurfaceLoroManager } from '@core/collab-surface/createCollabSurface';
 import { UserContextProvider } from '@core/context/user';
 import { fireAndForget } from '@core/util/fireAndForget';
@@ -511,7 +511,7 @@ const client = new QueryClient();
 render(
   () => (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <UserContextProvider>
             <DragDropProvider>
@@ -519,7 +519,7 @@ render(
             </DragDropProvider>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   ),
   root

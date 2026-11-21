@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
   editorMounted: vi.fn(),
 }));
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => state.flag,
 }));
 vi.mock('@core/constant/featureFlags', () => ({ enableForms: {} }));

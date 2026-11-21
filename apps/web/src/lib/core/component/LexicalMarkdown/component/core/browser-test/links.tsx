@@ -1,6 +1,6 @@
 import '@app/index.css';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
-import { PosthogProvider } from '@app/lib/analytics/posthog';
+import { FlagsProvider } from '@app/lib/analytics/flags';
 import { UserContextProvider } from '@core/context/user';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
 import { createSignal, onCleanup } from 'solid-js';
@@ -13,7 +13,7 @@ import { StaticMarkdown, StaticMarkdownContext } from '../StaticMarkdown';
 initializeLexical();
 
 const url = 'https://apps.apple.com/us/app/macro-app/id6743133649';
-const original = `hey! can you rate the Macro app on the App Store (5 stars if you're feeling it) and leave a quick review if you can? takes 30 seconds:\n${url}\n\n(sent by @macro on behalf of Jacob)`;
+const original = `hey! can you rate the aesv app on the App Store (5 stars if you're feeling it) and leave a quick review if you can? takes 30 seconds:\n${url}\n\n(sent by @macro on behalf of Jacob)`;
 
 function Fixture() {
   const initialValue =
@@ -28,7 +28,7 @@ function Fixture() {
     .withLinks({ floatingMenu: true, autoLinkMatchMode: 'common-tlds' });
   return (
     <AnalyticsContextProvider>
-      <PosthogProvider>
+      <FlagsProvider>
         <QueryClientProvider client={client}>
           <UserContextProvider>
             <StaticMarkdownContext>
@@ -38,7 +38,7 @@ function Fixture() {
                   data-testid="original"
                   class="border border-edge rounded p-4"
                 >
-                  <p class="font-medium mb-3">Macro · Agent</p>
+                  <p class="font-medium mb-3">aesv · Agent</p>
                   <StaticMarkdown markdown={original} />
                 </section>
                 <section
@@ -46,7 +46,7 @@ function Fixture() {
                   class="border border-edge rounded p-4"
                 >
                   <StaticMarkdown
-                    markdown={`here's the clickable link: [Rate Macro on the App Store](${url})`}
+                    markdown={`here's the clickable link: [Rate aesv on the App Store](${url})`}
                   />
                 </section>
                 <section
@@ -89,7 +89,7 @@ function Fixture() {
             </StaticMarkdownContext>
           </UserContextProvider>
         </QueryClientProvider>
-      </PosthogProvider>
+      </FlagsProvider>
     </AnalyticsContextProvider>
   );
 }

@@ -61,7 +61,7 @@ vi.mock('@service-connection/websocket', () => ({
   ws: { addEventListener: vi.fn(), send: vi.fn() },
   createConnectionWebsocketEffect: vi.fn(),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.projectsEnabled }),
 }));
 vi.mock('@entity', () => ({

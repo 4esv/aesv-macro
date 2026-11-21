@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import type { RoutineMentionItem } from '@core/component/LexicalMarkdown/utils/mentionsUtils';
 import { enableRoutineSharing } from '@core/constant/featureFlags';
 import { useUserId } from '@core/context/user';

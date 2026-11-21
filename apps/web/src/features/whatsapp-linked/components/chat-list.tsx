@@ -132,9 +132,7 @@ export function ChatList(props: {
                         variant="secondary"
                         size="sm"
                         aria-label={
-                          props.adding.has(chat.jid)
-                            ? 'Adding…'
-                            : 'Add to Macro'
+                          props.adding.has(chat.jid) ? 'Adding…' : 'Add to aesv'
                         }
                         disabled={props.adding.has(chat.jid)}
                         onClick={() => props.onAdd(chat)}
@@ -144,7 +142,7 @@ export function ChatList(props: {
                         <span class="mobile:hidden">
                           {props.adding.has(chat.jid)
                             ? 'Adding…'
-                            : 'Add to Macro'}
+                            : 'Add to aesv'}
                         </span>
                       </Button>
                     }

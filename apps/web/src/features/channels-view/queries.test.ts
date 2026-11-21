@@ -43,7 +43,7 @@ const createChannelDetailQuery = vi.hoisted(() =>
 
 vi.mock('@queries/soup/items', () => ({ useSoupAstItemsQuery }));
 vi.mock('@queries/channel/detail', () => ({ createChannelDetailQuery }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => graphqlSoup,
 }));
 vi.mock('@entity', () => ({

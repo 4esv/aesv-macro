@@ -450,7 +450,7 @@ function CalendarEventPreviewDetails(props: {
                 props.onJoin?.();
               }}
             >
-              Join Macro call
+              Join aesv call
               <ArrowSquareOutIcon class="size-3.5 shrink-0" />
             </Button>
           </MetadataInfo>
@@ -910,7 +910,7 @@ export function DocumentPreviewContent(props: DocumentPreviewContentProps) {
             <Show when={canOpenInChat()}>
               <Dropdown.Item onSelect={handleOpenInChat}>
                 <SparkleIcon class="size-4" />
-                Ask Macro
+                Ask aesv
               </Dropdown.Item>
             </Show>
             <Dropdown.CopyItem

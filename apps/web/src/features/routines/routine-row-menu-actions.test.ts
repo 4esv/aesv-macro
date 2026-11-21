@@ -21,7 +21,7 @@ vi.mock('@app/features/next-soup/actions', () => ({
   makeCopyLinkAction: () => ({ executeByBlock: vi.fn() }),
   makeCopyEntityIdAction: () => ({ executeById: vi.fn() }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false }),
 }));
 vi.mock('@app/signal/splitLayout', () => ({ globalSplitManager: () => {} }));

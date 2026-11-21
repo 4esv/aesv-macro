@@ -8,7 +8,7 @@ import { EntityAppearanceTrigger } from '../entity-appearance/entity-appearance'
  * the share dialog agree with what the service answered.
  */
 
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { HeaderActionButton } from '@components/app/HeaderActionButton';
 import { HeaderActionGroup } from '@components/app/HeaderActionGroup';
 import { ResponsivePermissionsBadge } from '@components/app/ResponsiveBlockToolbar';

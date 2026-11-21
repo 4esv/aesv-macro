@@ -66,7 +66,7 @@ export default defineConfig({
         '@core/component/UserIcon',
         '@core/component/inboxIcon',
         '@queries/email/mail-accounts',
-        '@app/lib/analytics/posthog',
+        '@app/lib/analytics/flags',
         '@core/email-link',
         '@app/components/view-shell',
       ].map((name) => ({

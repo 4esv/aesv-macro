@@ -1,5 +1,5 @@
 import { useViewShell, ViewShell } from '@app/components/view-shell';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import {
   useParams,

@@ -9,7 +9,7 @@ const usePropertyEntityDisplay = vi.fn(
   (_entityId: () => string, _entityType: () => string) => ({})
 );
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: databasesEnabled() }),
 }));
 vi.mock('@queries/bots/bots', () => ({

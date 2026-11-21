@@ -54,7 +54,7 @@ vi.mock('@service-storage/websocket', () => ({
   storageWS: { send() {}, addEventListener() {}, removeEventListener() {} },
   createWebSocketJob() {},
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: true }),
 }));
 vi.mock('@core/constant/featureFlags', async (importOriginal) => ({
@@ -241,7 +241,7 @@ describe('agent reply pending markers', () => {
 describe('static pull request mentions', () => {
   it.each([
     [
-      'a Macro id',
+      'a aesv id',
       '<m-pr-mention>{"id":"foreign-1","label":"macro-inc/macro#7956"}</m-pr-mention>',
       'foreign-1',
     ],

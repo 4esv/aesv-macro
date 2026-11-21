@@ -141,7 +141,7 @@ export default defineConfig({
         '@core/user/dmActivity': `${directory}/calendar-adapters.tsx`,
         '@core/component/EntityIcon': `${directory}/calendar-adapters.tsx`,
         '@core/user/use-contact-filter-options': `${directory}/list-filter-adapters.tsx`,
-        '@app/lib/analytics/posthog': `${directory}/list-filter-adapters.tsx`,
+        '@app/lib/analytics/flags': `${directory}/list-filter-adapters.tsx`,
         '@property/tags/use-tag-filter-group': `${directory}/list-filter-adapters.tsx`,
         '../context/drive-context': `${directory}/list-filter-adapters.tsx`,
         '../email-view/filters/use-email-filters': `${directory}/list-filter-adapters.tsx`,

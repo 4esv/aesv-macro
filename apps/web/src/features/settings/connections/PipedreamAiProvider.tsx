@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { linkGithubAccount } from '@core/auth/authorize-github';
 import { toast } from '@core/component/Toast/Toast';
 import { macroConnect } from '@core/constant/featureFlags';

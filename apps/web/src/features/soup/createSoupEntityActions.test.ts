@@ -73,7 +73,7 @@ vi.mock('@app/features/property/editor/state/propertyEditor', () => ({
 vi.mock('@app/lib/analytics/analytics-context', () => ({
   useAnalytics: () => ({ track: vi.fn() }),
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: mocks.projectsEnabled }),
 }));
 vi.mock('@app/lib/i18n', () => ({ t: (key: string) => key }));

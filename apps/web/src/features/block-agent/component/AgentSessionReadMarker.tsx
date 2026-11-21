@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { enableGraphqlSoup } from '@core/constant/featureFlags';
 import { fireAndForget } from '@core/util/fireAndForget';
 import { markNotificationsForEntityAsRead } from '@notifications/notification-helpers';

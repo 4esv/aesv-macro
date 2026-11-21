@@ -5,7 +5,7 @@
  * contract from `context/form-context`.
  */
 import { createPublicBookingSource } from '@app/features/scheduling/queries/public';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { DatabaseMentionValue } from '@block-database/database-mentions';
 import { exportDatabaseTableCsv } from '@block-database/queries/transfer';
 import { toast } from '@core/component/Toast/Toast';

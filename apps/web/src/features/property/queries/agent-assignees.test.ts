@@ -22,7 +22,7 @@ vi.mock('@core/constant/featureFlags', () => ({
   enableCodexAgents: { key: 'enable-codex-agents' },
   enableCursorAgents: { key: 'enable-cursor-agents' },
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled:
       flag.key === 'enable-chat-v3-agents'
@@ -123,7 +123,7 @@ describe('task agent assignees', () => {
     });
   });
 
-  it('reuses system session-agent rollout and excludes classic Macro', () => {
+  it('reuses system session-agent rollout and excludes classic aesv', () => {
     fixture.agentRollout = true;
     fixture.codexRollout = true;
     fixture.cursorRollout = true;

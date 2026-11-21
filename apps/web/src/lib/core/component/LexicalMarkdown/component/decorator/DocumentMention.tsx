@@ -2,7 +2,7 @@ import { calendarMentionOpen } from '@app/features/calendar-view/mention-open-ta
 import { openCalendarEventSplit } from '@app/features/calendar-view/open-calendar-event';
 import { externalChatApi } from '@app/features/external-chat/queries/production-api';
 import { externalChatContent } from '@app/features/external-view/hosted-content';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { URL_PARAMS as CHANNEL_PARAMS } from '@block-channel/constants';
 import { useSplitLayout } from '@components/app/split-layout/layout';
 import {

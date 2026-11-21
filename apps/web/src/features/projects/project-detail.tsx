@@ -4,7 +4,7 @@ import {
   makeCopyLinkAction,
 } from '@app/features/next-soup/actions';
 import type { ComposeTaskProps } from '@app/features/task-composer/core/types';
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import { useNavigate } from '@app/lib/split-router';
 import { usePending } from '@app/observability/flow';

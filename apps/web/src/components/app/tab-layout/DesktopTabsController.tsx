@@ -1,4 +1,4 @@
-import { useFeatureFlag } from '@app/lib/analytics/posthog';
+import { useFeatureFlag } from '@app/lib/analytics/flags';
 import { t } from '@app/lib/i18n';
 import type { SplitRouter } from '@app/lib/split-router';
 import { globalTabManager, setGlobalTabManager } from '@app/signal/tabLayout';

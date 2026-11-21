@@ -17,7 +17,7 @@ import type { RoutineTarget } from './core/routine-target';
 import { Routine } from './routine-detail';
 import type { HistoryRecord } from './views/routine-history';
 
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: () => () => ({ enabled: false, loading: false }),
 }));
 
@@ -168,7 +168,7 @@ vi.mock('@components/app/split-layout/components/SplitFileMenu', () => ({
     );
   },
 }));
-vi.mock('@app/lib/analytics/posthog', () => ({
+vi.mock('@app/lib/analytics/flags', () => ({
   useFeatureFlag: (flag: { key: string }) => () => ({
     enabled: flag.key === 'enable-routine-conditions',
   }),
