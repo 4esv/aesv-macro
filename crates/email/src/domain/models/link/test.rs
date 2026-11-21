@@ -1,4 +1,4 @@
-use super::{EmailBackfillStatus, EmailSyncStatus};
+use super::{EmailBackfillStatus, EmailSyncStatus, UserProvider};
 
 #[test]
 fn inactive_sync_takes_precedence_over_other_facts() {
@@ -39,5 +39,13 @@ fn backfill_status_maps_to_the_user_facing_sync_state() {
     assert_eq!(
         EmailSyncStatus::derive(true, false, None),
         EmailSyncStatus::UpToDate
+    );
+}
+
+#[test]
+fn icloud_serializes_as_the_database_value() {
+    assert_eq!(
+        serde_json::to_string(&UserProvider::ICloud).unwrap(),
+        format!("\"{}\"", UserProvider::ICloud.as_str())
     );
 }

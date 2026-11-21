@@ -57,6 +57,8 @@ pub enum UserProvider {
     Gmail,
     /// Microsoft Outlook and Microsoft 365.
     Outlook,
+    /// iCloud Mail over IMAP and SMTP, with an app-specific password.
+    ICloud,
 }
 
 impl UserProvider {
@@ -64,6 +66,7 @@ impl UserProvider {
         match self {
             UserProvider::Gmail => "GMAIL",
             UserProvider::Outlook => "OUTLOOK",
+            UserProvider::ICloud => "ICLOUD",
         }
     }
 }

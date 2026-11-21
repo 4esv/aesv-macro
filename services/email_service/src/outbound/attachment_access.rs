@@ -65,6 +65,8 @@ impl<A: MailboxAttachmentAccess> AttachmentBytes for ProviderAttachmentBytes<A> 
                     MailboxError::Provider(e) => provider_error(e),
                     _ => AttachmentError::Infrastructure,
                 }),
+            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
+            UserProvider::ICloud => Err(provider_error(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() })),
         }
     }
 }

@@ -5003,6 +5003,10 @@ enum GraphqlEmailProvider {
 	Microsoft Outlook and Microsoft 365.
 	"""
 	OUTLOOK
+	"""
+	iCloud Mail.
+	"""
+	ICLOUD
 }
 
 """

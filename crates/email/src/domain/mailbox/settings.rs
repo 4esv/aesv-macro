@@ -264,6 +264,11 @@ impl<R: MailboxSettingsRepository, G: MailboxSettingsGateway> MailboxSettingsSer
         let intents = self.repository.sender_intents(mailbox).await?;
         let mut result = match mailbox.provider {
             UserProvider::Gmail => self.gateway.gmail_blocked(mailbox).await?,
+            UserProvider::ICloud => {
+                return Err(MailboxError::InvalidInput(
+                    "iCloud Mail has no sender blocking yet",
+                ));
+            }
             UserProvider::Outlook => self
                 .gateway
                 .sender_rules(mailbox)
