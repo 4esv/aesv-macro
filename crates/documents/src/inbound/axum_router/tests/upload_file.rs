@@ -60,6 +60,7 @@ async fn upload_stores_the_body_as_a_document_created_by_the_resolved_principal(
         assert_eq!(
             *documents.created_documents.lock().unwrap(),
             [CreatedDocumentCall {
+                id: None,
                 document_name: "report".to_string(),
                 file_type: Some(FileType::Pdf),
                 project_id: None,

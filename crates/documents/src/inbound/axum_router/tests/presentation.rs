@@ -239,6 +239,7 @@ async fn copy_creates_the_edited_deck_in_the_project_and_leaves_the_original() {
     assert_eq!(
         *documents.created_documents.lock().unwrap(),
         [CreatedDocumentCall {
+            id: None,
             document_name: "Results (French)".to_string(),
             file_type: Some(FileType::Pptx),
             project_id: Some(PROJECT_ID),
