@@ -38,9 +38,12 @@ alwaysApply: false
 - Read a supported iOS notification launch intent before mounting the router;
   keep startup payload validators in the generated compact push-schema entry
   rather than importing the full service schema bundle.
-- Do not register an asset-caching service worker. Keep `public/sw.js` at its
-  deployed URL so existing workers can update, clear their shell and asset
-  caches, and unregister; it must not intercept requests.
+- The web app registers `public/sw.js` (not under Tauri). A page load goes to
+  the network first and falls back to the saved page only with no network or a
+  server error, so a deploy shows at once; upstream removed its cache-first
+  worker in macro-inc/macro#8148 because it left tabs on old builds. Hashed
+  chunks are served from the cache first, and a new `macro-bundle-build` drops
+  the old ones.
 - The build fails if any emitted file exceeds CloudFront's 10 MB compression
   limit; split it rather than raising the limit.
 - The build also fails if a chunk with source code has no source map or a map

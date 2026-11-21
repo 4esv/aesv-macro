@@ -19,8 +19,9 @@
   and the ast-grep rules `ts-browser-floor-apis` and `tsx-browser-floor-apis`
   ban APIs that turned out to be newer; add one there when it bites, or raise
   the floor.
-- The app does not register a service worker. Keep `public/sw.js` as a retirement
-  endpoint for existing installations; see the [startup bundle rule](../../.agents/rules/web/startup-bundle.md).
+- The web app registers `public/sw.js`, an offline shell for the installed app
+  (W-2096): network first for the page, saved hashed chunks first. See the
+  [startup bundle rule](../../.agents/rules/web/startup-bundle.md).
   Loro uses async WASM loading and HTML preloads independently of service workers.
 - Web asset publication and cache headers are covered by
   [web-app delivery](../../infra/stacks/web-app/README.md); its publisher tests
