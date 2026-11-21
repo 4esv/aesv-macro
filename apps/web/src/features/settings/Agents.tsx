@@ -1432,7 +1432,7 @@ function AgentEditorPage(props: {
                   <WhereItRunsOption
                     value="harness"
                     title="On your machine"
-                    description="Your own agent on your own machine. Local Claude Code, Codex, or other harness, via Macrod."
+                    description="Your own agent on your own machine. Local Claude Code, Codex, or another harness."
                     icon={<TerminalIcon />}
                     checked={macrodHarnesses().some(
                       (harness) => harness.id === harnessId()

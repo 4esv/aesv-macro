@@ -710,7 +710,7 @@ export default {
     updateReload: 'Genindlæs',
     updateReadyTitle: 'Opdatering klar',
     updateBundleDescription:
-      'En ny version af Macros skrivebordsapp er downloadet. Opdater for at begynde at bruge den.',
+      'En ny version af aesv-skrivebordsappen er downloadet. Opdater for at begynde at bruge den.',
     updateAction: 'Opdater',
     updateDesktopReadyTitle: 'Opdatering af skrivebordsappen er klar',
     updateNativeDescription:
