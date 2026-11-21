@@ -97,7 +97,7 @@ sfs_delete = []
 
 [dependencies]
 agent_correlation = { path = "../../crates/agent_correlation", features = ["http", "postgres"] }
-calendar_events = { path = "../../crates/calendar_events", features = ["google", "inbound", "postgres", "schema"] }
+calendar_events = { path = "../../crates/calendar_events", features = ["caldav", "google", "inbound", "postgres", "schema"] }
 anyhow = { workspace = true }
 authentication_service_client = { path = "../../crates/authentication_service_client" }
 macro_aws_config = { path = "../../crates/macro_aws_config", features = ["s3", "sqs"] }
@@ -119,7 +119,7 @@ ego-tree = { workspace = true }
 email = { path = "../../crates/email", features = ["axum", "calendar_invitations", "gmail_senders", "gmail_token", "inbound", "outbound", "mailbox", "sqs"] }
 entity_access = { path = "../../crates/entity_access", default-features = false, features = ["outbound"] }
 entity_access_management = { path = "../../crates/entity_access_management" }
-email_api_client = { path = "../../crates/email_api_client", features = ["ports", "outbound-gmail", "outbound-outlook", "microsoft-gate"] }
+email_api_client = { path = "../../crates/email_api_client", features = ["ports", "outbound-gmail", "outbound-outlook", "outbound-imap", "microsoft-gate"] }
 email_db_client = { path = "../../crates/email_db_client" }
 email_utils = { path = "../../crates/email_utils" }
 frecency = { path = "../../crates/frecency", features = ["postgres"] }

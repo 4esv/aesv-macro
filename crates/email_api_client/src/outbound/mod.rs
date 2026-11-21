@@ -11,3 +11,7 @@ pub mod outlook;
 /// Cross-service Microsoft request admission.
 #[cfg(feature = "microsoft-gate")]
 pub mod microsoft_gate;
+
+/// IMAP and SMTP adapter for mailboxes linked with a password, such as iCloud Mail.
+#[cfg(feature = "outbound-imap")]
+pub mod imap;

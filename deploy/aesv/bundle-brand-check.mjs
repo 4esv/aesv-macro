@@ -12,8 +12,9 @@
 // - index.html fails on any macro.com origin, since the page loads it.
 //
 // Source maps (*.map) are skipped: they carry the source and its comments.
-// The pdf.js worker skips the word check: its glyph tables name the macron
-// accent "Macron", which no pattern can tell from Finnish "Macron".
+// In the pdf.js worker, the glyph names "Macron" and "Macronsmall" (the macron
+// accent) are masked before the word check; no pattern can tell them from
+// Finnish "Macron". Any other Macro there still fails.
 import { readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -32,6 +33,7 @@ const KEYS = new Set(['id', 'key', 'slug', 'tag', 'kind', 'type', 'nodeNames']);
 const TEXT_FILE = /\.(html|json|webmanifest|css|svg|txt)$/;
 const JS_FILE = /\.m?js$/;
 const PDFJS_WORKER = /^pdfjs-worker-.*\.m?js$/;
+const GLYPH = /\bMacron(small)?\b(?! [a-z])/g;
 const TEXT_NODES = new Set([
   ts.SyntaxKind.StringLiteral,
   ts.SyntaxKind.NoSubstitutionTemplateLiteral,
@@ -87,10 +89,12 @@ export function check(dir) {
     const say = (what, text) => hits.push(`${rel}: ${what}: ${text}`);
     const posthog = src.search(POSTHOG);
     if (posthog >= 0) say('posthog', around(src, posthog));
-    if (PDFJS_WORKER.test(entry.name)) {
-      // Glyph names only; see the header.
-    } else if (JS_FILE.test(rel)) {
-      for (const text of jsHits(file, src)) say('Macro', text);
+    if (JS_FILE.test(rel)) {
+      // Same length, so each hit's context stays where it was.
+      const text = PDFJS_WORKER.test(entry.name)
+        ? src.replace(GLYPH, (glyph) => `x${glyph.slice(1)}`)
+        : src;
+      for (const hit of jsHits(file, text)) say('Macro', hit);
     } else {
       const macro = src.search(WORD);
       if (macro >= 0) say('Macro', around(src, macro));

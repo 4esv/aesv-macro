@@ -76,7 +76,9 @@ test('the brand fails inflected or hyphenated', () => {
   assert.equal(check(dir).length, 5);
 });
 
-test("pdf.js's macron glyph is not the brand", () => {
-  const dir = bundle({ 'pdfjs-worker-a1.js': 'let g=[`Macron`,63184,`Macronsmall`,63407];' });
-  assert.deepEqual(check(dir), []);
+test("pdf.js's macron glyph is not the brand, but other Macro in it is", () => {
+  const glyphs = 'let g=[`Macron`,63184,`Macronsmall`,63407];let t=`Brevesmall,Macronsmall,figuredash`;';
+  assert.deepEqual(check(bundle({ 'pdfjs-worker-a1.js': glyphs })), []);
+  const planted = bundle({ 'pdfjs-worker-a1.js': `${glyphs}h({label:\`Ask Macro\`});` });
+  assert.equal(check(planted).length, 1);
 });

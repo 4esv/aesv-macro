@@ -326,21 +326,17 @@ struct VisibleCalendarRow {
 }
 
 fn visible_calendar(row: VisibleCalendarRow) -> VisibleCalendar {
-    let outlook = row.provider == "outlook";
+    let provider = CalendarProvider::from_account(&row.provider);
     VisibleCalendar {
-        provider: if outlook {
-            CalendarProvider::Outlook
-        } else {
-            CalendarProvider::Google
-        },
-        capabilities: if outlook {
-            CalendarCapabilities::outlook(
+        provider,
+        capabilities: match provider {
+            CalendarProvider::Outlook => CalendarCapabilities::outlook(
                 row.online_meeting_providers
                     .iter()
                     .any(|provider| provider == "teamsForBusiness"),
-            )
-        } else {
-            CalendarCapabilities::google()
+            ),
+            CalendarProvider::ICloud => CalendarCapabilities::icloud(),
+            CalendarProvider::Google => CalendarCapabilities::google(),
         },
         id: row.id,
         email_link_id: row.email_link_id,
@@ -4535,7 +4531,7 @@ async fn fetch_calendar_reminder_context(
     .await
     .map_err(report)?;
     Ok(row.map(|row| CalendarReminderContext {
-        provider: if row.provider=="outlook" {CalendarProvider::Outlook} else {CalendarProvider::Google},
+        provider: CalendarProvider::from_account(&row.provider),
         time_zone: row.time_zone,
         // This feeds the firing schedule: a malformed value silently drops
         // every default reminder on the calendar, so it must leave a trace.

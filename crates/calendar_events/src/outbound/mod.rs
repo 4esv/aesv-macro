@@ -1,5 +1,8 @@
 //! Outbound calendar adapters.
 
+/// iCloud CalDAV adapter.
+#[cfg(feature = "caldav")]
+pub mod caldav;
 /// Calendar-service HTTP adapter for the mutation port.
 #[cfg(feature = "mutation-client")]
 pub mod calendar_service_mutations;
