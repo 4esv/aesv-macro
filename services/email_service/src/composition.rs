@@ -55,6 +55,7 @@ pub fn inbox_health(
     queue: sqs_client::SQS,
     broker: MacroEventBrokerService<KafkaEventPublisher, TaskTracker>,
     contacts: std::sync::Arc<SqsContactsIngress<SqsContactsQueue>>,
+    icloud: email_api_client::outbound::imap::ImapMailboxRepository,
 ) -> InboxHealth {
     InboxHealthService::new(
         PgInboxHealth {
@@ -67,6 +68,10 @@ pub fn inbox_health(
             outlook: MicrosoftTokens::new(
                 PgMailboxSync::new(db.clone()),
                 MicrosoftCredentialsClient(auth),
+            ),
+            icloud: crate::outbound::email_api::ICloudEnvCredential::verified(
+                icloud,
+                PgMailboxSync::new(db.clone()),
             ),
             db,
             queue,

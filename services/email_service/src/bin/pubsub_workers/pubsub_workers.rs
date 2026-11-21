@@ -316,7 +316,7 @@ async fn main() -> anyhow::Result<()> {
     // adapter serves every iCloud caller, so they share its IMAP sessions.
     let icloud_repository = email_service::outbound::email_api::icloud_repository()?;
     let icloud_mailbox =
-        email_service::outbound::email_api::icloud_mailbox(icloud_repository.clone());
+        email_service::outbound::email_api::icloud_mailbox(icloud_repository.clone(), db.clone());
     let icloud_api = email_service::outbound::email_api::icloud_api(icloud_repository);
     let icloud_sync_repository = email::outbound::mailbox_pg::PgMailboxSync::new(db.clone())
         .for_provider(models_email::service::link::UserProvider::ICloud);

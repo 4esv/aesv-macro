@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE email_links SET is_sync_active = true,needs_reauth = false,\n                last_sync_error_at = NULL,updated_at = now()\n            WHERE id = $1 RETURNING sync_generation",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sync_generation",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "6ce29e607d02ea713716cf208e696816ae182e9f368b5f684dbd06466265f7f6"
+}

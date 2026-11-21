@@ -1,17 +1,31 @@
 //! The iCloud Mail login, read from the stack's environment.
 
+use email::domain::mailbox::credentials::{CredentialHealth, MailboxCredentialHealthRepository};
+use email::outbound::mailbox_pg::PgMailboxSync;
+use email_api_client::domain::models::EmailApiError;
 use email_api_client::domain::models::{AccessToken, MailboxAccess, TokenError, TokenFreshness};
+use email_api_client::domain::ports::MailboxContentReader;
 use email_api_client::domain::ports::{MailboxTokenSource, ProviderTokenSource};
-use email_api_client::outbound::imap::Credential;
+use email_api_client::outbound::imap::{Credential, ImapMailboxRepository};
 use models_email::service::link::Link;
 use uuid::Uuid;
 
 /// The Apple ID and app-specific password every iCloud link logs in with:
 /// the stack's one iCloud login, as the calendar reads it.
-#[derive(Clone, Copy, Debug, Default)]
-pub struct ICloudEnvCredential;
+#[derive(Clone, Default)]
+pub struct ICloudEnvCredential {
+    verifier: Option<(ImapMailboxRepository, PgMailboxSync)>,
+}
 
 impl ICloudEnvCredential {
+    /// A credential that logs in on a fresh request, which follows every
+    /// refused call, and marks the link for reauthorization when iCloud refuses.
+    pub fn verified(repository: ImapMailboxRepository, health: PgMailboxSync) -> Self {
+        Self {
+            verifier: Some((repository, health)),
+        }
+    }
+
     // NOTE(shortcut): one iCloud account from env, a per-link encrypted store when a second account matters.
     fn login() -> Option<(String, String)> {
         let login = calendar_events::outbound::caldav::CalDavCalendarClient::stack_credential()?;
@@ -38,10 +52,24 @@ impl ICloudEnvCredential {
 impl MailboxTokenSource for ICloudEnvCredential {
     async fn access_token(
         &self,
-        _mailbox: MailboxAccess,
-        _freshness: TokenFreshness,
+        mailbox: MailboxAccess,
+        freshness: TokenFreshness,
     ) -> Result<AccessToken, TokenError> {
-        Self::token()
+        let (Some((repository, health)), TokenFreshness::Fresh) = (&self.verifier, freshness)
+        else {
+            return Self::token();
+        };
+        if let Ok(token) = Self::token() {
+            match repository.folders(&token).await {
+                Err(EmailApiError::AuthRequired) => {}
+                // Any other answer says nothing about the password.
+                _ => return Ok(token),
+            }
+        }
+        health
+            .record(mailbox, CredentialHealth::ReauthorizationRequired)
+            .await?;
+        Err(TokenError::ReauthRequired)
     }
 }
 

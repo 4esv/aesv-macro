@@ -1,6 +1,6 @@
 //! UpdateThreadLabels tool for adding or removing a label from all messages in a thread.
 
-use crate::domain::models::{LinkLabel, UserProvider, mailbox_action::MailboxAction};
+use crate::domain::models::{LinkLabel, mailbox_action::MailboxAction};
 use crate::domain::ports::{EmailService, GmailTokenProvider};
 use ai_toolset::{AsyncTool, RequestContext, ServiceContext, ToolCallError, ToolResult};
 use ai_toolset::{ToolAnnotated, ToolAnnotations};

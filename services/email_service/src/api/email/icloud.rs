@@ -1,28 +1,40 @@
-//! Linking the stack's iCloud Mail account.
+//! Turning on mail sync for the stack's iCloud Mail account.
 
-use crate::api::ApiContext;
-use crate::api::context::AuthorizationService;
 use crate::outbound::icloud_link::{ICloudLinkError, ICloudLinks};
 use axum::{
     Router,
-    extract::State,
+    extract::{FromRef, State},
     http::StatusCode,
     response::{IntoResponse, Json, Response},
     routing::get,
 };
-use macro_authorization::{MacroAuthorizationExtractor, UserOrInternal};
+use macro_authorization::{
+    MacroAuthorizationExtractor, MacroAuthorizationService, MacroAuthorizationState, UserOrInternal,
+};
 use model::response::ErrorResponse;
+use std::sync::Arc;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-pub fn router() -> Router<ApiContext> {
-    Router::new().route("/", get(availability).post(link))
+#[cfg(test)]
+mod test;
+
+/// The routes, generic over the state and the authorization service so a test
+/// can serve them without a JWT validator.
+pub fn router<S, Svc>() -> Router<S>
+where
+    S: Clone + Send + Sync + 'static,
+    Svc: MacroAuthorizationService,
+    Arc<ICloudLinks>: FromRef<S>,
+    MacroAuthorizationState<Svc>: FromRef<S>,
+{
+    Router::new().route("/", get(availability::<Svc>).post(link::<Svc>))
 }
 
-/// Whether the stack offers an iCloud Mail account to link.
+/// Whether the caller can link the stack's iCloud Mail account.
 #[derive(Debug, serde::Serialize, serde::Deserialize, ToSchema)]
 pub struct ICloudAvailability {
-    /// True when the stack has an Apple ID and app-specific password.
+    /// True when the stack has an iCloud login and its link row names the caller.
     pub available: bool,
 }
 
@@ -33,23 +45,31 @@ pub struct ICloudLinkResponse {
     pub link_id: Uuid,
 }
 
-/// Whether an iCloud Mail account can be linked on this stack.
+/// Whether the caller can link the stack's iCloud Mail account.
 #[utoipa::path(
     get,
     tag = "Init",
     path = "/email/icloud",
     operation_id = "icloud_availability",
-    responses((status = 200, body = ICloudAvailability), (status = 401, body = ErrorResponse))
+    responses(
+        (status = 200, body = ICloudAvailability),
+        (status = 401, body = ErrorResponse),
+        (status = 500, body = ErrorResponse),
+    )
 )]
-pub(crate) async fn availability(
-    _authorization: MacroAuthorizationExtractor<AuthorizationService, UserOrInternal>,
-) -> Json<ICloudAvailability> {
-    Json(ICloudAvailability {
-        available: ICloudLinks::available(),
-    })
+pub(crate) async fn availability<Svc: MacroAuthorizationService>(
+    State(links): State<Arc<ICloudLinks>>,
+    authorization: MacroAuthorizationExtractor<Svc, UserOrInternal>,
+) -> Response {
+    let user = &authorization.authorization.user;
+    match links.available(user.macro_user_id.as_ref()).await {
+        Ok(available) => Json(ICloudAvailability { available }).into_response(),
+        Err(error) => respond(ICloudLinkError::Database(error)),
+    }
 }
 
-/// Link the stack's iCloud Mail account to the caller and start its sync.
+/// Turn on mail sync for the caller's iCloud link. Only the user the stack's
+/// connect script named may link it.
 #[utoipa::path(
     post,
     tag = "Init",
@@ -65,39 +85,34 @@ pub(crate) async fn availability(
         (status = 500, body = ErrorResponse),
     )
 )]
-#[tracing::instrument(skip(ctx, authorization), fields(user_id = authorization.authorization.user.user_context.user_id))]
-pub(crate) async fn link(
-    State(ctx): State<ApiContext>,
-    authorization: MacroAuthorizationExtractor<AuthorizationService, UserOrInternal>,
+#[tracing::instrument(skip(links, authorization), fields(user_id = authorization.authorization.user.user_context.user_id))]
+pub(crate) async fn link<Svc: MacroAuthorizationService>(
+    State(links): State<Arc<ICloudLinks>>,
+    authorization: MacroAuthorizationExtractor<Svc, UserOrInternal>,
 ) -> Response {
     let user = &authorization.authorization.user;
-    let result = ctx
-        .icloud_links
-        .link(
-            user.macro_user_id.as_ref(),
-            &user.user_context.fusion_user_id,
-        )
-        .await;
-    match result {
+    match links.link(user.macro_user_id.as_ref()).await {
         Ok(link_id) => Json(ICloudLinkResponse { link_id }).into_response(),
-        Err(error) => {
-            let status = match &error {
-                ICloudLinkError::NotConfigured => StatusCode::NOT_FOUND,
-                ICloudLinkError::Taken => StatusCode::CONFLICT,
-                ICloudLinkError::Refused => StatusCode::BAD_GATEWAY,
-                ICloudLinkError::Unavailable => StatusCode::SERVICE_UNAVAILABLE,
-                ICloudLinkError::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            };
-            if status.is_server_error() {
-                tracing::error!(%error, "iCloud link failed");
-            }
-            (
-                status,
-                Json(ErrorResponse {
-                    message: error.to_string().into(),
-                }),
-            )
-                .into_response()
-        }
+        Err(error) => respond(error),
     }
+}
+
+fn respond(error: ICloudLinkError) -> Response {
+    let status = match &error {
+        ICloudLinkError::NotConfigured => StatusCode::NOT_FOUND,
+        ICloudLinkError::Taken => StatusCode::CONFLICT,
+        ICloudLinkError::Refused => StatusCode::BAD_GATEWAY,
+        ICloudLinkError::Unavailable => StatusCode::SERVICE_UNAVAILABLE,
+        ICloudLinkError::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    };
+    if status.is_server_error() {
+        tracing::error!(%error, "iCloud link failed");
+    }
+    (
+        status,
+        Json(ErrorResponse {
+            message: error.to_string().into(),
+        }),
+    )
+        .into_response()
 }

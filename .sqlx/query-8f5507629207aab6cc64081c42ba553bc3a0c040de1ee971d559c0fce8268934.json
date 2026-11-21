@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO email_links (id,macro_id,fusionauth_user_id,email_address,provider,is_sync_active) VALUES ($1,$2,'owner-id',$3,'ICLOUD',false)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8f5507629207aab6cc64081c42ba553bc3a0c040de1ee971d559c0fce8268934"
+}

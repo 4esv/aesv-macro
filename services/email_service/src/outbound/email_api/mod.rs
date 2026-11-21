@@ -42,13 +42,18 @@ pub type ICloudGateway = ProviderMailboxGateway<
     email_api_client::domain::ports::AlwaysAllowRateLimiter,
 >;
 
-/// The mailbox service over one shared IMAP adapter, whose clones share its sessions.
+/// The mailbox service over one shared IMAP adapter, whose clones share its
+/// sessions. A refused login marks the link for reauthorization in `db`.
 pub fn icloud_mailbox(
     repository: email_api_client::outbound::imap::ImapMailboxRepository,
+    db: sqlx::PgPool,
 ) -> ICloudMailbox {
     ICloudMailbox::new(
-        repository,
-        ICloudEnvCredential,
+        repository.clone(),
+        ICloudEnvCredential::verified(
+            repository,
+            email::outbound::mailbox_pg::PgMailboxSync::new(db),
+        ),
         email_api_client::domain::ports::AlwaysAllowRateLimiter,
     )
 }
@@ -59,7 +64,7 @@ pub fn icloud_api(
 ) -> ICloudApi {
     ICloudApi::new(
         repository,
-        ICloudEnvCredential,
+        ICloudEnvCredential::default(),
         email_api_client::domain::ports::AlwaysAllowRateLimiter,
     )
 }

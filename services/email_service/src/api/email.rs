@@ -2,6 +2,7 @@ use axum::Router;
 use axum::routing::post;
 
 use crate::api::ApiContext;
+use crate::api::context::AuthorizationService;
 
 pub(crate) mod attachments;
 pub(crate) mod backfill;
@@ -40,5 +41,8 @@ pub fn router(state: ApiContext) -> Router<ApiContext> {
             macro_middleware::connection_drop_prevention_handler,
         ))
         .route("/init", post(init::handler))
-        .nest("/icloud", icloud::router())
+        .nest(
+            "/icloud",
+            icloud::router::<ApiContext, AuthorizationService>(),
+        )
 }
