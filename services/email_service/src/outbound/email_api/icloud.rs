@@ -28,7 +28,10 @@ impl ICloudEnvCredential {
 
     // NOTE(shortcut): one iCloud account from env, a per-link encrypted store when a second account matters.
     fn login() -> Option<(String, String)> {
-        let login = calendar_events::outbound::caldav::CalDavCalendarClient::stack_credential()?;
+        // The mailbox's address is the Apple ID: `ICloudLinks` turns on only that row.
+        let apple_id = std::env::var("ICLOUD_APPLE_ID").ok()?;
+        let login =
+            calendar_events::outbound::caldav::CalDavCalendarClient::stack_credential(&apple_id)?;
         // An Apple ID holds no `:`, so the first one ends it.
         let (apple_id, password) = login.split_once(':')?;
         Some((apple_id.to_owned(), password.to_owned()))
