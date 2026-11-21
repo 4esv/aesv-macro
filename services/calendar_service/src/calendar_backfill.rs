@@ -19,10 +19,12 @@ use calendar_events::domain::{
         GoogleCalendarBackfillFailureService, GoogleCalendarBackfillRunError,
     },
 };
-use calendar_events::outbound::{google::GoogleCalendarClient, pg::PgCalendarRepository};
+use calendar_events::outbound::{
+    caldav::CalDavCalendarClient, google::GoogleCalendarClient, pg::PgCalendarRepository,
+};
 use chrono::Utc;
 use macro_event_broker::{KafkaEventPublisher, MacroEventBrokerService};
-use models_email::email::service::link::Link;
+use models_email::email::service::link::{Link, UserProvider};
 use redis::aio::MultiplexedConnection;
 use sqlx::PgPool;
 use tokio_util::sync::CancellationToken;
@@ -47,6 +49,15 @@ type GoogleCalendarBackfillService = GoogleCalendarBackfillCoordinator<
     CalendarEventBroker,
 >;
 
+/// The same coordinator over CalDAV, for an iCloud link. iCloud has no push,
+/// so the five-minute due-sync poll keeps it fresh.
+type ICloudCalendarBackfillService = GoogleCalendarBackfillCoordinator<
+    PgCalendarRepository,
+    CalDavCalendarClient,
+    PgCalendarRepository,
+    CalendarEventBroker,
+>;
+
 /// Concrete pre-lease Google Calendar failure handler for this service.
 type GoogleCalendarBackfillFailureHandler =
     GoogleCalendarBackfillFailureService<PgCalendarRepository>;
@@ -63,6 +74,7 @@ pub struct CalendarBackfillContext {
     auth_service_client: AuthServiceClient,
     connection_gateway_client: connection_gateway_client::client::ConnectionGatewayClient,
     coordinator: Arc<GoogleCalendarBackfillService>,
+    icloud: Arc<ICloudCalendarBackfillService>,
     failure: Arc<GoogleCalendarBackfillFailureHandler>,
     reauth: Arc<CalendarReauth>,
     calendar_sync_enabled: bool,
@@ -86,18 +98,26 @@ impl CalendarBackfillContext {
         team_sharing_enabled: bool,
     ) -> Self {
         let repository = PgCalendarRepository::new(db.clone());
+        let http = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .expect("calendar client configuration is valid");
         let coordinator = Arc::new(GoogleCalendarBackfillCoordinator::new(
             repository.clone(),
             GoogleCalendarClient::with_gate(
-                reqwest::Client::builder()
-                    .timeout(Duration::from_secs(30))
-                    .build()
-                    .expect("calendar client configuration is valid"),
+                http.clone(),
                 RedisCalendarRequestGate::new(rate_limiter),
             ),
             repository.clone(),
-            macro_event_broker,
+            macro_event_broker.clone(),
             watch,
+        ));
+        let icloud = Arc::new(GoogleCalendarBackfillCoordinator::new(
+            repository.clone(),
+            CalDavCalendarClient::icloud(http),
+            repository.clone(),
+            macro_event_broker,
+            None,
         ));
         let failure = Arc::new(GoogleCalendarBackfillFailureService::new(repository));
         let reauth = Arc::new(CalendarReauthAnnouncer::new(reauth_notifier));
@@ -108,6 +128,7 @@ impl CalendarBackfillContext {
             auth_service_client,
             connection_gateway_client,
             coordinator,
+            icloud,
             failure,
             reauth,
             calendar_sync_enabled,
@@ -256,6 +277,22 @@ async fn google_backfill(
         }
     };
 
+    if link.provider == UserProvider::ICloud {
+        let Some(credential) =
+            CalDavCalendarClient::stack_credential(link.email_address.0.as_ref())
+        else {
+            return fail_unclaimed(
+                ctx,
+                link_id,
+                calendar_job_id,
+                CalendarBackfillFailureDisposition::ReauthRequired,
+                "iCloud calendar credentials are not connected",
+            )
+            .await;
+        };
+        return run_coordinator(ctx, &credential, &link, calendar_job_id).await;
+    }
+
     // Calendar jobs can be created immediately after an incremental Google scope
     // grant. Bypass the token cache so this job does not reuse a pre-consent
     // access token that lacks calendar scopes.
@@ -299,19 +336,32 @@ async fn run_coordinator(
     calendar_job_id: Uuid,
 ) -> Disposition {
     let mut report = GoogleBackfillRunReport::default();
-    let run_result = ctx
-        .coordinator
-        .run(
-            CalendarBackfillJobKey {
-                job_id: calendar_job_id,
-                email_link_id: link.id,
-            },
-            link.macro_id.as_ref(),
-            access_token,
-            OccurrenceRange::maintenance_horizon(Utc::now()),
-            &mut report,
-        )
-        .await;
+    let key = CalendarBackfillJobKey {
+        job_id: calendar_job_id,
+        email_link_id: link.id,
+    };
+    let range = OccurrenceRange::maintenance_horizon(Utc::now());
+    let run_result = if link.provider == UserProvider::ICloud {
+        ctx.icloud
+            .run(
+                key,
+                link.macro_id.as_ref(),
+                access_token,
+                range,
+                &mut report,
+            )
+            .await
+    } else {
+        ctx.coordinator
+            .run(
+                key,
+                link.macro_id.as_ref(),
+                access_token,
+                range,
+                &mut report,
+            )
+            .await
+    };
     // Quiet token-only polls change nothing; only real changes nudge active
     // viewers to refetch. The nudge goes out even when the run ultimately
     // failed: per-calendar commits before the error are durable, and the

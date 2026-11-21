@@ -20,10 +20,12 @@ where
     T: MailboxTokenSource,
     L: ProviderRateLimiter,
 {
+    // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
     async fn labels(&self, mailbox: SettingsMailbox) -> Result<Vec<Label>, EmailApiError> {
         match mailbox.provider {
             UserProvider::Gmail => self.gmail.list_labels(mailbox.key.link_id).await,
             UserProvider::Outlook => self.outlook.labels(access(mailbox)).await,
+            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         }
     }
     async fn create_label(
@@ -34,6 +36,7 @@ where
         match mailbox.provider {
             UserProvider::Gmail => self.gmail.create_label(mailbox.key.link_id, name).await,
             UserProvider::Outlook => self.outlook.create_label(access(mailbox), name).await,
+            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         }
     }
     async fn delete_label(
@@ -44,6 +47,7 @@ where
         match mailbox.provider {
             UserProvider::Gmail => self.gmail.delete_label(mailbox.key.link_id, name).await,
             UserProvider::Outlook => self.outlook.delete_label(access(mailbox), name).await,
+            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         }
     }
     async fn category_messages(

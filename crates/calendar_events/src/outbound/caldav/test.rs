@@ -640,3 +640,13 @@ fn the_credential_goes_only_to_the_base_origin_or_an_https_icloud_host() {
     assert!(!local.may_receive_credential(&Url::parse("http://127.0.0.1:5233/user/cal/").unwrap()));
     assert!(!local.may_receive_credential(&Url::parse("https://p01-caldav.icloud.com/").unwrap()));
 }
+
+#[test]
+fn the_stack_credential_serves_only_its_own_apple_id() {
+    let credential = |email| credential_for(email, "Axel@iCloud.com".into(), "app-pass".into());
+    assert_eq!(
+        credential(" axel@icloud.com ").as_deref(),
+        Some("Axel@iCloud.com:app-pass")
+    );
+    assert_eq!(credential("someone@icloud.com"), None);
+}

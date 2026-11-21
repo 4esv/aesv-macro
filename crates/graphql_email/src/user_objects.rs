@@ -93,6 +93,9 @@ pub enum GraphqlEmailProvider {
     Gmail,
     /// Microsoft Outlook and Microsoft 365.
     Outlook,
+    /// iCloud Mail.
+    #[graphql(name = "ICLOUD")]
+    ICloud,
 }
 
 impl From<UserProvider> for GraphqlEmailProvider {
@@ -100,6 +103,7 @@ impl From<UserProvider> for GraphqlEmailProvider {
         match provider {
             UserProvider::Gmail => Self::Gmail,
             UserProvider::Outlook => Self::Outlook,
+            UserProvider::ICloud => Self::ICloud,
         }
     }
 }

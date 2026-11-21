@@ -77,6 +77,8 @@ impl<R: InboxCatalogRepository> InboxCatalogService<R> {
                             .next()
                             .is_some_and(|scope| scope.eq_ignore_ascii_case("Calendars.ReadWrite"))
                     }),
+                    // NOTE: an iCloud app password reaches CalDAV, so the link always carries calendar.
+                    UserProvider::ICloud => true,
                 };
                 InboxCatalogEntry {
                     needs_calendar_permission: facts.calendar_disabled || !has_calendar,

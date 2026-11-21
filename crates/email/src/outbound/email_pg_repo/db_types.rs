@@ -155,6 +155,8 @@ pub enum DbUserProvider {
     Gmail,
     /// Microsoft Outlook and Microsoft 365.
     Outlook,
+    /// iCloud Mail over IMAP and SMTP, with an app-specific password.
+    ICloud,
 }
 
 #[derive(Debug, Clone)]

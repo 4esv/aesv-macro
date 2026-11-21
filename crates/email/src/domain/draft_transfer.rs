@@ -190,6 +190,8 @@ where
         let maximum = match plan.destination_provider {
             UserProvider::Gmail => 18_000_000,
             UserProvider::Outlook => 150_000_000,
+            // iCloud Mail caps a message at 20 MB.
+            UserProvider::ICloud => 20_000_000,
         };
         let mut total = plan
             .uploads

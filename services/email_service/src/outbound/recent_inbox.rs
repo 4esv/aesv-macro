@@ -84,6 +84,8 @@ where
                 .into_iter()
                 .map(|message| message.content.message)
                 .collect(),
+            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
+            UserProvider::ICloud => return Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         };
 
         Ok(messages

@@ -41,6 +41,21 @@ async fn actor(db: &PgPool, email: &str) -> (Uuid, MacroUserIdStr<'static>) {
     (id, macro_id)
 }
 
+/// A user without the paid roles. NOTE: on aesv every user gets them at sign-up
+/// (20261117150000_aesv_every_user_has_every_feature), so the free inbox limit
+/// only applies once someone takes them away.
+async fn free_actor(db: &PgPool, email: &str) -> (Uuid, MacroUserIdStr<'static>) {
+    let actor = actor(db, email).await;
+    sqlx::query!(
+        r#"DELETE FROM "RolesOnUsers" WHERE "userId" = $1"#,
+        actor.1.as_ref()
+    )
+    .execute(db)
+    .await
+    .unwrap();
+    actor
+}
+
 async fn attempt(db: &PgPool, actor: (Uuid, MacroUserIdStr<'static>)) -> InitializeMailbox {
     let id = macro_uuid::generate_uuid_v7();
     sqlx::query!("INSERT INTO in_progress_user_link (id,macro_user_id,email_provider,linked_email) VALUES ($1,$2,'OUTLOOK','mailbox@example.com')",id,actor.0)
@@ -215,8 +230,26 @@ async fn wrong_actor_and_changed_snapshot_cannot_consume_an_attempt(db: PgPool) 
 }
 
 #[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
+async fn every_signed_up_user_may_add_another_inbox(db: PgPool) {
+    let owner = actor(&db, "every-feature@example.com").await;
+    for (address, provider) in [
+        ("gmail@example.com", "GMAIL"),
+        ("outlook@example.com", "OUTLOOK"),
+    ] {
+        sqlx::query!("INSERT INTO email_links(id,macro_id,fusionauth_user_id,email_address,provider) VALUES($1,$2,$3,$4,$5::text::email_user_provider_enum)",Uuid::now_v7(),owner.1.as_ref(),owner.0.to_string(),address,provider).execute(&db).await.unwrap();
+    }
+    let mut tx = db.begin().await.unwrap();
+    assert!(
+        lock_gmail_connection(&mut tx, owner.1.as_ref(), "third@example.com")
+            .await
+            .is_ok(),
+        "a third inbox is past the free limit, and every aesv user may add it"
+    );
+}
+
+#[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
 async fn mixed_provider_connection_limit_is_rechecked_without_blocking_reconnect(db: PgPool) {
-    let owner = actor(&db, "limit@example.com").await;
+    let owner = free_actor(&db, "limit@example.com").await;
     let req = attempt(&db, owner.clone()).await;
     let service = MailboxInitializationService::new(
         PgMailboxInitialization(db.clone()),
@@ -241,7 +274,7 @@ async fn mixed_provider_connection_limit_is_rechecked_without_blocking_reconnect
 
 #[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
 async fn gmail_reservation_counts_outlook_and_allows_only_verified_reconnect(db: PgPool) {
-    let owner = actor(&db, "gmail-limit@example.com").await;
+    let owner = free_actor(&db, "gmail-limit@example.com").await;
     for (address, provider) in [
         ("gmail@example.com", "GMAIL"),
         ("outlook@example.com", "OUTLOOK"),
@@ -535,7 +568,7 @@ async fn reconnect_deletes_the_superseded_generations_sync_work(db: PgPool) {
 
 #[sqlx::test(migrator = "MACRO_DB_MIGRATIONS")]
 async fn concurrent_gmail_and_outlook_connections_share_one_remaining_free_slot(db: PgPool) {
-    let owner = actor(&db, "concurrent-limit@example.com").await;
+    let owner = free_actor(&db, "concurrent-limit@example.com").await;
     sqlx::query!("INSERT INTO email_links(id,macro_id,fusionauth_user_id,email_address,provider) VALUES($1,$2,$3,'first@gmail.example','GMAIL')",Uuid::new_v4(),owner.1.as_ref(),owner.0.to_string()).execute(&db).await.unwrap();
     let request = attempt(&db, owner.clone()).await;
     let service = MailboxInitializationService::new(

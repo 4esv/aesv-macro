@@ -114,6 +114,8 @@ impl<T: MailboxTokenSource, B: MacroEventBroker, C: ContactsIngress> InboxHealth
                         message: "Microsoft token health is temporarily unavailable".into(),
                     },
                 }),
+            // FIX: route to the IMAP adapter once iCloud mail sync exists (W-2066).
+            UserProvider::ICloud => Err(EmailApiError::Permanent { message: "iCloud Mail is not wired yet".into() }),
         }
     }
     async fn renew_gmail_watch(

@@ -305,6 +305,8 @@ impl InboxLifecycleRepository for PgMailboxSync {
                     already_in_progress: in_progress && stream.is_some(),
                 }
             }
+            // FIX: start an IMAP resync once iCloud mail sync exists (W-2066).
+            UserProvider::ICloud => return Err(InboxLifecycleError::Unavailable),
         };
         tx.commit().await.map_err(failed)?;
         if current.provider == UserProvider::Outlook && !result.already_in_progress {
