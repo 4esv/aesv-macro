@@ -1793,7 +1793,9 @@ async fn create_markdown_keeps_the_id_the_client_chose() {
             ))
             .expect("request should build");
 
-    let _ = send(&router, request).await;
+    // NOTE: the test router has no sync service, so the create fails after the
+    // document is made and the fake panics on cleanup. The id is recorded first.
+    let _ = tokio::spawn(async move { send(&router, request).await }).await;
 
     assert_eq!(document_service.created_ids(), [Some(id)]);
 }
