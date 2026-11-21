@@ -53,6 +53,8 @@ export function CapturePage(): JSX.Element {
       await saveOfflineNote(id, title().trim(), text());
       setTitle('');
       setText('');
+      // List it now: a send on a network that only looks up can take seconds.
+      refetch();
       refresh();
     } finally {
       setSaving(false);

@@ -85,17 +85,26 @@ export async function clearOfflineNotes(): Promise<void> {
 }
 
 let sending: Promise<string[]> | undefined;
+let queued: Promise<string[]> | undefined;
 
 /**
  * Sends this user's waiting notes, one at a time, and returns the ids the
  * server now holds. A note stays when neither the create nor the check
- * confirms it, and goes again next time. Overlapping calls share one pass.
+ * confirms it, and goes again next time. Passes never overlap: a call made
+ * during a pass runs one more pass after it, so a note saved meanwhile goes too.
  */
 export function sendOfflineNotes(
   userId: string,
   transport: NoteTransport
 ): Promise<string[]> {
-  sending ??= (async () => {
+  if (sending) {
+    queued ??= sending.then(() => {
+      queued = undefined;
+      return sendOfflineNotes(userId, transport);
+    });
+    return queued;
+  }
+  sending = (async () => {
     const sent: string[] = [];
     for (const note of await listOfflineNotes(userId)) {
       const created = await transport.create(note).catch(() => false);

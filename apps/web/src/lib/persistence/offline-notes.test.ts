@@ -67,8 +67,36 @@ describe('offline notes', () => {
     ]);
 
     expect(first).toEqual([mine.id]);
-    expect(second).toEqual([mine.id]);
+    // The second call runs after the first pass and finds nothing left.
+    expect(second).toEqual([]);
     expect(up.creates()).toBe(1);
     expect(await countOfflineNotes()).toBe(1);
+  });
+
+  it('send a note saved while a pass is running, when asked during that pass', async () => {
+    await clearOfflineNotes();
+    const early = await saveOfflineNote('axel', 'Early', 'a');
+    const up = server();
+    let release = () => {};
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const slow = {
+      ...up.transport,
+      async create(note: OfflineNote) {
+        if (note.id === early.id) await gate; // a send on a slow network
+        return up.transport.create(note);
+      },
+    };
+
+    const first = sendOfflineNotes('axel', slow);
+    const late = await saveOfflineNote('axel', 'Late', 'b');
+    const second = sendOfflineNotes('axel', slow);
+    release();
+
+    expect(await first).toEqual([early.id]);
+    expect(await second).toEqual([late.id]);
+    expect(up.creates()).toBe(2);
+    expect(await countOfflineNotes()).toBe(0);
   });
 });
