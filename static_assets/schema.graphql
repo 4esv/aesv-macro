@@ -3168,6 +3168,10 @@ enum GraphqlCalendarProvider {
 	"""
 	GOOGLE
 	"""
+	iCloud calendar over CalDAV.
+	"""
+	ICLOUD
+	"""
 	Microsoft Outlook calendar.
 	"""
 	OUTLOOK

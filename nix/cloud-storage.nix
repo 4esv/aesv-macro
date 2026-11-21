@@ -595,9 +595,20 @@
           + pkgs.lib.concatMapStringsSep " " (binary: "--bin ${binary}") def.binaries
         ) deployServiceBinaryDefinitions;
 
+      # NOTE: mkDummySrc stubs the [patch.crates-io] crates under vendor/, and
+      # a crates.io dependency that reaches into one (rrule into chrono-tz's
+      # zone modules) then fails to build. Overlay their real code, as
+      # prunedDeploySrc does for the service builds.
+      deployDepsDummySrc = pkgs.runCommand "cloud-storage-deploy-deps-src" { } ''
+        cp -rT ${deployDummySrc} $out
+        chmod -R +w $out
+        cp -rfT ${rootDepsSrc} $out
+      '';
+
       deployCargoArtifacts = craneLib.buildDepsOnly (
         commonArgs
         // {
+          dummySrc = deployDepsDummySrc;
           pname = "cloud-storage-deploy-deps";
           doCheck = false;
           # buildDepsOnly runs a cargo check in buildPhase by default; keep this

@@ -595,6 +595,9 @@ pub(crate) fn occurrence_nodes(listings: Vec<OccurrenceListing>) -> Vec<GraphqlC
 pub enum GraphqlCalendarProvider {
     /// Google Calendar.
     Google,
+    /// iCloud calendar over CalDAV.
+    #[graphql(name = "ICLOUD")]
+    ICloud,
     /// Microsoft Outlook calendar.
     Outlook,
 }
@@ -604,6 +607,7 @@ impl From<CalendarProvider> for GraphqlCalendarProvider {
         match provider {
             CalendarProvider::Google => Self::Google,
             CalendarProvider::Outlook => Self::Outlook,
+            CalendarProvider::ICloud => Self::ICloud,
         }
     }
 }

@@ -35,6 +35,13 @@ impl CalendarAccessTokenProvider for CalendarTokenProviderAdapter {
         &self,
         identity: &CalendarLinkTokenIdentity,
     ) -> Result<String, CalendarTokenError> {
+        if identity.provider == CalendarProvider::ICloud {
+            // FIX: read the inbox's iCloud app-specific password from the store the iCloud mail
+            // link writes, and return it as `apple-id:password` for `CalDavCalendarClient`.
+            return Err(CalendarTokenError::ReauthRequired(
+                "iCloud calendar credentials are not connected".into(),
+            ));
+        }
         if identity.provider == CalendarProvider::Outlook {
             let binding = identity.binding.ok_or_else(|| {
                 CalendarTokenError::ReauthRequired("Microsoft calendar binding is missing".into())

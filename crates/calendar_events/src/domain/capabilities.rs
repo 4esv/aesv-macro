@@ -201,7 +201,7 @@ impl ViewerCapabilities {
                 rsvp: true,
                 organize: false,
             },
-            CalendarProvider::Outlook => Self {
+            CalendarProvider::Outlook | CalendarProvider::ICloud => Self {
                 rsvp: true,
                 ..Self::NONE
             },
