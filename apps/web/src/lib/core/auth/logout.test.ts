@@ -143,6 +143,18 @@ describe('logout GraphQL session teardown', () => {
   });
 });
 
+describe('session expiry', () => {
+  it('keeps notes and unsent edits, which the same user sends after signing back in', async () => {
+    client.current = new QueryClient();
+    vi.mocked(clearLocalDocumentCopies).mockClear();
+    vi.mocked(clearOfflineNotes).mockClear();
+    await clearLocalAuthSession('session-expired');
+    expect(clearLocalDocumentCopies).not.toHaveBeenCalled();
+    expect(clearOfflineNotes).not.toHaveBeenCalled();
+    client.current.clear();
+  });
+});
+
 describe('logout notification cache isolation', () => {
   it('retires pending Done buckets and rotates the display-intent session', async () => {
     const queryClient = new QueryClient();

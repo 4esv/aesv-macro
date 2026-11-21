@@ -1,6 +1,8 @@
 import 'fake-indexeddb/auto';
-import { describe, expect, it } from 'vitest';
+import { clearLocalDocumentCopies } from '@macro-inc/collaboration/collab/local-copies';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  claimOfflineCopies,
   clearOfflineNotes,
   countOfflineNotes,
   listOfflineNotes,
@@ -8,6 +10,10 @@ import {
   saveOfflineNote,
   sendOfflineNotes,
 } from './offline-notes';
+
+vi.mock('@macro-inc/collaboration/collab/local-copies', () => ({
+  clearLocalDocumentCopies: vi.fn(async () => {}),
+}));
 
 /** A server that holds notes by id: a second create of one id fails, as the primary key does. */
 function server(options: { down?: boolean; loseResponse?: boolean } = {}) {
@@ -98,5 +104,20 @@ describe('offline notes', () => {
     expect(await second).toEqual([late.id]);
     expect(up.creates()).toBe(2);
     expect(await countOfflineNotes()).toBe(0);
+  });
+
+  it('belong to the user who wrote them: another user signing in clears them and the unsent edits', async () => {
+    await clearOfflineNotes();
+    await claimOfflineCopies('axel');
+    await saveOfflineNote('axel', 'Mine', 'kept through an expired session');
+    vi.mocked(clearLocalDocumentCopies).mockClear();
+
+    await claimOfflineCopies('axel'); // the same user signs back in
+    expect(await countOfflineNotes()).toBe(1);
+    expect(clearLocalDocumentCopies).not.toHaveBeenCalled();
+
+    await claimOfflineCopies('someone');
+    expect(await countOfflineNotes()).toBe(0);
+    expect(clearLocalDocumentCopies).toHaveBeenCalledOnce();
   });
 });

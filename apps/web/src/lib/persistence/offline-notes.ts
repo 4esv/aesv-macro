@@ -1,3 +1,4 @@
+import { clearLocalDocumentCopies } from '@macro-inc/collaboration/collab/local-copies';
 import { RecoverableIDB } from './recoverable-idb';
 
 // Notes written with no network (W-2096). Each is saved here whole, under the
@@ -80,8 +81,47 @@ export async function countOfflineNotes(): Promise<number> {
 
 /** Removes every unsent note on this device, at sign-out. */
 export async function clearOfflineNotes(): Promise<void> {
+  setOwner(undefined);
   if (typeof indexedDB === 'undefined') return;
   await run('readwrite', (store) => store.clear());
+}
+
+// The user this device's notes and unsent edits belong to. An expired session
+// keeps them, since its user sends them after signing back in; a different
+// user signing in clears them first.
+const OWNER_KEY = 'aesv:offline-copies-owner';
+
+function owner(): string | undefined {
+  try {
+    return localStorage.getItem(OWNER_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function setOwner(userId: string | undefined) {
+  try {
+    if (userId) localStorage.setItem(OWNER_KEY, userId);
+    else localStorage.removeItem(OWNER_KEY);
+  } catch {
+    // Without storage the notes stay keyed by user, and sends filter by user.
+  }
+}
+
+/** Marks this device's copies as this user's, clearing another user's first. */
+export async function claimOfflineCopies(userId: string): Promise<void> {
+  const previous = owner();
+  if (previous === userId) return;
+  if (typeof indexedDB !== 'undefined') {
+    const notes = await run('readonly', (store) => store.getAll());
+    for (const note of notes as OfflineNote[])
+      if (note.userId !== userId)
+        await run('readwrite', (store) => store.delete(note.id));
+  }
+  // NOTE: with no owner on record (before this shipped) the edits can't be
+  // attributed, so they stay; their documents still need this user's access.
+  if (previous !== undefined) await clearLocalDocumentCopies();
+  setOwner(userId);
 }
 
 let sending: Promise<string[]> | undefined;

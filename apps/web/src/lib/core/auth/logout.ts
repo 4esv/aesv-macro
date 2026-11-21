@@ -75,8 +75,14 @@ export function clearLocalAuthSession(
     syncLoginStorage(false);
     clearMcpAuthAttempts();
     const documentContextsCleared = clearOfflineDocumentContexts();
-    const documentCopiesCleared = clearLocalDocumentCopies();
-    const offlineNotesCleared = clearOfflineNotes();
+    // An expired session keeps the notes and unsent edits: its user sends them
+    // after signing back in, and claimOfflineCopies clears them if another
+    // user signs in instead.
+    const expired = cause === 'session-expired';
+    const documentCopiesCleared = expired
+      ? undefined
+      : clearLocalDocumentCopies();
+    const offlineNotesCleared = expired ? undefined : clearOfflineNotes();
     clearDocumentQueryCache(queryClient);
     clearTeamCalendarQueries();
     // Start every wipe before waiting, including stores not hydrated this session.

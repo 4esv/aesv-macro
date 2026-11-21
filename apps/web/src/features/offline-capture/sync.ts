@@ -1,4 +1,5 @@
 import {
+  claimOfflineCopies,
   type NoteTransport,
   sendOfflineNotes,
 } from '@app/lib/persistence/offline-notes';
@@ -22,10 +23,14 @@ export const dssNoteTransport: NoteTransport = {
     });
     return created.isOk();
   },
+  // A row alone isn't delivery: a create that failed in finalize leaves one
+  // briefly, or for good if its cleanup fails. Only ready content counts.
   async exists(id) {
-    return (
-      await storageServiceClient.getDocumentMetadata({ documentId: id })
-    ).isOk();
+    storageServiceClient.getDocumentLocation.invalidate({ documentId: id });
+    const location = await storageServiceClient.getDocumentLocation({
+      documentId: id,
+    });
+    return location.isOk() && location.value.data.content.state === 'ready';
   },
 };
 
@@ -37,7 +42,9 @@ export function offlineNoteUser(): string | undefined {
 /** Sends this user's waiting notes and shows each in the notes list. */
 export async function syncOfflineNotes(): Promise<string[]> {
   const userId = offlineNoteUser();
-  if (!userId || deviceLooksOffline()) return [];
+  if (!userId) return [];
+  await claimOfflineCopies(userId);
+  if (deviceLooksOffline()) return [];
   const sent = await sendOfflineNotes(userId, dssNoteTransport);
   for (const id of sent) {
     refetchSoupEntity(id, 'document', {
@@ -48,7 +55,7 @@ export async function syncOfflineNotes(): Promise<string[]> {
   return sent;
 }
 
-/** Sends waiting notes at start, on sign-in and whenever the network returns. */
+/** Claims this device's copies, then sends waiting notes: at start, on sign-in and whenever the network returns. */
 export function watchOfflineNotes(): void {
   const run = () => {
     syncOfflineNotes().catch((error) =>
