@@ -84,8 +84,7 @@ self.addEventListener('fetch', (event) => {
     // The page saves after it answers, even when the saved shell answered first.
     event.waitUntil(network.then(() => saving));
     const slow = new Promise((resolve) => setTimeout(resolve, SLOW_MS)).then(
-      async () =>
-        (await caches.match(SCOPE, { cacheName: SHELL })) ?? network
+      async () => (await caches.match(SCOPE, { cacheName: SHELL })) ?? network
     );
     event.respondWith(Promise.race([network, slow]));
     return;
