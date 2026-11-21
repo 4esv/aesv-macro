@@ -12,6 +12,7 @@ import {
   HomeDetailRouteView,
 } from '@app/features/home/home-view';
 import { HomeRouteView } from '@app/features/home/route-views';
+import { CapturePage } from '@app/features/offline-capture/CapturePage';
 import { ReviewsViewSkeleton } from '@app/features/reviews-view/reviews-view-skeleton';
 import { TasksViewSkeleton } from '@app/features/tasks-view/tasks-view-skeleton';
 import { TeamInviteAcceptance } from '@app/features/team-invitations/TeamInviteAcceptance';
@@ -105,6 +106,7 @@ import {
   callDetailRoute,
   callsCallRoute,
   callsRoute,
+  captureRoute,
   channelDetailRoute,
   channelInviteRoute,
   channelsSplitRoute,
@@ -274,6 +276,7 @@ export function appRouteElements(): JSX.Element {
         />
         <Route definition={loginRoute} component={LoginPage} />
         <Route definition={welcomeRoute} component={WelcomePage} />
+        <Route definition={captureRoute} component={CapturePage} />
         <Route
           definition={mobileEmailSignupRoute}
           component={MobileWebSignup}

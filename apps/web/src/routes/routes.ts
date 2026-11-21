@@ -219,6 +219,12 @@ export const channelInviteRoute = defineRoute({
   externalSearch: '*',
 });
 
+/** Write a note with or without a network; it syncs when one returns (W-2096). */
+export const captureRoute = defineRoute({
+  id: 'capture',
+  path: 'capture',
+});
+
 /** Sign-in, onboarding, invite, and handoff pages, without the app's chrome. */
 export const authRoute = defineRoute({ id: 'auth' });
 

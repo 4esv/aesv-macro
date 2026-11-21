@@ -164,12 +164,22 @@ struct FakeDocumentService {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct CreatedDocumentCall {
+    id: Option<Uuid>,
     document_name: String,
     file_type: Option<FileType>,
     project_id: Option<Uuid>,
 }
 
 impl FakeDocumentService {
+    fn created_ids(&self) -> Vec<Option<Uuid>> {
+        self.created_documents
+            .lock()
+            .expect("created documents lock poisoned")
+            .iter()
+            .map(|document| document.id)
+            .collect()
+    }
+
     fn create_calls(&self) -> Vec<CreateDocumentCall> {
         self.create_calls
             .lock()
@@ -380,6 +390,7 @@ impl DocumentService for FakeDocumentService {
             .lock()
             .expect("created documents lock poisoned")
             .push(CreatedDocumentCall {
+                id: document.id,
                 document_name: document.document_name,
                 file_type: document.file_type,
                 project_id: document.project_id,
@@ -1767,6 +1778,24 @@ async fn create_routes_reject_callers_that_cannot_create_before_reading_the_body
             assert!(document_service.copy_calls().is_empty());
         }
     }
+}
+
+#[tokio::test]
+async fn create_markdown_keeps_the_id_the_client_chose() {
+    // A note written offline is sent again after a lost response; its own id
+    // makes the second insert collide instead of making a copy (W-2096).
+    let (router, document_service, _access_service, _authorization_service) = test_router();
+    let id = Uuid::new_v4();
+    let request =
+        with_jwt(Request::post("/create_markdown").header("content-type", "application/json"))
+            .body(Body::from(
+                json!({ "documentName": "idea", "markdown": "on the train", "id": id }).to_string(),
+            ))
+            .expect("request should build");
+
+    let _ = send(&router, request).await;
+
+    assert_eq!(document_service.created_ids(), [Some(id)]);
 }
 
 #[tokio::test]

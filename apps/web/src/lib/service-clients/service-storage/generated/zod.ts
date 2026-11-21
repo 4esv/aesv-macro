@@ -24453,6 +24453,12 @@ export const createMarkdownHandlerBody = zod
       .describe(
         'Whether to add a viewed_at record for this document upon creation.'
       ),
+    id: zod
+      .uuid()
+      .nullish()
+      .describe(
+        'An ID chosen by the client, so a create sent again (a note written\noffline, retried after a lost response) can never make a second copy.'
+      ),
   })
   .describe(
     'Request body for creating a markdown document whose content is initialized\nby the backend.'

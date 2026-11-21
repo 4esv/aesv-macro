@@ -1,5 +1,9 @@
 import { clearMcpAuthAttempts } from '@app/features/settings/mcp-auth-attempt';
 import { useAnalytics } from '@app/lib/analytics/analytics-context';
+import {
+  clearOfflineNotes,
+  countOfflineNotes,
+} from '@app/lib/persistence/offline-notes';
 import { clearNativeDiagnostics } from '@app/observability/native-diagnostics';
 import { reloadApp } from '@app/observability/reload';
 import { SERVER_HOSTS } from '@core/constant/servers';
@@ -72,6 +76,7 @@ export function clearLocalAuthSession(
     clearMcpAuthAttempts();
     const documentContextsCleared = clearOfflineDocumentContexts();
     const documentCopiesCleared = clearLocalDocumentCopies();
+    const offlineNotesCleared = clearOfflineNotes();
     clearDocumentQueryCache(queryClient);
     clearTeamCalendarQueries();
     // Start every wipe before waiting, including stores not hydrated this session.
@@ -82,6 +87,7 @@ export function clearLocalAuthSession(
       Promise.resolve().then(clearComposerStorage),
       documentContextsCleared,
       documentCopiesCleared,
+      offlineNotesCleared,
       // Publishing a signed-out query can retire the physical cache host.
       // Keep that publication behind its write drain and storage cleanup.
       (async () => {
@@ -116,12 +122,13 @@ export function useLogout() {
     try {
       const inspectDrafts = async () => {
         await flushLocalDrafts();
-        const [drafts, sends, edits] = await Promise.all([
+        const [drafts, sends, edits, notes] = await Promise.all([
           listLocalDrafts(),
           readEmailSendIntents(),
           countUnsentEdits(),
+          countOfflineNotes(),
         ]);
-        return { drafts, sends, edits };
+        return { drafts, sends, edits: edits + notes };
       };
       const { drafts, sends, edits } = await Promise.race([
         inspectDrafts(),
@@ -138,7 +145,7 @@ export function useLogout() {
       if (edits > 0)
         warning = [
           warning,
-          `${edits} note edit(s) have not reached the server yet. Signing out removes them.`,
+          `${edits} note change(s) have not reached the server yet. Signing out removes them.`,
         ]
           .filter(Boolean)
           .join(' ');

@@ -1,6 +1,7 @@
 import { ROUTER_BASE } from '@app/constants/routerBase';
 import { GlobalShareInboxConflictDialog } from '@app/features/inbox/ShareInboxConflictDialog';
 import { MeetingSessionProvider } from '@app/features/meetings/meeting-session-provider';
+import { watchOfflineNotes } from '@app/features/offline-capture/sync';
 import { useRecordSuggestionsActivity } from '@app/features/suggestions/queries/use-record-suggestions-activity';
 import { AnalyticsContextProvider } from '@app/lib/analytics/analytics-context';
 import { FlagsProvider } from '@app/lib/analytics/flags';
@@ -140,6 +141,7 @@ export function Root() {
 
   onMount(() => {
     perfMark('boot.root-mounted');
+    watchOfflineNotes();
     applyTheme(resolveActiveThemeId());
     ensureMinimalThemeContrast();
   });

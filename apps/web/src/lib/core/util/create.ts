@@ -48,6 +48,8 @@ type CreateMarkdownFileArgs = {
  * Creates a new markdown file and initializes sync-service on the backend.
  * Use createTask for the task subtype.
  */
+// FIX: with no network this create fails; send the person to the capture page
+// (route 'capture', W-2096) so a note started here is not lost.
 export async function createMarkdownFile(
   args?: CreateMarkdownFileArgs
 ): Promise<string | undefined> {

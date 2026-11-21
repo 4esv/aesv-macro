@@ -38669,6 +38669,11 @@
           "skipHistory": {
             "type": "boolean",
             "description": "Whether to add a viewed_at record for this document upon creation."
+          },
+          "id": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "An ID chosen by the client, so a create sent again (a note written\noffline, retried after a lost response) can never make a second copy."
           }
         }
       },

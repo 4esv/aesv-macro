@@ -48,6 +48,9 @@ pub async fn create_markdown_handler<
     let req = project.into_inner();
 
     let mut metadata = NewDocumentMetadata::builder(req.document_name);
+    if let Some(id) = req.id {
+        metadata = metadata.id(id);
+    }
     if let Some(project_id) = req.project_id {
         metadata = metadata.project_id(project_id);
     }

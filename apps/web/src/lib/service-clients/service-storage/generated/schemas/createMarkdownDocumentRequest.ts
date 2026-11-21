@@ -4,6 +4,7 @@
  * document_storage_service
  * OpenAPI spec version: 0.1.0
  */
+import type { CreateMarkdownDocumentRequestId } from './createMarkdownDocumentRequestId';
 import type { CreateMarkdownDocumentRequestMarkdown } from './createMarkdownDocumentRequestMarkdown';
 import type { CreateMarkdownDocumentRequestProjectId } from './createMarkdownDocumentRequestProjectId';
 
@@ -20,4 +21,7 @@ export interface CreateMarkdownDocumentRequest {
   projectId?: CreateMarkdownDocumentRequestProjectId;
   /** Whether to add a viewed_at record for this document upon creation. */
   skipHistory?: boolean;
+  /** An ID chosen by the client, so a create sent again (a note written
+offline, retried after a lost response) can never make a second copy. */
+  id?: CreateMarkdownDocumentRequestId;
 }
